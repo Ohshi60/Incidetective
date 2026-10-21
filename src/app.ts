@@ -16,11 +16,7 @@ export function buildApp() {
   app.get("/incidents", async (req, res) => {
     return res.send(listIncidents());
   });
-  app.get("/incidents/:id", async (req, res) => {
-    console.log(req.params.id);
-    if (!req.params.id) {
-      return res.code(400).send({ error: "no valid id supplied" });
-    }
+  app.get<{ Params: { id: string } }>("/incidents/:id", async (req, res) => {
     const incident = getIncident(req.params.id);
     if (incident) {
       return res.code(200).send(incident);
