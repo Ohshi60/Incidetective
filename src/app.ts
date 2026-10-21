@@ -1,6 +1,10 @@
 import Fastify from "fastify";
 import type { CreateIncidentInput } from "./incidents/incident.js";
-import { createIncident } from "./incidents/incident-store.js";
+import {
+  createIncident,
+  getIncident,
+  listIncidents,
+} from "./incidents/incident-store.js";
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -9,6 +13,21 @@ export function buildApp() {
     return { status: "ok" };
   });
 
+  app.get("/incidents", async (req, res) => {
+    return res.send(listIncidents());
+  });
+  app.get("/incidents/:id", async (req, res) => {
+    console.log(req.params.id);
+    if (!req.params.id) {
+      return res.code(400).send({ error: "no valid id supplied" });
+    }
+    const incident = getIncident(req.params.id);
+    if (incident) {
+      return res.code(200).send(incident);
+    } else {
+      return res.code(404).send({ error: "incident not found" });
+    }
+  });
   app.post<{ Body: CreateIncidentInput }>(
     "/incidents",
     {

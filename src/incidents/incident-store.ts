@@ -20,3 +20,7 @@ export function getIncident(id: string): Incident | undefined {
 export function listIncidents(): Incident[] {
   return Array.from(incidentMap.values());
 }
+
+export function clearIncidents(): void {
+  incidentMap.clear();
+}
