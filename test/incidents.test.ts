@@ -62,6 +62,21 @@ describe("POST /incidents", () => {
 
     expect(response.statusCode).toBe(400);
   });
+  it("rejects if contains extra fields ", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/incidents",
+      payload: {
+        id: "1337-haxx0r",
+        title: "Something",
+        service: "checkout-api",
+        severity: "banana",
+        description: "HTTP 500 errors increased after deployment",
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
 
 describe("GET /incidents", () => {
@@ -87,12 +102,13 @@ describe("GET /incidents", () => {
       severity: "high" as const,
       description: "HTTP 500 errors increased after deployment",
     };
-    createIncident(payload);
+    const incident = createIncident(payload);
     const response = await app.inject({
       method: "GET",
       url: "/incidents",
     });
     expect(response.json().length).toEqual(1);
+    expect(response.json()).toEqual(expect.arrayContaining([incident]));
   });
 });
 describe("GET /incidents/:id", () => {
@@ -110,6 +126,9 @@ describe("GET /incidents/:id", () => {
       url: "/incidents/1",
     });
     expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({
+      error: "incident not found",
+    });
   });
   it("Returns incident when provided id ", async () => {
     const payload = {
@@ -129,5 +148,7 @@ describe("GET /incidents/:id", () => {
     expect(incident.severity).toBe(parsesdResponse.severity);
     expect(incident.description).toBe(parsesdResponse.description);
     expect(incident.createdAt).toBe(parsesdResponse.createdAt);
+    expect(response.statusCode).toBe(200);
+    expect(parsesdResponse.id).toBe(incident.id);
   });
 });
