@@ -8,9 +8,15 @@ export function addLogEntry(entry: LogEntry): LogEntry {
 }
 
 export function fetchLogs(): LogEntry[] {
-  return logEntries;
+  return [...logEntries];
 }
 
 export function clearLog(): void {
   logEntries.length = 0;
+}
+
+export function fetchIncidentLogs(incidentId: string): LogEntry[] {
+  return logEntries.filter((entry) => {
+    return entry.incidentId === incidentId;
+  });
 }

@@ -1,30 +1,30 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  createIncident,
-  getIncident,
-  listIncidents,
-} from "../src/incidents/incident-store.js";
 import { getSampleLogs } from "../src/evidence/sample-logs.js";
 import {
   addLogEntry,
   clearLog,
+  fetchIncidentLogs,
   fetchLogs,
 } from "../src/evidence/evidence-store.js";
+import { randomUUID } from "node:crypto";
 
 describe("addLog", () => {
   beforeEach(() => {
     clearLog();
   });
   it("adds the log to the db", () => {
-    const [first, ...samples] = getSampleLogs();
-    if (!first) {
-      return;
-    }
-    const entry = addLogEntry(first);
+    const sample: LogEntry = {
+      incidentId: randomUUID(),
+      timestamp: "2026-10-21T10:00:00.000Z",
+      service: "checkout-service",
+      level: "error",
+      message: "Request timeout",
+    };
+    const entry = addLogEntry(sample);
 
-    expect(entry.message).toBe(first.message);
-    expect(entry.service).toBe(first.service);
-    expect(entry.level).toBe(first.level);
+    expect(entry.message).toBe(sample.message);
+    expect(entry.service).toBe(sample.service);
+    expect(entry.level).toBe(sample.level);
   });
 });
 
@@ -47,5 +47,27 @@ describe("getLogs", () => {
 
     expect(logs.length).toEqual(5);
     expect(logs).toEqual(expect.arrayContaining(samples));
+  });
+});
+
+describe("fetchIncidentLogs", () => {
+  beforeEach(() => {
+    clearLog();
+  });
+  it("returns empty array incidentId is not found", () => {
+    const logs = fetchIncidentLogs("invalid");
+
+    expect(logs.length).toEqual(0);
+  });
+  it("returns all the logs belonging to an incidentId", () => {
+    const samples = getSampleLogs();
+    samples.map((sample) => {
+      addLogEntry(sample);
+    });
+
+    const logs = fetchIncidentLogs("420-69-yolo");
+
+    expect(logs.length).toEqual(2);
+    expect(logs).toEqual(expect.arrayContaining(samples.slice(0, 2)));
   });
 });
