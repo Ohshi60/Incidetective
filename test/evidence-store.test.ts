@@ -7,6 +7,7 @@ import {
   fetchLogs,
 } from "../src/evidence/evidence-store.js";
 import { randomUUID } from "node:crypto";
+import type { LogEntry } from "../src/evidence/evidence.js";
 
 describe("addLog", () => {
   beforeEach(() => {
@@ -60,14 +61,29 @@ describe("fetchIncidentLogs", () => {
     expect(logs.length).toEqual(0);
   });
   it("returns all the logs belonging to an incidentId", () => {
-    const samples = getSampleLogs();
-    samples.map((sample) => {
-      addLogEntry(sample);
-    });
+    const incidentA = "incident-a";
+    const incidentB = "incident-b";
 
-    const logs = fetchIncidentLogs("420-69-yolo");
+    const logA: LogEntry = {
+      incidentId: incidentA,
+      timestamp: "2026-10-21T10:00:00.000Z",
+      service: "checkout-service",
+      level: "error",
+      message: "Checkout requests failing",
+    };
 
-    expect(logs.length).toEqual(2);
-    expect(logs).toEqual(expect.arrayContaining(samples.slice(0, 2)));
+    const logB: LogEntry = {
+      incidentId: incidentB,
+      timestamp: "2026-10-21T11:00:00.000Z",
+      service: "payment-service",
+      level: "error",
+      message: "Payment requests failing",
+    };
+
+    addLogEntry(logA);
+    addLogEntry(logB);
+
+    expect(fetchIncidentLogs(incidentA)).toEqual([logA]);
+    expect(fetchIncidentLogs(incidentB)).toEqual([logB]);
   });
 });
