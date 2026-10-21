@@ -9,37 +9,37 @@ function timestampAt(offsetSeconds: number): string {
   return new Date(incidentStart + offsetSeconds * 1000).toISOString();
 }
 export function getSampleLogs(): LogEntry[] {
-  const SampleLogs: LogEntry[] = [
+  const sampleLogs: LogEntry[] = [
     {
-      incidentId: "420-69-yolo",
+      incidentId: "incident-checkout-demo",
       timestamp: timestampAt(-60),
       service: "deploy-service",
       level: "info",
       message: "Deployment started",
     },
     {
-      incidentId: "420-69-yolo",
+      incidentId: "incident-checkout-demo",
       timestamp: timestampAt(0),
       service: "checkout-service",
       level: "error",
       message: "Request Timeout",
     },
     {
-      incidentId: "420-69-yolo",
+      incidentId: "incident-checkout-demo",
       timestamp: timestampAt(30),
       service: "database-service",
       level: "warn",
       message: "Query took 670 ms",
     },
     {
-      incidentId: "420-69-yolo",
+      incidentId: "incident-checkout-demo",
       timestamp: timestampAt(60),
       service: "checkout-service",
       level: "warn",
       message: "Request latency is dangerously high: 6969 ms",
     },
     {
-      incidentId: "420-69-yolo",
+      incidentId: "incident-checkout-demo",
       timestamp: timestampAt(120),
       service: "checkout-service",
       level: "error",
@@ -47,5 +47,5 @@ export function getSampleLogs(): LogEntry[] {
     },
   ];
 
-  return SampleLogs;
+  return sampleLogs;
 }

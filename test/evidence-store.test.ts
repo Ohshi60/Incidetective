@@ -23,9 +23,7 @@ describe("addLog", () => {
     };
     const entry = addLogEntry(sample);
 
-    expect(entry.message).toBe(sample.message);
-    expect(entry.service).toBe(sample.service);
-    expect(entry.level).toBe(sample.level);
+    expect(entry).toEqual(sample);
   });
 });
 
