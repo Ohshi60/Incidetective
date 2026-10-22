@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../../src/app.js";
-import type { InvestigationReport } from "../../src/analysis/reports/investigation-report.js";
+import type { InvestigationReport } from "../../shared/types/report.js";
 
 describe("Investigation report API", () => {
   it("generates an evidence-backed report for an existing incident", async () => {
