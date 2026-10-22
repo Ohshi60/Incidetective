@@ -1,8 +1,9 @@
 import type { LogEntry } from "../evidence/evidence.js";
+import { normalizeErrorMessage } from "./normalize-error.js";
 
 export interface ErrorGroup {
   service: string;
-  message: string;
+  normalizedMessage: string;
   count: number;
   firstSeen: string;
   lastSeen: string;
@@ -14,8 +15,10 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
 
   for (const log of logs) {
     if (log.level !== "error") continue;
+
+    const normalizedMessage = normalizeErrorMessage(log.message);
     // A collision-safe option would be JSON.stringify([log.service, log.message]).
-    const key = `${log.service}|${log.message}`;
+    const key = JSON.stringify([log.service, normalizedMessage]);
     const existingGroup = groupsMap.get(key);
 
     if (existingGroup) {
@@ -29,7 +32,7 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
     } else {
       groupsMap.set(key, {
         service: log.service,
-        message: log.message,
+        normalizedMessage: normalizedMessage,
         count: 1,
         firstSeen: log.timestamp,
         lastSeen: log.timestamp,
@@ -47,6 +50,6 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
     if (serviceCompare !== 0) {
       return serviceCompare;
     }
-    return a.message.localeCompare(b.message);
+    return a.normalizedMessage.localeCompare(b.normalizedMessage);
   });
 }

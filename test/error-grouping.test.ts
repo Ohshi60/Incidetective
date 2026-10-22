@@ -26,7 +26,7 @@ describe("groupErrors", () => {
     expect(groupErrors(logs)).toEqual([
       {
         service: "checkout-api",
-        message: "Timeout",
+        normalizedMessage: "Timeout",
         count: 3,
         firstSeen: "2026-10-22T10:00:00Z",
         lastSeen: "2026-10-22T10:05:00Z",
@@ -46,12 +46,12 @@ describe("groupErrors", () => {
     expect(result).toHaveLength(2);
     expect(result[0]).toMatchObject({
       service: "payment-api",
-      message: "Timeout",
+      normalizedMessage: "Timeout",
       count: 2,
     });
     expect(result[1]).toMatchObject({
       service: "checkout-api",
-      message: "Timeout",
+      normalizedMessage: "Timeout",
       count: 1,
     });
   });

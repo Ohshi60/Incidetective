@@ -47,14 +47,14 @@ describe("analyzeIncident", () => {
       errorGroups: [
         {
           service: "payment-api",
-          message: "Connection timeout",
+          normalizedMessage: "Connection timeout",
           count: 1,
           firstSeen: "2026-10-22T10:10:00.000Z",
           lastSeen: "2026-10-22T10:10:00.000Z",
         },
         {
           service: "payment-api",
-          message: "Payment failed",
+          normalizedMessage: "Payment failed",
           count: 1,
           firstSeen: "2026-10-22T10:05:00.000Z",
           lastSeen: "2026-10-22T10:05:00.000Z",
