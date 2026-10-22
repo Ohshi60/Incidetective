@@ -5,6 +5,8 @@ import {
   getIncident,
   listIncidents,
 } from "./incidents/incident-store.js";
+import { fetchIncidentLogs } from "./evidence/evidence-store.js";
+import { loadSampleLogsForIncident } from "./evidence/sample-evidence-loader.js";
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -24,6 +26,18 @@ export function buildApp() {
       return res.code(404).send({ error: "incident not found" });
     }
   });
+  app.get<{ Params: { id: string } }>(
+    "/incidents/:id/logs",
+    async (req, res) => {
+      const incident = getIncident(req.params.id);
+      if (incident) {
+        const incidentLogs = fetchIncidentLogs(req.params.id) ?? [];
+        return res.code(200).send(incidentLogs);
+      } else {
+        return res.code(404).send({ error: "incident not found" });
+      }
+    },
+  );
   app.post<{ Body: CreateIncidentInput }>(
     "/incidents",
     {
@@ -46,6 +60,8 @@ export function buildApp() {
     },
     async (req, res) => {
       const incident = createIncident(req.body);
+      // temporary create synthetic evidence
+      loadSampleLogsForIncident(incident.id);
       return res.code(201).send(incident);
     },
   );

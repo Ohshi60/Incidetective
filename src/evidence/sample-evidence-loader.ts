@@ -3,7 +3,6 @@ import type { LogEntry } from "./evidence.js";
 import { generateLogsForIncident } from "./sample-logs.js";
 
 export function loadSampleLogsForIncident(incidentId: string): LogEntry[] {
-  // Your implementation
   const logs = fetchIncidentLogs(incidentId);
   if (logs.length) {
     return logs;
