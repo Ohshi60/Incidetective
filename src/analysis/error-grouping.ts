@@ -14,6 +14,7 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
 
   for (const log of logs) {
     if (log.level !== "error") continue;
+    // A collision-safe option would be JSON.stringify([log.service, log.message]).
     const key = `${log.service}|${log.message}`;
     const existingGroup = groupsMap.get(key);
 

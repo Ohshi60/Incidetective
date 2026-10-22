@@ -44,6 +44,22 @@ describe("analyzeIncident", () => {
       affectedServices: ["checkout-api", "payment-api"],
       firstTimestamp: "2026-10-22T10:00:00.000Z",
       lastTimestamp: "2026-10-22T10:10:00.000Z",
+      errorGroups: [
+        {
+          service: "payment-api",
+          message: "Connection timeout",
+          count: 1,
+          firstSeen: "2026-10-22T10:10:00.000Z",
+          lastSeen: "2026-10-22T10:10:00.000Z",
+        },
+        {
+          service: "payment-api",
+          message: "Payment failed",
+          count: 1,
+          firstSeen: "2026-10-22T10:05:00.000Z",
+          lastSeen: "2026-10-22T10:05:00.000Z",
+        },
+      ],
     });
   });
 
@@ -55,6 +71,7 @@ describe("analyzeIncident", () => {
       affectedServices: [],
       firstTimestamp: null,
       lastTimestamp: null,
+      errorGroups: [],
     });
   });
 });
