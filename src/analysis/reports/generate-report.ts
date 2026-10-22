@@ -8,8 +8,6 @@ export function generateReport(
   incident: Incident,
   logs: LogEntry[],
 ): InvestigationReport {
-  // Your implementation
-
   const analysis = analyseIncident(logs);
   const findings = analysis.errorGroups.map((group) => {
     const evidence = logs
@@ -37,19 +35,15 @@ export function generateReport(
       evidence,
     };
   });
-  let summary;
-  if (analysis.errorCount) {
-    summary =
-      `
-    ${analysis.errorCount} errors found across ${analysis.totalLogs}
-    ` +
-      `The most frequent failure was ${analysis.errorGroups[0]?.normalizedMessage}` +
-      `in ${analysis.errorGroups[0]?.service}, occuring ${analysis.errorGroups[0]?.count} times` +
-      "root cause has not been determined";
-  } else {
-    summary = `No errors found across ${analysis.totalLogs}
-    root cause has not been determined`;
-  }
+  const topGroup = analysis.errorGroups[0];
+
+  const summary = topGroup
+    ? `${analysis.errorCount} errors found across ${analysis.totalLogs} logs. ` +
+      `The most frequent failure was "${topGroup.normalizedMessage}" ` +
+      `in ${topGroup.service}, occurring ${topGroup.count} times. ` +
+      `Root cause has not been determined.`
+    : `No errors found across ${analysis.totalLogs} logs. ` +
+      `Root cause has not been determined.`;
 
   return {
     incidentId: incident.id,
