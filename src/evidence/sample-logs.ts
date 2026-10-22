@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import type { LogEntry } from "./evidence.js";
 
 // helper function for creating chronological timestamps
@@ -48,4 +47,10 @@ export function getSampleLogs(): LogEntry[] {
   ];
 
   return sampleLogs;
+}
+
+export function generateLogsForIncident(id: string): LogEntry[] {
+  return getSampleLogs().map((log) => {
+    return { ...log, incidentId: id };
+  });
 }
