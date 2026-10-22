@@ -103,4 +103,70 @@ describe("Incident API", () => {
       await app.close();
     }
   });
+  it("returns analysis for an existing incident", async () => {
+    const app = buildApp();
+
+    try {
+      const createResponse = await app.inject({
+        method: "POST",
+        url: "/incidents",
+        payload: {
+          title: "Checkout failures",
+          service: "checkout-api",
+          severity: "high",
+          description: "HTTP 500 errors increased",
+        },
+      });
+
+      expect(createResponse.statusCode).toBe(201);
+
+      const incident = createResponse.json();
+
+      const logsResponse = await app.inject({
+        method: "GET",
+        url: `/incidents/${incident.id}/logs`,
+      });
+
+      expect(logsResponse.statusCode).toBe(200);
+
+      const logs: LogEntry[] = logsResponse.json();
+
+      const response = await app.inject({
+        method: "GET",
+        url: `/incidents/${incident.id}/analysis`,
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const analysis = response.json();
+
+      expect(analysis.totalLogs).toBe(logs.length);
+      expect(analysis.errorCount).toBe(
+        logs.filter((log) => log.level === "error").length,
+      );
+      expect(analysis.warningCount).toBe(
+        logs.filter((log) => log.level === "warn").length,
+      );
+      expect(analysis.affectedServices).toEqual(
+        [...new Set(logs.map((log) => log.service))].sort(),
+      );
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("returns 404 when analyzing an unknown incident", async () => {
+    const app = buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/incidents/${crypto.randomUUID()}/analysis`,
+      });
+
+      expect(response.statusCode).toBe(404);
+    } finally {
+      await app.close();
+    }
+  });
 });

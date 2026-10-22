@@ -7,6 +7,7 @@ import {
 } from "./incidents/incident-store.js";
 import { fetchIncidentLogs } from "./evidence/evidence-store.js";
 import { loadSampleLogsForIncident } from "./evidence/sample-evidence-loader.js";
+import { analyseIncident } from "./analysis/incident-analysis.js";
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -36,6 +37,19 @@ export function buildApp() {
 
       const incidentLogs = fetchIncidentLogs(req.params.id);
       return res.code(200).send(incidentLogs);
+    },
+  );
+  app.get<{ Params: { id: string } }>(
+    "/incidents/:id/analysis",
+    async (req, res) => {
+      const incident = getIncident(req.params.id);
+      if (!incident) {
+        return res.code(404).send({ error: "incident not found" });
+      }
+
+      const incidentLogs = fetchIncidentLogs(req.params.id);
+      const analysis = analyseIncident(incidentLogs);
+      return res.code(200).send(analysis);
     },
   );
   app.post<{ Body: CreateIncidentInput }>(
