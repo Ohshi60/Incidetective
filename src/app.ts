@@ -30,12 +30,12 @@ export function buildApp() {
     "/incidents/:id/logs",
     async (req, res) => {
       const incident = getIncident(req.params.id);
-      if (incident) {
-        const incidentLogs = fetchIncidentLogs(req.params.id) ?? [];
-        return res.code(200).send(incidentLogs);
-      } else {
+      if (!incident) {
         return res.code(404).send({ error: "incident not found" });
       }
+
+      const incidentLogs = fetchIncidentLogs(req.params.id);
+      return res.code(200).send(incidentLogs);
     },
   );
   app.post<{ Body: CreateIncidentInput }>(
