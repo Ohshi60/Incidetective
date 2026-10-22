@@ -65,4 +65,20 @@ describe("groupErrors", () => {
     expect(groupErrors(logs)).toEqual([]);
     expect(groupErrors([])).toEqual([]);
   });
+  it("groups errors with different request IDs", () => {
+    const logs = [
+      makeLog("checkout-api", "Request 123 timed out", "2026-10-22T10:00:00Z"),
+      makeLog("checkout-api", "Request 456 timed out", "2026-10-22T10:01:00Z"),
+    ];
+
+    expect(groupErrors(logs)).toEqual([
+      {
+        service: "checkout-api",
+        normalizedMessage: "Request <number> timed out",
+        count: 2,
+        firstSeen: "2026-10-22T10:00:00Z",
+        lastSeen: "2026-10-22T10:01:00Z",
+      },
+    ]);
+  });
 });
