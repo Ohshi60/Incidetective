@@ -7,7 +7,7 @@ import {
   fetchLogs,
 } from "../src/evidence/evidence-store.js";
 import { randomUUID } from "node:crypto";
-import type { LogEntry } from "../src/evidence/evidence.js";
+import type { LogEntry } from "../shared/types/evidence.js";
 
 describe("addLog", () => {
   beforeEach(() => {

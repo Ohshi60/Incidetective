@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Incident } from "./types/incident";
+import type { Incident } from "../../shared/types/incident";
 import { CreateIncidentForm } from "./components/CreateIncidentForm";
 import { Toaster } from "sonner";
 import { IncidentDetail } from "./components/IncidentDetail";

@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import type { CreateIncidentInput } from "./incidents/incident.js";
+import type { CreateIncidentInput } from "../shared/types/incident.js";
 import {
   createIncident,
   getIncident,

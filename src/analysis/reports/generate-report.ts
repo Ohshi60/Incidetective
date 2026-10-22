@@ -1,8 +1,8 @@
-import type { LogEntry } from "../../evidence/evidence.js";
-import type { Incident } from "../../incidents/incident.js";
+import type { LogEntry } from "../../../shared/types/evidence.js";
+import type { Incident } from "../../../shared/types/incident.js";
+import type { InvestigationReport } from "../../../shared/types/report.js";
 import { analyseIncident } from "../incident-analysis.js";
 import { normalizeErrorMessage } from "../normalize-error.js";
-import type { InvestigationReport } from "./investigation-report.js";
 
 export function generateReport(
   incident: Incident,

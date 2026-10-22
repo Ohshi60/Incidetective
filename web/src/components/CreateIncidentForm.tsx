@@ -1,6 +1,6 @@
 import { useState, type SubmitEvent } from "react";
-import type { Incident } from "../types/incident";
 import { toast } from "sonner";
+import type { Incident } from "../../../shared/types/incident";
 
 interface CreateIncidentFormProps {
   onCreated: (incident: Incident) => void;

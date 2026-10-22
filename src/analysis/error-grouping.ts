@@ -1,13 +1,6 @@
-import type { LogEntry } from "../evidence/evidence.js";
+import type { ErrorGroup } from "../../shared/types/analysis.js";
+import type { LogEntry } from "../../shared/types/evidence.js";
 import { normalizeErrorMessage } from "./normalize-error.js";
-
-export interface ErrorGroup {
-  service: string;
-  normalizedMessage: string;
-  count: number;
-  firstSeen: string;
-  lastSeen: string;
-}
 
 export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
   // Map key: "service|message" -> value: ErrorGroup

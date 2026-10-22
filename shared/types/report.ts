@@ -1,4 +1,4 @@
-import type { IncidentSeverity } from "../../incidents/incident.js";
+import type { IncidentSeverity } from "./incident.js";
 
 export interface ReportFinding {
   service: string;

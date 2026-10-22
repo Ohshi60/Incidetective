@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { Incident } from "../types/incident";
-import type { InvestigationReport } from "../types/report";
 import { ReportFindings } from "./ReportFindings";
+import type { Incident } from "../../../shared/types/incident";
+import type { InvestigationReport } from "../../../shared/types/report";
 
 interface IncidentDetailProps {
   incident: Incident;

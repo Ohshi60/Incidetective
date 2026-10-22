@@ -1,6 +1,6 @@
-import type { LogEntry } from "./evidence.js";
-
 // helper function for creating chronological timestamps
+
+import type { LogEntry } from "../../shared/types/evidence.js";
 
 const incidentStart = Date.parse("2026-10-21T10:00:00.000Z");
 

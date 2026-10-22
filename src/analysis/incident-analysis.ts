@@ -1,15 +1,6 @@
-import type { LogEntry } from "../evidence/evidence.js";
-import { groupErrors, type ErrorGroup } from "./error-grouping.js";
-
-export interface IncidentAnalysis {
-  totalLogs: number;
-  errorCount: number;
-  warningCount: number;
-  affectedServices: string[];
-  firstTimestamp: string | null;
-  lastTimestamp: string | null;
-  errorGroups: ErrorGroup[];
-}
+import type { IncidentAnalysis } from "../../shared/types/analysis.js";
+import type { LogEntry } from "../../shared/types/evidence.js";
+import { groupErrors } from "./error-grouping.js";
 
 export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
   // shortcircuit if no logs provided

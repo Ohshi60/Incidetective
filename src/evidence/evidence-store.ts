@@ -1,4 +1,4 @@
-import type { LogEntry } from "./evidence.js";
+import type { LogEntry } from "../../shared/types/evidence.js";
 
 const logEntries: LogEntry[] = [];
 

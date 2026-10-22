@@ -1,5 +1,8 @@
-import type { Incident, CreateIncidentInput } from "./incident.js";
 import { randomUUID } from "node:crypto";
+import type {
+  CreateIncidentInput,
+  Incident,
+} from "../../shared/types/incident.js";
 
 const incidentMap = new Map<string, Incident>();
 

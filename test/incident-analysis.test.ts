@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { analyseIncident } from "../src/analysis/incident-analysis.js";
-import type { LogEntry } from "../src/evidence/evidence.js";
+import type { LogEntry } from "../shared/types/evidence.js";
 
 describe("analyzeIncident", () => {
   it("analyzes logs regardless of their order", () => {

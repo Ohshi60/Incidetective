@@ -1,5 +1,5 @@
+import type { LogEntry } from "../../shared/types/evidence.js";
 import { addLogEntry, fetchIncidentLogs } from "./evidence-store.js";
-import type { LogEntry } from "./evidence.js";
 import { generateLogsForIncident } from "./sample-logs.js";
 
 export function loadSampleLogsForIncident(incidentId: string): LogEntry[] {

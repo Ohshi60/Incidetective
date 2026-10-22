@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../../src/app.js";
-import type { LogEntry } from "../../src/evidence/evidence.js";
+import type { LogEntry } from "../../shared/types/evidence.js";
 
 describe("Incident API", () => {
   it("returns logs belonging to a created incident", async () => {

@@ -1,4 +1,4 @@
-import type { InvestigationReport, ReportFinding } from "../types/report";
+import type { ReportFinding } from "../../../shared/types/report";
 
 export function ReportFindings({ findings }: ReportFinding[]) {
   console.log("received", findings);
@@ -33,14 +33,3 @@ export function ReportFindings({ findings }: ReportFinding[]) {
     </>
   );
 }
-
-//  service: string;
-//   pattern: string;
-//   occurrences: number;
-//   firstSeen: string;
-//   lastSeen: string;
-//   evidence: {
-//     timestamp: string;
-//     message: string;
-//   }[];
-// }

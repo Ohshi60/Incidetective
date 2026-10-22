@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { groupErrors } from "../src/analysis/error-grouping.js";
-import type { LogEntry } from "../src/evidence/evidence.js";
+import type { LogEntry } from "../shared/types/evidence.js";
 
 const makeLog = (
   service: string,
