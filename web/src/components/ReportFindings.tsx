@@ -1,7 +1,9 @@
 import type { ReportFinding } from "../../../shared/types/report";
+interface ReportFindingProps {
+  findings: ReportFinding[];
+}
 
-export function ReportFindings({ findings }: ReportFinding[]) {
-  console.log("received", findings);
+export function ReportFindings({ findings }: ReportFindingProps) {
   return (
     <>
       {findings.map((finding) => {

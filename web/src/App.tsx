@@ -1,38 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Incident } from "../../shared/types/incident";
 import { CreateIncidentForm } from "./components/CreateIncidentForm";
 import { Toaster } from "sonner";
 import { IncidentDetail } from "./components/IncidentDetail";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { fetchIncidents } from "./api/incidents";
 
 function App() {
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: incidents = [],
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["incidents"],
+    queryFn: fetchIncidents,
+  });
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
     null,
   );
-  useEffect(() => {
-    async function fetchIncidents() {
-      try {
-        const response = await fetch("/api/incidents");
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.json()}`);
-        }
-        const data: Incident[] = await response.json();
-        setIncidents(data);
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : "Failed to fetch incidents",
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchIncidents();
-  }, []);
-  if (loading) return <p>Loading incidents...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const queryClient = useQueryClient();
 
+  if (isPending) {
+    return <p>Loading incidents...</p>;
+  }
+  if (isError) {
+    return <p>Failed to load incidents: {error.message}</p>;
+  }
   return (
     <>
       <Toaster position="top-right" theme="dark" richColors />
@@ -74,8 +68,8 @@ function App() {
           <section className="max-w-xl rounded-xl border border-slate-800 bg-slate-900/50 p-6">
             <h2 className="mb-6 text-xl font-semibold">Create incident</h2>
             <CreateIncidentForm
-              onCreated={(incident) => {
-                setIncidents((current) => [...current, incident]);
+              onCreated={() => {
+                queryClient.invalidateQueries({ queryKey: ["incidents"] });
               }}
             />
           </section>
