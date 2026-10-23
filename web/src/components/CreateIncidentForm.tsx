@@ -2,6 +2,17 @@ import { useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createIncident } from "../api/incidents";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Button } from "./ui/button";
 
 interface CreateIncidentFormProps {
   onSuccess?: () => void;
@@ -45,69 +56,71 @@ export function CreateIncidentForm({ onSuccess }: CreateIncidentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1">
-        <label htmlFor="title" className="block text-sm font-medium">
-          Title
-        </label>
-        <input
+        <Label htmlFor="title">Title</Label>
+        <Input
           id="title"
-          type="text"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
+          placeholder="e.g Checkout API returning 500 errors"
           required
-          className="w-full rounded-md border border-slate-500 bg-slate-900 p-2 text-white"
         />
       </div>
-      <div>
-        <label htmlFor="service">Service</label>
-        <input
+      <div className="space-y-1">
+        <Label htmlFor="service">Title</Label>
+        <Input
           id="service"
-          type="text"
           value={service}
-          onChange={(e) => setService(e.target.value)}
+          onChange={(event) => setService(event.target.value)}
+          placeholder="the service logging the error"
           required
-          className="w-full rounded-md border border-slate-500 bg-slate-900 p-2 text-white"
         />
       </div>
-      <div>
-        <label htmlFor="severity" className="block text-sm font-medium">
-          Severity
-        </label>
-        <select
-          id="severity"
+      <div className="space-y-2">
+        <Label htmlFor="severity">Severity</Label>
+        <Select
           value={severity}
-          onChange={(e) =>
-            setSeverity(
-              e.target.value as "low" | "medium" | "high" | "critical",
-            )
-          }
-          required
-          className="w-full rounded-md border border-slate-700 bg-slate-900 p-2 text-white"
+          onValueChange={(value) => {
+            if (value) {
+              setSeverity(value);
+            }
+          }}
+          items={[
+            { value: "low", label: "Low" },
+            { value: "medium", label: "Medium" },
+            { value: "high", label: "High" },
+            { value: "critical", label: "Critical" },
+          ]}
         >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">Critical</option>
-        </select>
+          <SelectTrigger id="severity" className="w-full">
+            <SelectValue placeholder="select severity" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="low">Low</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="critical">Critical</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium">
-          Description
-        </label>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe what happened"
+          rows={4}
           required
-          className="w-full rounded-md border border-slate-700 bg-slate-900 p-2 text-white"
         />
+        <p className="text-xs text-muted-foreground">
+          Describe the symptoms rather than an assumed root cause.
+        </p>
       </div>
-      <button
-        type="submit"
-        disabled={mutation.isPending}
-        className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-500"
-      >
-        {mutation.isPending ? "Creating..." : "Create incident"}
-      </button>
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? "Creating..." : "Create incident"}
+        </Button>
+      </div>
     </form>
   );
 }
