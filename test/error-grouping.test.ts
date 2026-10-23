@@ -30,6 +30,7 @@ describe("groupErrors", () => {
         count: 3,
         firstSeen: "2026-10-22T10:00:00Z",
         lastSeen: "2026-10-22T10:05:00Z",
+        evidence: logs.filter((log) => log.level === "error"),
       },
     ]);
   });
@@ -74,10 +75,11 @@ describe("groupErrors", () => {
     expect(groupErrors(logs)).toEqual([
       {
         service: "checkout-api",
-        normalizedMessage: "Request <number> timed out",
+        normalizedMessage: "Request <NUM> timed out",
         count: 2,
         firstSeen: "2026-10-22T10:00:00Z",
         lastSeen: "2026-10-22T10:01:00Z",
+        evidence: logs,
       },
     ]);
   });

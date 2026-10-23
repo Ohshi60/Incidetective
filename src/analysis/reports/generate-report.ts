@@ -2,7 +2,6 @@ import type { LogEntry } from "../../../shared/types/evidence.js";
 import type { Incident } from "../../../shared/types/incident.js";
 import type { InvestigationReport } from "../../../shared/types/report.js";
 import { analyseIncident } from "../incident-analysis.js";
-import { normalizeErrorMessage } from "../normalize-error.js";
 
 export function generateReport(
   incident: Incident,
@@ -10,22 +9,13 @@ export function generateReport(
 ): InvestigationReport {
   const analysis = analyseIncident(logs);
   const findings = analysis.errorGroups.map((group) => {
-    const evidence = logs
-      .filter(
-        (log) =>
-          log.level === "error" &&
-          log.service === group.service &&
-          normalizeErrorMessage(log.message) === group.normalizedMessage,
-      )
-      .sort((a, b) => {
-        return a.timestamp.localeCompare(b.timestamp);
-      })
+    const evidence = [...group.evidence]
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
       .slice(0, 3)
       .map((log) => ({
         timestamp: log.timestamp,
         message: log.message,
       }));
-
     return {
       service: group.service,
       pattern: group.normalizedMessage,

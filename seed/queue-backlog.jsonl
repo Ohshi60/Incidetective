@@ -1,0 +1,165 @@
+{"timestamp":"2026-10-23T07:11:14.000Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=369603 durationMs=576"}
+{"timestamp":"2026-10-23T07:12:12.108Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=815646 durationMs=679"}
+{"timestamp":"2026-10-23T07:13:24.219Z","service":"postgres","level":"info","message":"Order processed successfully orderId=804545 durationMs=634"}
+{"timestamp":"2026-10-23T07:13:48.432Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=287290 durationMs=342"}
+{"timestamp":"2026-10-23T07:14:46.000Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=566449 durationMs=743"}
+{"timestamp":"2026-10-23T07:14:53.219Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=301398 durationMs=526"}
+{"timestamp":"2026-10-23T07:14:54.108Z","service":"postgres","level":"info","message":"Order processed successfully orderId=731800 durationMs=196"}
+{"timestamp":"2026-10-23T07:15:32.108Z","service":"postgres","level":"info","message":"Order processed successfully orderId=568591 durationMs=554"}
+{"timestamp":"2026-10-23T07:17:11.000Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=701312 durationMs=660"}
+{"timestamp":"2026-10-23T07:17:33.219Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=518639 durationMs=170"}
+{"timestamp":"2026-10-23T07:19:08.219Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=138351 durationMs=657"}
+{"timestamp":"2026-10-23T07:19:54.219Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=853711 durationMs=646"}
+{"timestamp":"2026-10-23T07:22:35.108Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=254634 durationMs=371"}
+{"timestamp":"2026-10-23T07:22:47.219Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=468702 durationMs=573"}
+{"timestamp":"2026-10-23T07:24:42.432Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=701520 durationMs=724"}
+{"timestamp":"2026-10-23T07:27:03.219Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=416745 durationMs=176"}
+{"timestamp":"2026-10-23T07:28:14.108Z","service":"postgres","level":"info","message":"Order processed successfully orderId=329824 durationMs=175"}
+{"timestamp":"2026-10-23T07:29:55.000Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=628475 durationMs=427"}
+{"timestamp":"2026-10-23T07:30:44.000Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=602768 durationMs=318"}
+{"timestamp":"2026-10-23T07:31:04.670Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=534407 durationMs=687"}
+{"timestamp":"2026-10-23T07:32:39.432Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=112028 durationMs=320"}
+{"timestamp":"2026-10-23T07:33:22.219Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=149357 durationMs=261"}
+{"timestamp":"2026-10-23T07:35:41.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2955 oldestAgeMs=159670"}
+{"timestamp":"2026-10-23T07:36:07.670Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:36:29.432Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2858 oldestAgeMs=36732"}
+{"timestamp":"2026-10-23T07:37:09.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=3589 oldestAgeMs=150876"}
+{"timestamp":"2026-10-23T07:38:27.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2329 oldestAgeMs=184721"}
+{"timestamp":"2026-10-23T07:39:01.219Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:39:28.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6738 oldestAgeMs=147291"}
+{"timestamp":"2026-10-23T07:40:58.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=1857 oldestAgeMs=39208"}
+{"timestamp":"2026-10-23T07:40:59.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6599 oldestAgeMs=176554"}
+{"timestamp":"2026-10-23T07:41:36.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=7781 oldestAgeMs=42465"}
+{"timestamp":"2026-10-23T07:42:25.670Z","service":"postgres","level":"warn","message":"Order status update latency=1107ms"}
+{"timestamp":"2026-10-23T07:42:32.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=455460"}
+{"timestamp":"2026-10-23T07:42:49.000Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=882958"}
+{"timestamp":"2026-10-23T07:43:04.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:43:05.432Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=898079"}
+{"timestamp":"2026-10-23T07:43:30.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6111 oldestAgeMs=138887"}
+{"timestamp":"2026-10-23T07:45:05.108Z","service":"postgres","level":"warn","message":"Order status update latency=768ms"}
+{"timestamp":"2026-10-23T07:46:26.432Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:48:05.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=530535"}
+{"timestamp":"2026-10-23T07:49:07.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=394587"}
+{"timestamp":"2026-10-23T07:49:33.219Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:50:15.000Z","service":"postgres","level":"warn","message":"Order status update latency=459ms"}
+{"timestamp":"2026-10-23T07:50:18.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=456947"}
+{"timestamp":"2026-10-23T07:52:16.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=555505"}
+{"timestamp":"2026-10-23T07:54:39.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=694173"}
+{"timestamp":"2026-10-23T07:56:35.432Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=7388 oldestAgeMs=49562"}
+{"timestamp":"2026-10-23T07:57:22.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=556999"}
+{"timestamp":"2026-10-23T07:57:35.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=463987"}
+{"timestamp":"2026-10-23T07:58:24.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=5473 oldestAgeMs=103282"}
+{"timestamp":"2026-10-23T07:58:28.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T07:59:04.108Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=5618 oldestAgeMs=100186"}
+{"timestamp":"2026-10-23T07:59:35.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:00:09.219Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=545855"}
+{"timestamp":"2026-10-23T08:00:25.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:01:47.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=983642"}
+{"timestamp":"2026-10-23T08:02:50.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=653823"}
+{"timestamp":"2026-10-23T08:03:13.000Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=215418"}
+{"timestamp":"2026-10-23T08:03:14.219Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=433598"}
+{"timestamp":"2026-10-23T08:03:48.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=8725 oldestAgeMs=97727"}
+{"timestamp":"2026-10-23T08:03:55.000Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:07:27.219Z","service":"postgres","level":"warn","message":"Order status update latency=1378ms"}
+{"timestamp":"2026-10-23T08:09:32.670Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:10:14.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2471 oldestAgeMs=150635"}
+{"timestamp":"2026-10-23T08:11:51.219Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=241925"}
+{"timestamp":"2026-10-23T08:13:50.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=414084"}
+{"timestamp":"2026-10-23T08:14:13.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=8096 oldestAgeMs=134621"}
+{"timestamp":"2026-10-23T08:14:20.432Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:14:24.219Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=586332"}
+{"timestamp":"2026-10-23T08:14:29.432Z","service":"postgres","level":"warn","message":"Order status update latency=999ms"}
+{"timestamp":"2026-10-23T08:15:02.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=148986"}
+{"timestamp":"2026-10-23T08:15:17.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:16:46.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=423673"}
+{"timestamp":"2026-10-23T08:16:49.108Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:16:52.432Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:17:14.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=552237"}
+{"timestamp":"2026-10-23T08:19:25.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=549584"}
+{"timestamp":"2026-10-23T08:19:38.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=313657"}
+{"timestamp":"2026-10-23T08:21:32.670Z","service":"postgres","level":"warn","message":"Order status update latency=828ms"}
+{"timestamp":"2026-10-23T08:24:01.670Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=223342"}
+{"timestamp":"2026-10-23T08:24:33.670Z","service":"postgres","level":"warn","message":"Order status update latency=665ms"}
+{"timestamp":"2026-10-23T08:24:37.108Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=4037 oldestAgeMs=163503"}
+{"timestamp":"2026-10-23T08:25:43.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=323245"}
+{"timestamp":"2026-10-23T08:26:21.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=3019 oldestAgeMs=92001"}
+{"timestamp":"2026-10-23T08:26:25.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=872013"}
+{"timestamp":"2026-10-23T08:27:23.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=985621"}
+{"timestamp":"2026-10-23T08:27:49.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=569893"}
+{"timestamp":"2026-10-23T08:28:08.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=855159"}
+{"timestamp":"2026-10-23T08:29:42.000Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=481580"}
+{"timestamp":"2026-10-23T08:30:28.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=7026 oldestAgeMs=185732"}
+{"timestamp":"2026-10-23T08:31:03.670Z","service":"postgres","level":"warn","message":"Order status update latency=1225ms"}
+{"timestamp":"2026-10-23T08:33:12.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=507978"}
+{"timestamp":"2026-10-23T08:34:47.432Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=392659"}
+{"timestamp":"2026-10-23T08:35:15.432Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=519527"}
+{"timestamp":"2026-10-23T08:35:36.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=4761 oldestAgeMs=60662"}
+{"timestamp":"2026-10-23T08:35:54.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=1671 oldestAgeMs=102551"}
+{"timestamp":"2026-10-23T08:36:01.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=442696"}
+{"timestamp":"2026-10-23T08:36:16.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=8906 oldestAgeMs=159572"}
+{"timestamp":"2026-10-23T08:37:33.000Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2682 oldestAgeMs=98443"}
+{"timestamp":"2026-10-23T08:40:03.219Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=177340"}
+{"timestamp":"2026-10-23T08:40:35.108Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=543947"}
+{"timestamp":"2026-10-23T08:44:17.670Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=7607 oldestAgeMs=111615"}
+{"timestamp":"2026-10-23T08:44:53.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6945 oldestAgeMs=149845"}
+{"timestamp":"2026-10-23T08:45:46.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=204663"}
+{"timestamp":"2026-10-23T08:46:37.432Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=850269"}
+{"timestamp":"2026-10-23T08:47:03.000Z","service":"postgres","level":"warn","message":"Order status update latency=810ms"}
+{"timestamp":"2026-10-23T08:47:20.670Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=984740"}
+{"timestamp":"2026-10-23T08:47:46.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=837544"}
+{"timestamp":"2026-10-23T08:48:23.108Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6057 oldestAgeMs=129267"}
+{"timestamp":"2026-10-23T08:49:33.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2124 oldestAgeMs=123801"}
+{"timestamp":"2026-10-23T08:50:05.432Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:50:25.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=811499"}
+{"timestamp":"2026-10-23T08:50:35.432Z","service":"postgres","level":"warn","message":"Order status update latency=1335ms"}
+{"timestamp":"2026-10-23T08:50:44.670Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:51:38.108Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2459 oldestAgeMs=140140"}
+{"timestamp":"2026-10-23T08:53:01.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=4928 oldestAgeMs=143670"}
+{"timestamp":"2026-10-23T08:53:31.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=619836"}
+{"timestamp":"2026-10-23T08:55:35.219Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:55:38.432Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=6003 oldestAgeMs=32355"}
+{"timestamp":"2026-10-23T08:55:57.000Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=206649"}
+{"timestamp":"2026-10-23T08:56:32.432Z","service":"inventory-service","level":"warn","message":"Rate limit reached on /reserve quota=120/min caller=order-worker"}
+{"timestamp":"2026-10-23T08:57:39.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=608106"}
+{"timestamp":"2026-10-23T08:57:53.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=4360 oldestAgeMs=170398"}
+{"timestamp":"2026-10-23T08:59:23.432Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=600040"}
+{"timestamp":"2026-10-23T09:00:21.000Z","service":"postgres","level":"warn","message":"Order status update latency=649ms"}
+{"timestamp":"2026-10-23T09:00:23.432Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=947792"}
+{"timestamp":"2026-10-23T09:00:42.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=527718"}
+{"timestamp":"2026-10-23T09:00:44.670Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=157075"}
+{"timestamp":"2026-10-23T09:01:16.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=676434"}
+{"timestamp":"2026-10-23T09:01:32.670Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=806334"}
+{"timestamp":"2026-10-23T09:03:34.670Z","service":"postgres","level":"warn","message":"Order status update latency=518ms"}
+{"timestamp":"2026-10-23T09:04:27.219Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=7312 oldestAgeMs=95598"}
+{"timestamp":"2026-10-23T09:04:47.000Z","service":"postgres","level":"warn","message":"Order status update latency=457ms"}
+{"timestamp":"2026-10-23T09:05:17.000Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=447747"}
+{"timestamp":"2026-10-23T09:05:39.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=335502"}
+{"timestamp":"2026-10-23T09:06:46.108Z","service":"message-broker","level":"warn","message":"orders.pending consumer lag=2132 oldestAgeMs=44433"}
+{"timestamp":"2026-10-23T09:07:45.108Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=747396"}
+{"timestamp":"2026-10-23T09:08:20.670Z","service":"orders-api","level":"info","message":"Order accepted for asynchronous processing orderId=969754"}
+{"timestamp":"2026-10-23T09:08:55.219Z","service":"postgres","level":"warn","message":"Order status update latency=647ms"}
+{"timestamp":"2026-10-23T09:09:31.219Z","service":"order-worker","level":"error","message":"Inventory reservation failed: upstream HTTP 429 retryAfter=2s orderId=116348"}
+{"timestamp":"2026-10-23T09:11:00.108Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=735696 durationMs=653"}
+{"timestamp":"2026-10-23T09:11:15.432Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=606659 durationMs=631"}
+{"timestamp":"2026-10-23T09:11:40.670Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=395307 durationMs=279"}
+{"timestamp":"2026-10-23T09:12:06.000Z","service":"order-worker","level":"info","message":"Worker concurrency reduced from 32 to 8; queue backlog draining"}
+{"timestamp":"2026-10-23T09:14:19.670Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=755828 durationMs=653"}
+{"timestamp":"2026-10-23T09:14:21.670Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=539824 durationMs=671"}
+{"timestamp":"2026-10-23T09:14:46.670Z","service":"postgres","level":"info","message":"Order processed successfully orderId=400351 durationMs=319"}
+{"timestamp":"2026-10-23T09:16:46.108Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=871414 durationMs=664"}
+{"timestamp":"2026-10-23T09:16:51.432Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=710893 durationMs=286"}
+{"timestamp":"2026-10-23T09:18:14.432Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=315422 durationMs=185"}
+{"timestamp":"2026-10-23T09:18:27.219Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=437578 durationMs=354"}
+{"timestamp":"2026-10-23T09:18:56.000Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=636871 durationMs=183"}
+{"timestamp":"2026-10-23T09:19:07.219Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=645551 durationMs=266"}
+{"timestamp":"2026-10-23T09:19:22.000Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=256152 durationMs=287"}
+{"timestamp":"2026-10-23T09:19:35.000Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=344982 durationMs=204"}
+{"timestamp":"2026-10-23T09:19:40.670Z","service":"order-worker","level":"info","message":"Worker concurrency reduced from 32 to 8; queue backlog draining"}
+{"timestamp":"2026-10-23T09:21:07.219Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=106231 durationMs=278"}
+{"timestamp":"2026-10-23T09:21:51.000Z","service":"postgres","level":"info","message":"Order processed successfully orderId=136510 durationMs=539"}
+{"timestamp":"2026-10-23T09:24:01.219Z","service":"postgres","level":"info","message":"Order processed successfully orderId=397258 durationMs=566"}
+{"timestamp":"2026-10-23T09:24:17.108Z","service":"inventory-service","level":"info","message":"Order processed successfully orderId=804931 durationMs=360"}
+{"timestamp":"2026-10-23T09:27:32.000Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=105971 durationMs=427"}
+{"timestamp":"2026-10-23T09:27:34.670Z","service":"message-broker","level":"info","message":"Order processed successfully orderId=346821 durationMs=280"}
+{"timestamp":"2026-10-23T09:27:36.670Z","service":"orders-api","level":"info","message":"Order processed successfully orderId=276013 durationMs=426"}
+{"timestamp":"2026-10-23T09:27:58.219Z","service":"order-worker","level":"info","message":"Order processed successfully orderId=569922 durationMs=401"}

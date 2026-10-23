@@ -1,48 +1,70 @@
+import {
+  TemplateMiner,
+  TemplateMinerConfig,
+  DEFAULT_MASKING_INSTRUCTIONS,
+} from "@agentix-e/drain-ts";
+
 import type { ErrorGroup } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
-import { normalizeErrorMessage } from "./normalize-error.js";
 
 export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
-  // Map key: "service|message" -> value: ErrorGroup
-  const groupsMap = new Map<string, ErrorGroup>();
+  const miners = new Map<string, TemplateMiner>();
+  const groups = new Map<string, ErrorGroup>();
 
   for (const log of logs) {
     if (log.level !== "error") continue;
 
-    const normalizedMessage = normalizeErrorMessage(log.message);
-    // A collision-safe option would be JSON.stringify([log.service, log.message]).
-    const key = JSON.stringify([log.service, normalizedMessage]);
-    const existingGroup = groupsMap.get(key);
+    let miner = miners.get(log.service);
 
-    if (existingGroup) {
-      existingGroup.count++;
-      if (log.timestamp < existingGroup.firstSeen) {
-        existingGroup.firstSeen = log.timestamp;
+    if (!miner) {
+      miner = new TemplateMiner({
+        config: TemplateMinerConfig.from({
+          maskingInstructions: DEFAULT_MASKING_INSTRUCTIONS,
+        }),
+      });
+
+      miners.set(log.service, miner);
+    }
+
+    const result = miner.addLogMessage(log.message);
+
+    // Cluster IDs are unique only within an individual miner.
+    const key = JSON.stringify([log.service, result.clusterId]);
+
+    const existing = groups.get(key);
+
+    if (existing) {
+      existing.count++;
+      existing.evidence.push(log);
+
+      if (log.timestamp < existing.firstSeen) {
+        existing.firstSeen = log.timestamp;
       }
-      if (log.timestamp > existingGroup.lastSeen) {
-        existingGroup.lastSeen = log.timestamp;
+
+      if (log.timestamp > existing.lastSeen) {
+        existing.lastSeen = log.timestamp;
       }
+
+      // Templates evolve as new messages arrive.
+      existing.normalizedMessage = result.templateMined;
     } else {
-      groupsMap.set(key, {
+      groups.set(key, {
         service: log.service,
-        normalizedMessage: normalizedMessage,
+        normalizedMessage: result.templateMined,
         count: 1,
         firstSeen: log.timestamp,
         lastSeen: log.timestamp,
+        evidence: [log],
       });
     }
   }
 
-  //Convert map to array and sort based on count desc
-  return Array.from(groupsMap.values()).sort((a, b) => {
-    if (b.count !== a.count) {
-      return b.count - a.count;
-    }
-    //secondary sort on service name
+  return [...groups.values()].sort((a, b) => {
+    if (b.count !== a.count) return b.count - a.count;
+
     const serviceCompare = a.service.localeCompare(b.service);
-    if (serviceCompare !== 0) {
-      return serviceCompare;
-    }
+    if (serviceCompare !== 0) return serviceCompare;
+
     return a.normalizedMessage.localeCompare(b.normalizedMessage);
   });
 }

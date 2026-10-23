@@ -51,6 +51,10 @@ describe("analyzeIncident", () => {
           count: 1,
           firstSeen: "2026-10-22T10:10:00.000Z",
           lastSeen: "2026-10-22T10:10:00.000Z",
+          evidence: logs.filter(
+            (log) =>
+              log.level === "error" && log.message === "Connection timeout",
+          ),
         },
         {
           service: "payment-api",
@@ -58,6 +62,9 @@ describe("analyzeIncident", () => {
           count: 1,
           firstSeen: "2026-10-22T10:05:00.000Z",
           lastSeen: "2026-10-22T10:05:00.000Z",
+          evidence: logs.filter(
+            (log) => log.level === "error" && log.message === "Payment failed",
+          ),
         },
       ],
     });

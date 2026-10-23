@@ -1,0 +1,180 @@
+{"timestamp":"2026-10-22T08:48:50.432Z","service":"deploy-controller","level":"info","message":"Rollout started payment-service revision=pay-20261022.3"}
+{"timestamp":"2026-10-22T08:48:51.000Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=45 requestId=f3bcad7b"}
+{"timestamp":"2026-10-22T08:48:52.670Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=119 requestId=7236a773"}
+{"timestamp":"2026-10-22T08:49:35.108Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=205 requestId=10646ff8"}
+{"timestamp":"2026-10-22T08:49:57.219Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=215 requestId=8536b996"}
+{"timestamp":"2026-10-22T08:50:47.108Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=223 requestId=b73b308f"}
+{"timestamp":"2026-10-22T08:50:49.432Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=102 requestId=45280560"}
+{"timestamp":"2026-10-22T08:51:02.670Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=75 requestId=5a41a49b"}
+{"timestamp":"2026-10-22T08:52:09.432Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=218 requestId=d8974690"}
+{"timestamp":"2026-10-22T08:52:33.670Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=218 requestId=d2bd3749"}
+{"timestamp":"2026-10-22T08:52:44.432Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=138 requestId=1e99355b"}
+{"timestamp":"2026-10-22T08:53:56.432Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=144 requestId=b0f8c427"}
+{"timestamp":"2026-10-22T08:54:42.219Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=228 requestId=1f6deffd"}
+{"timestamp":"2026-10-22T08:57:15.000Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=185 requestId=2449c932"}
+{"timestamp":"2026-10-22T08:57:43.108Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=98 requestId=46ba3dc7"}
+{"timestamp":"2026-10-22T08:57:53.219Z","service":"deploy-controller","level":"info","message":"Rollout started payment-service revision=pay-20261022.3"}
+{"timestamp":"2026-10-22T08:58:22.219Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=198 requestId=7e0488ed"}
+{"timestamp":"2026-10-22T08:58:27.432Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=70 requestId=b605bcff"}
+{"timestamp":"2026-10-22T08:59:15.108Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=144 requestId=4602fb28"}
+{"timestamp":"2026-10-22T08:59:20.432Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=116 requestId=2ee7d2c3"}
+{"timestamp":"2026-10-22T08:59:51.000Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=110 requestId=0476c238"}
+{"timestamp":"2026-10-22T09:01:10.108Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=123 requestId=9d2b5fbd"}
+{"timestamp":"2026-10-22T09:01:52.219Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=110 requestId=f711c76f"}
+{"timestamp":"2026-10-22T09:02:19.432Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=64 requestId=af7085da"}
+{"timestamp":"2026-10-22T09:02:46.432Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=135 requestId=a621db26"}
+{"timestamp":"2026-10-22T09:03:36.108Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=79 requestId=e0c888a5"}
+{"timestamp":"2026-10-22T09:04:28.000Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=141 requestId=b0525c8e"}
+{"timestamp":"2026-10-22T09:05:03.108Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=109 requestId=24e17f16"}
+{"timestamp":"2026-10-22T09:05:07.219Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=118 requestId=2725cd35"}
+{"timestamp":"2026-10-22T09:05:10.108Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=205 requestId=391df480"}
+{"timestamp":"2026-10-22T09:05:17.108Z","service":"deploy-controller","level":"info","message":"Rollout started payment-service revision=pay-20261022.3"}
+{"timestamp":"2026-10-22T09:05:35.219Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=75 requestId=d652b87a"}
+{"timestamp":"2026-10-22T09:06:46.108Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=84 requestId=ab14d9a8"}
+{"timestamp":"2026-10-22T09:07:34.108Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=177 requestId=49eb859c"}
+{"timestamp":"2026-10-22T09:07:44.108Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=228 requestId=efbbc5f7"}
+{"timestamp":"2026-10-22T09:08:18.432Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=193 requestId=bd9616c8"}
+{"timestamp":"2026-10-22T09:08:40.219Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=171 requestId=03231769"}
+{"timestamp":"2026-10-22T09:09:07.000Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=168 requestId=a62fdb30"}
+{"timestamp":"2026-10-22T09:09:18.670Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=222 requestId=ccd1b900"}
+{"timestamp":"2026-10-22T09:09:34.219Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=208 requestId=d798c284"}
+{"timestamp":"2026-10-22T09:09:38.670Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=161 requestId=749cee70"}
+{"timestamp":"2026-10-22T09:10:14.432Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=234 requestId=75d50b12"}
+{"timestamp":"2026-10-22T09:12:13.000Z","service":"api-gateway","level":"info","message":"GET /cart completed status=200 durationMs=39 requestId=f93754fc"}
+{"timestamp":"2026-10-22T09:13:18.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=72a4fee8"}
+{"timestamp":"2026-10-22T09:13:31.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=91bb8a23"}
+{"timestamp":"2026-10-22T09:14:43.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4284ms requestId=1df4300b"}
+{"timestamp":"2026-10-22T09:15:39.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3168ms requestId=1c59471c"}
+{"timestamp":"2026-10-22T09:17:23.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=9d6aa56f"}
+{"timestamp":"2026-10-22T09:17:52.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=3113e29e"}
+{"timestamp":"2026-10-22T09:17:56.219Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1837ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:18:24.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=77176168"}
+{"timestamp":"2026-10-22T09:18:43.670Z","service":"api-gateway","level":"warn","message":"Upstream checkout-api 5xx rate above threshold: 18.4%"}
+{"timestamp":"2026-10-22T09:18:48.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3374ms requestId=4cdf7a61"}
+{"timestamp":"2026-10-22T09:19:19.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=da930b2b"}
+{"timestamp":"2026-10-22T09:20:15.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=ef14cb2d"}
+{"timestamp":"2026-10-22T09:20:31.108Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1698ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:20:34.108Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4913ms requestId=20087a88"}
+{"timestamp":"2026-10-22T09:22:08.219Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3860ms requestId=1638e5f4"}
+{"timestamp":"2026-10-22T09:23:41.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=51718708"}
+{"timestamp":"2026-10-22T09:23:50.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=ca1b51ed"}
+{"timestamp":"2026-10-22T09:24:04.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=5eb535b3"}
+{"timestamp":"2026-10-22T09:24:29.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=548d9bbf"}
+{"timestamp":"2026-10-22T09:25:32.219Z","service":"payment-service","level":"info","message":"GET /cart completed status=200 durationMs=119 requestId=85278ff4"}
+{"timestamp":"2026-10-22T09:25:43.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=7aec0bdb"}
+{"timestamp":"2026-10-22T09:26:31.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=827e849d"}
+{"timestamp":"2026-10-22T09:26:32.670Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1606ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:26:56.219Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1789ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:30:59.108Z","service":"deploy-controller","level":"info","message":"GET /cart completed status=200 durationMs=85 requestId=b2532088"}
+{"timestamp":"2026-10-22T09:31:33.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=4e305fe9"}
+{"timestamp":"2026-10-22T09:31:42.108Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 880ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:32:23.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3179ms requestId=828953b7"}
+{"timestamp":"2026-10-22T09:32:24.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=369ee04d"}
+{"timestamp":"2026-10-22T09:33:18.670Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1338ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:33:19.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=9c0494a9"}
+{"timestamp":"2026-10-22T09:34:02.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=8df0cb36"}
+{"timestamp":"2026-10-22T09:34:04.219Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3190ms requestId=ef2b5cf2"}
+{"timestamp":"2026-10-22T09:34:19.432Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1613ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:34:46.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=ff5c4b10"}
+{"timestamp":"2026-10-22T09:35:02.219Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1762ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:36:00.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=72825bec"}
+{"timestamp":"2026-10-22T09:36:21.219Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1856ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:37:33.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3127ms requestId=43fef03e"}
+{"timestamp":"2026-10-22T09:37:34.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4419ms requestId=d7753815"}
+{"timestamp":"2026-10-22T09:37:46.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=39e9fd2a"}
+{"timestamp":"2026-10-22T09:37:56.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4885ms requestId=836fab49"}
+{"timestamp":"2026-10-22T09:38:00.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=093d2e1e"}
+{"timestamp":"2026-10-22T09:38:39.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=c91d797a"}
+{"timestamp":"2026-10-22T09:38:45.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4605ms requestId=627d5994"}
+{"timestamp":"2026-10-22T09:39:25.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=72a9c06b"}
+{"timestamp":"2026-10-22T09:39:28.108Z","service":"payment-service","level":"info","message":"GET /cart completed status=200 durationMs=128 requestId=7c818d5c"}
+{"timestamp":"2026-10-22T09:39:32.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=7311319b"}
+{"timestamp":"2026-10-22T09:39:57.432Z","service":"payment-service","level":"info","message":"GET /cart completed status=200 durationMs=142 requestId=f582a4fa"}
+{"timestamp":"2026-10-22T09:40:52.000Z","service":"deploy-controller","level":"info","message":"GET /cart completed status=200 durationMs=63 requestId=bfec499f"}
+{"timestamp":"2026-10-22T09:40:55.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=20d0e819"}
+{"timestamp":"2026-10-22T09:41:22.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4218ms requestId=d4fc5780"}
+{"timestamp":"2026-10-22T09:42:50.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4199ms requestId=3e8d1a96"}
+{"timestamp":"2026-10-22T09:43:43.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=a7029d57"}
+{"timestamp":"2026-10-22T09:43:50.432Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=a9560f02"}
+{"timestamp":"2026-10-22T09:44:16.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=bf50a3bd"}
+{"timestamp":"2026-10-22T09:44:43.219Z","service":"postgres","level":"info","message":"GET /cart completed status=200 durationMs=151 requestId=89555da6"}
+{"timestamp":"2026-10-22T09:46:14.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=ea5c5ff4"}
+{"timestamp":"2026-10-22T09:47:02.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=fe616168"}
+{"timestamp":"2026-10-22T09:48:06.432Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1408ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:48:58.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 5279ms requestId=0924151d"}
+{"timestamp":"2026-10-22T09:49:51.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=c718cb9b"}
+{"timestamp":"2026-10-22T09:51:09.000Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 874ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:51:48.432Z","service":"api-gateway","level":"warn","message":"Upstream checkout-api 5xx rate above threshold: 18.4%"}
+{"timestamp":"2026-10-22T09:52:02.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 5189ms requestId=6d82b573"}
+{"timestamp":"2026-10-22T09:54:05.108Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 5143ms requestId=26d1f06a"}
+{"timestamp":"2026-10-22T09:54:25.000Z","service":"api-gateway","level":"warn","message":"Upstream checkout-api 5xx rate above threshold: 18.4%"}
+{"timestamp":"2026-10-22T09:54:26.000Z","service":"api-gateway","level":"info","message":"GET /cart completed status=200 durationMs=113 requestId=e2e9fa4e"}
+{"timestamp":"2026-10-22T09:55:20.432Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 881ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:55:42.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=9e066534"}
+{"timestamp":"2026-10-22T09:56:22.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=7220cb51"}
+{"timestamp":"2026-10-22T09:57:34.108Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1570ms active=20 idle=0"}
+{"timestamp":"2026-10-22T09:57:48.108Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1291ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:00:48.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4536ms requestId=10ef6753"}
+{"timestamp":"2026-10-22T10:00:58.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4912ms requestId=974ab81e"}
+{"timestamp":"2026-10-22T10:01:04.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3786ms requestId=9ab17237"}
+{"timestamp":"2026-10-22T10:01:10.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3724ms requestId=fa8b7351"}
+{"timestamp":"2026-10-22T10:01:23.432Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1424ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:02:31.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=d3f84070"}
+{"timestamp":"2026-10-22T10:02:32.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3047ms requestId=bc29285d"}
+{"timestamp":"2026-10-22T10:02:43.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=86b8e64f"}
+{"timestamp":"2026-10-22T10:02:57.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 5491ms requestId=358bb066"}
+{"timestamp":"2026-10-22T10:03:09.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3702ms requestId=59b87d53"}
+{"timestamp":"2026-10-22T10:04:00.108Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1653ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:04:19.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3960ms requestId=da7f8bde"}
+{"timestamp":"2026-10-22T10:04:40.432Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1344ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:04:44.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4561ms requestId=452c1000"}
+{"timestamp":"2026-10-22T10:04:49.108Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=c6d6887d"}
+{"timestamp":"2026-10-22T10:05:53.219Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1827ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:07:20.219Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 3011ms requestId=b8afa82d"}
+{"timestamp":"2026-10-22T10:07:32.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=67828e3e"}
+{"timestamp":"2026-10-22T10:08:25.000Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=95438d2e"}
+{"timestamp":"2026-10-22T10:08:32.670Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=56ac9b7a"}
+{"timestamp":"2026-10-22T10:08:45.000Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1571ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:08:53.108Z","service":"postgres","level":"info","message":"GET /cart completed status=200 durationMs=33 requestId=dc5a3248"}
+{"timestamp":"2026-10-22T10:09:45.432Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4553ms requestId=90dcf2b9"}
+{"timestamp":"2026-10-22T10:11:40.000Z","service":"postgres","level":"warn","message":"Connection pool wait exceeded 1604ms active=20 idle=0"}
+{"timestamp":"2026-10-22T10:12:46.219Z","service":"api-gateway","level":"warn","message":"Upstream checkout-api 5xx rate above threshold: 18.4%"}
+{"timestamp":"2026-10-22T10:14:15.000Z","service":"api-gateway","level":"warn","message":"Upstream checkout-api 5xx rate above threshold: 18.4%"}
+{"timestamp":"2026-10-22T10:14:59.670Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4287ms requestId=7054bf66"}
+{"timestamp":"2026-10-22T10:15:16.000Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4612ms requestId=51319f1a"}
+{"timestamp":"2026-10-22T10:15:22.219Z","service":"payment-service","level":"error","message":"Gateway request timed out after 3000ms provider=paybridge requestId=79778533"}
+{"timestamp":"2026-10-22T10:17:49.108Z","service":"checkout-api","level":"error","message":"POST /checkout returned 502 after 4263ms requestId=8a533afc"}
+{"timestamp":"2026-10-22T10:18:17.670Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=153 requestId=2cb21505"}
+{"timestamp":"2026-10-22T10:19:06.432Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=113 requestId=491aeb22"}
+{"timestamp":"2026-10-22T10:19:09.432Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=82 requestId=37a90995"}
+{"timestamp":"2026-10-22T10:19:43.432Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=149 requestId=cbd88e40"}
+{"timestamp":"2026-10-22T10:19:51.670Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=131 requestId=3c4056a7"}
+{"timestamp":"2026-10-22T10:19:53.108Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=118 requestId=12081881"}
+{"timestamp":"2026-10-22T10:20:16.000Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=129 requestId=606dd6b8"}
+{"timestamp":"2026-10-22T10:20:50.219Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=47 requestId=52c78139"}
+{"timestamp":"2026-10-22T10:21:28.108Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=154 requestId=fa22fd0b"}
+{"timestamp":"2026-10-22T10:21:38.432Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=70 requestId=fd4674ab"}
+{"timestamp":"2026-10-22T10:21:45.000Z","service":"deploy-controller","level":"info","message":"Rollback completed for payment-service revision=pay-20261022.3"}
+{"timestamp":"2026-10-22T10:22:18.108Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=199 requestId=058f9686"}
+{"timestamp":"2026-10-22T10:23:52.670Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=205 requestId=95c0ef2c"}
+{"timestamp":"2026-10-22T10:24:19.670Z","service":"checkout-api","level":"info","message":"Request completed status=200 durationMs=154 requestId=7a319177"}
+{"timestamp":"2026-10-22T10:24:21.432Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=83 requestId=96ab90e8"}
+{"timestamp":"2026-10-22T10:24:26.108Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=87 requestId=c31ff235"}
+{"timestamp":"2026-10-22T10:24:33.219Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=137 requestId=111330ef"}
+{"timestamp":"2026-10-22T10:25:55.108Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=170 requestId=041ac052"}
+{"timestamp":"2026-10-22T10:25:58.108Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=201 requestId=60ebc1c9"}
+{"timestamp":"2026-10-22T10:26:33.000Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=61 requestId=eed8645e"}
+{"timestamp":"2026-10-22T10:26:55.000Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=96 requestId=d15dcd78"}
+{"timestamp":"2026-10-22T10:27:45.108Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=46 requestId=67b7f419"}
+{"timestamp":"2026-10-22T10:28:19.000Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=131 requestId=d17f0e5f"}
+{"timestamp":"2026-10-22T10:30:00.108Z","service":"deploy-controller","level":"info","message":"Rollback completed for payment-service revision=pay-20261022.3"}
+{"timestamp":"2026-10-22T10:30:36.219Z","service":"api-gateway","level":"info","message":"Request completed status=200 durationMs=196 requestId=26e562ec"}
+{"timestamp":"2026-10-22T10:30:41.108Z","service":"deploy-controller","level":"info","message":"Request completed status=200 durationMs=65 requestId=2116eb43"}
+{"timestamp":"2026-10-22T10:30:59.432Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=152 requestId=d823beac"}
+{"timestamp":"2026-10-22T10:31:39.000Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=75 requestId=94ce3dac"}
+{"timestamp":"2026-10-22T10:32:23.108Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=167 requestId=f53f180b"}
+{"timestamp":"2026-10-22T10:32:24.219Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=176 requestId=11f68fd6"}
+{"timestamp":"2026-10-22T10:33:32.108Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=78 requestId=79d96b0d"}
+{"timestamp":"2026-10-22T10:33:40.219Z","service":"postgres","level":"info","message":"Request completed status=200 durationMs=208 requestId=82d6157d"}
+{"timestamp":"2026-10-22T10:33:57.000Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=67 requestId=250b7cb2"}
+{"timestamp":"2026-10-22T10:35:30.219Z","service":"payment-service","level":"info","message":"Request completed status=200 durationMs=167 requestId=e2b240aa"}
