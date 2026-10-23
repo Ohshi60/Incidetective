@@ -1,13 +1,10 @@
 import { useState } from "react";
 import type { Incident } from "../../shared/types/incident";
-import { CreateIncidentForm } from "./components/CreateIncidentForm";
 import { Toaster } from "sonner";
 import { IncidentDetail } from "./components/IncidentDetail";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIncidents } from "./api/incidents";
 import { IncidentCard } from "./components/IncidentCard";
-import { Button } from "./components/ui/button";
-import { PlusIcon } from "@phosphor-icons/react";
 import { CreateIncidentDialog } from "./components/CreateIncidentDialog";
 
 function App() {
