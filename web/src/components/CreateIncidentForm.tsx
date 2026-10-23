@@ -46,16 +46,16 @@ export function CreateIncidentForm({ onSuccess }: CreateIncidentFormProps) {
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     mutation.mutate({
-      title,
-      service,
+      title: title.trim(),
+      service: service.trim(),
       severity,
-      description,
+      description: description.trim(),
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input
           id="title"
@@ -65,8 +65,8 @@ export function CreateIncidentForm({ onSuccess }: CreateIncidentFormProps) {
           required
         />
       </div>
-      <div className="space-y-1">
-        <Label htmlFor="service">Title</Label>
+      <div className="space-y-2">
+        <Label htmlFor="service">Service</Label>
         <Input
           id="service"
           value={service}
