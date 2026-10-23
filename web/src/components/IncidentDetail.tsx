@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { ArrowArcLeftIcon } from "@phosphor-icons/react";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { LogUpload } from "./LogUpload";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -49,6 +50,7 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
             {error.message}
           </p>
         )}
+        <LogUpload incidentId={incident.id} />
         {report && (
           <div className="space-y-6">
             <Card>
@@ -69,49 +71,6 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
           </div>
         )}
       </section>
-      {/* <div>
-        <div className="max-w-sm w-full">
-          <div className="font-bold text-xl mb-2">{incident.title}</div>
-          <p className="text-gray-700 text-base">{incident.description}</p>
-          <div className="px-6 pt-4 pb-2">
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              Service: {incident.service}
-            </span>
-            <span className="inline-block bg-red-400 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              Severity: {incident.severity}
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              onBack();
-            }}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          >
-            Back
-          </button>
-        </div>
-        <div>
-          {isPending && (
-            <p className="text-slate-400">Loading investigation report...</p>
-          )}
-
-          {isError && (
-            <p role="alert" className="text-red-400">
-              {error.message}
-            </p>
-          )}
-          {report && (
-            <section className="mt-8 space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold">Investigation summary</h2>
-                <p className="mt-2 text-slate-300">{report.summary}</p>
-              </div>
-
-              <ReportFindings findings={report.findings} />
-            </section>
-          )}
-        </div>
-      </div> */}
     </>
   );
 }

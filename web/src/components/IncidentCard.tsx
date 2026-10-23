@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "./ui/badge";
+import { LogUpload } from "./LogUpload";
 
 interface IncidentCardProps {
   incident: Incident;

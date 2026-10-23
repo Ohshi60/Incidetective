@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIncidents } from "./api/incidents";
 import { IncidentCard } from "./components/IncidentCard";
 import { CreateIncidentDialog } from "./components/CreateIncidentDialog";
+import { LogUpload } from "./components/LogUpload";
 
 function App() {
   const {
