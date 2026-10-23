@@ -6,13 +6,20 @@ import {
   listIncidents,
 } from "./incidents/incident-store.js";
 import { fetchIncidentLogs } from "./evidence/evidence-store.js";
-import { loadSampleLogsForIncident } from "./evidence/sample-evidence-loader.js";
 import { analyseIncident } from "./analysis/incident-analysis.js";
 import { generateReport } from "./analysis/reports/generate-report.js";
-
+import multipart from "@fastify/multipart";
+import { ingestLogs } from "./evidence/log-ingestion.js";
+import { LogImportError } from "./evidence/log-import.js";
 export function buildApp() {
   const app = Fastify({ logger: true });
 
+  app.register(multipart, {
+    limits: {
+      fileSize: 1024 * 1024, // 1 MiB
+      files: 1,
+    },
+  });
   app.get("/health", async () => {
     return { status: "ok" };
   });
@@ -92,6 +99,41 @@ export function buildApp() {
       // temporary create synthetic evidence
       //loadSampleLogsForIncident(incident.id);
       return res.code(201).send(incident);
+    },
+  );
+  app.post<{ Params: { id: string } }>(
+    "/incidents/:id/logs/import",
+    async (req, res) => {
+      //check incident exists
+      const incident = getIncident(req.params.id);
+      if (!incident) {
+        return res.code(404).send({ error: "incident not found" });
+      }
+
+      const data = await req.file();
+      if (!data) {
+        return res.code(400).send({ error: "no file provided" });
+      }
+      try {
+        const content = (await data.toBuffer()).toString("utf8");
+
+        const importedRecords = ingestLogs(incident.id, content);
+        return res.code(201).send({ imported: importedRecords.length });
+      } catch (error) {
+        if (error instanceof app.multipartErrors.RequestFileTooLargeError) {
+          return res.code(413).send({
+            error: "File exceeds the 1 MiB upload limit",
+          });
+        }
+        if (error instanceof LogImportError) {
+          return res.code(400).send({
+            error: "Invalid log file",
+            line: error.line,
+            message: error.message,
+          });
+        }
+        throw error;
+      }
     },
   );
 

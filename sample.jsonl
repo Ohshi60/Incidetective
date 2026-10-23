@@ -1,0 +1,2 @@
+{"timestamp":"2026-10-23T10:00:00Z","service":"checkout-api","level":"error","message":"Database connection timeout"}
+{"timestamp":"2026-10-23T10:00:02Z","service":"payment-api","level":"warn","message":"Payment request delayed"}
