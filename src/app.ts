@@ -25,10 +25,11 @@ export function buildApp() {
   });
 
   app.get("/incidents", async (req, res) => {
-    return res.send(listIncidents());
+    const incidents = await listIncidents();
+    return res.send(incidents);
   });
   app.get<{ Params: { id: string } }>("/incidents/:id", async (req, res) => {
-    const incident = getIncident(req.params.id);
+    const incident = await getIncident(req.params.id);
     if (incident) {
       return res.code(200).send(incident);
     } else {
@@ -38,24 +39,24 @@ export function buildApp() {
   app.get<{ Params: { id: string } }>(
     "/incidents/:id/logs",
     async (req, res) => {
-      const incident = getIncident(req.params.id);
+      const incident = await getIncident(req.params.id);
       if (!incident) {
         return res.code(404).send({ error: "incident not found" });
       }
 
-      const incidentLogs = fetchIncidentLogs(req.params.id);
+      const incidentLogs = await fetchIncidentLogs(req.params.id);
       return res.code(200).send(incidentLogs);
     },
   );
   app.get<{ Params: { id: string } }>(
     "/incidents/:id/analysis",
     async (req, res) => {
-      const incident = getIncident(req.params.id);
+      const incident = await getIncident(req.params.id);
       if (!incident) {
         return res.code(404).send({ error: "incident not found" });
       }
 
-      const incidentLogs = fetchIncidentLogs(req.params.id);
+      const incidentLogs = await fetchIncidentLogs(req.params.id);
       const analysis = analyseIncident(incidentLogs);
       return res.code(200).send(analysis);
     },
@@ -63,12 +64,12 @@ export function buildApp() {
   app.get<{ Params: { id: string } }>(
     "/incidents/:id/report",
     async (req, res) => {
-      const incident = getIncident(req.params.id);
+      const incident = await getIncident(req.params.id);
       if (!incident) {
         return res.code(404).send({ error: "incident not found" });
       }
 
-      const incidentLogs = fetchIncidentLogs(req.params.id);
+      const incidentLogs = await fetchIncidentLogs(req.params.id);
       const report = generateReport(incident, incidentLogs);
 
       return res.code(200).send(report);
@@ -95,7 +96,7 @@ export function buildApp() {
       },
     },
     async (req, res) => {
-      const incident = createIncident(req.body);
+      const incident = await createIncident(req.body);
       // temporary create synthetic evidence
       //loadSampleLogsForIncident(incident.id);
       return res.code(201).send(incident);
@@ -105,7 +106,7 @@ export function buildApp() {
     "/incidents/:id/logs/import",
     async (req, res) => {
       //check incident exists
-      const incident = getIncident(req.params.id);
+      const incident = await getIncident(req.params.id);
       if (!incident) {
         return res.code(404).send({ error: "incident not found" });
       }
@@ -117,8 +118,8 @@ export function buildApp() {
       try {
         const content = (await data.toBuffer()).toString("utf8");
 
-        const importedRecords = ingestLogs(incident.id, content);
-        return res.code(201).send({ imported: importedRecords.length });
+        const importedRecords = await ingestLogs(incident.id, content);
+        return res.code(201).send({ imported: importedRecords });
       } catch (error) {
         if (error instanceof app.multipartErrors.RequestFileTooLargeError) {
           return res.code(413).send({

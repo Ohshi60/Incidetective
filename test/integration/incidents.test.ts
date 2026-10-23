@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../../src/app.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
+import { beforeEach } from "vitest";
+import { db } from "../../src/db/client.js";
+import { incidents } from "../../src/db/schema.js";
+
+beforeEach(async () => {
+  await db.delete(incidents);
+});
 
 describe("Incident API", () => {
   it("returns an empty log array for a newly created incident", async () => {

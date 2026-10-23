@@ -2,8 +2,10 @@ import type { LogEntry } from "../../shared/types/evidence.js";
 import { addLogEntry, fetchIncidentLogs } from "./evidence-store.js";
 import { generateLogsForIncident } from "./sample-logs.js";
 
-export function loadSampleLogsForIncident(incidentId: string): LogEntry[] {
-  const logs = fetchIncidentLogs(incidentId);
+export async function loadSampleLogsForIncident(
+  incidentId: string,
+): Promise<LogEntry[]> {
+  const logs = await fetchIncidentLogs(incidentId);
   if (logs.length) {
     return logs;
   } else {

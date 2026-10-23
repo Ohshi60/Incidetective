@@ -1,10 +1,12 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { buildApp } from "../src/app.js";
-import {
-  clearIncidents,
-  createIncident,
-} from "../src/incidents/incident-store.js";
-
+import { createIncident } from "../src/incidents/incident-store.js";
+import { db } from "../src/db/client.js";
+import { incidents } from "../src/db/schema.js";
+import { randomUUID } from "node:crypto";
+beforeEach(async () => {
+  await db.delete(incidents);
+});
 describe("POST /incidents", () => {
   const app = buildApp();
 
@@ -81,9 +83,7 @@ describe("POST /incidents", () => {
 
 describe("GET /incidents", () => {
   const app = buildApp();
-  beforeEach(() => {
-    clearIncidents();
-  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -102,7 +102,7 @@ describe("GET /incidents", () => {
       severity: "high" as const,
       description: "HTTP 500 errors increased after deployment",
     };
-    const incident = createIncident(payload);
+    const incident = await createIncident(payload);
     const response = await app.inject({
       method: "GET",
       url: "/incidents",
@@ -113,17 +113,15 @@ describe("GET /incidents", () => {
 });
 describe("GET /incidents/:id", () => {
   const app = buildApp();
-  beforeEach(() => {
-    clearIncidents();
-  });
   afterAll(async () => {
     await app.close();
   });
 
   it("Unknown Id returns 404 ", async () => {
+    const id = randomUUID();
     const response = await app.inject({
       method: "GET",
-      url: "/incidents/1",
+      url: `/incidents/${id}`,
     });
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({
@@ -137,7 +135,7 @@ describe("GET /incidents/:id", () => {
       severity: "high" as const,
       description: "HTTP 500 errors increased after deployment",
     };
-    const incident = createIncident(payload);
+    const incident = await createIncident(payload);
     const response = await app.inject({
       method: "GET",
       url: `/incidents/${incident.id}`,
