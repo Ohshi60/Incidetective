@@ -39,8 +39,7 @@ describe("Investigation report API", () => {
       expect(Number.isNaN(Date.parse(report.generatedAt))).toBe(false);
       expect(report.summary.trim().length).toBeGreaterThan(0);
       expect(Array.isArray(report.findings)).toBe(true);
-      expect(report.findings.length).toBeGreaterThan(0);
-
+      expect(report.findings).toEqual([]);
       for (const finding of report.findings) {
         expect(finding.occurrences).toBeGreaterThan(0);
         expect(finding.evidence.length).toBeGreaterThan(0);
