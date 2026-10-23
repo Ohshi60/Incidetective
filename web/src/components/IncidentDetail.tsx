@@ -9,10 +9,6 @@ interface IncidentDetailProps {
 }
 
 export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
-  // const [report, setReport] = useState<InvestigationReport | null>(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
-
   const {
     data: report,
     isPending,
