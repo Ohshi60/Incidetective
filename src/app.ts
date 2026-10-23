@@ -90,7 +90,7 @@ export function buildApp() {
     async (req, res) => {
       const incident = createIncident(req.body);
       // temporary create synthetic evidence
-      loadSampleLogsForIncident(incident.id);
+      //loadSampleLogsForIncident(incident.id);
       return res.code(201).send(incident);
     },
   );
