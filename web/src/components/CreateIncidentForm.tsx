@@ -3,7 +3,11 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createIncident } from "../api/incidents";
 
-export function CreateIncidentForm() {
+interface CreateIncidentFormProps {
+  onSuccess?: () => void;
+}
+
+export function CreateIncidentForm({ onSuccess }: CreateIncidentFormProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -15,6 +19,7 @@ export function CreateIncidentForm() {
       setSeverity("medium");
       setDescription("");
       toast.success("Incident created succesfully");
+      onSuccess?.();
     },
     onError: () => {
       toast.error("Failed to create incident");
