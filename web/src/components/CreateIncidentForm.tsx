@@ -1,15 +1,27 @@
 import { useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
-import type { Incident } from "../../../shared/types/incident";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createIncident } from "../api/incidents";
 
-interface CreateIncidentFormProps {
-  onCreated: (incident: Incident) => void;
-}
+export function CreateIncidentForm() {
+  const queryClient = useQueryClient();
 
-export function CreateIncidentForm({ onCreated }: CreateIncidentFormProps) {
+  const mutation = useMutation({
+    mutationFn: createIncident,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+      setTitle("");
+      setService("");
+      setSeverity("medium");
+      setDescription("");
+      toast.success("Incident created succesfully");
+    },
+    onError: () => {
+      toast.error("Failed to create incident");
+    },
+  });
   const [title, setTitle] = useState<string>("");
   const [service, setService] = useState<string>("");
-  const [submitting, setSubmitting] = useState(false);
   const [severity, setSeverity] = useState<
     "low" | "medium" | "high" | "critical"
   >("medium");
@@ -17,38 +29,12 @@ export function CreateIncidentForm({ onCreated }: CreateIncidentFormProps) {
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    try {
-      setSubmitting(true);
-      const response = await fetch("/api/incidents", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          service,
-          severity,
-          description,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to create incident: ${response.status}`);
-      }
-      const createdIncident: Incident = await response.json();
-      onCreated(createdIncident);
-
-      toast.success("Incident created successfully");
-
-      setTitle("");
-      setService("");
-      setSeverity("medium");
-      setDescription("");
-      setSubmitting(false);
-    } catch (error) {
-      console.error("Error creating incident:", error);
-      toast.error("Failed to create incident");
-      setSubmitting(false);
-    }
+    mutation.mutate({
+      title,
+      service,
+      severity,
+      description,
+    });
   }
 
   return (
@@ -112,10 +98,10 @@ export function CreateIncidentForm({ onCreated }: CreateIncidentFormProps) {
       </div>
       <button
         type="submit"
-        disabled={submitting}
+        disabled={mutation.isPending}
         className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-500"
       >
-        Create incident
+        {mutation.isPending ? "Creating..." : "Create incident"}
       </button>
     </form>
   );

@@ -3,7 +3,7 @@ import type { Incident } from "../../shared/types/incident";
 import { CreateIncidentForm } from "./components/CreateIncidentForm";
 import { Toaster } from "sonner";
 import { IncidentDetail } from "./components/IncidentDetail";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchIncidents } from "./api/incidents";
 
 function App() {
@@ -19,7 +19,6 @@ function App() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
     null,
   );
-  const queryClient = useQueryClient();
 
   if (isPending) {
     return <p>Loading incidents...</p>;
@@ -67,11 +66,7 @@ function App() {
 
           <section className="max-w-xl rounded-xl border border-slate-800 bg-slate-900/50 p-6">
             <h2 className="mb-6 text-xl font-semibold">Create incident</h2>
-            <CreateIncidentForm
-              onCreated={() => {
-                queryClient.invalidateQueries({ queryKey: ["incidents"] });
-              }}
-            />
+            <CreateIncidentForm />
           </section>
         </div>
       </main>
