@@ -8,6 +8,7 @@ import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { LogUpload } from "./LogUpload";
 import { LogExplorer } from "./LogExplorer";
+import { AIInvestigation } from "./AIInvestigation";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -64,6 +65,7 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
                 </p>
               </CardContent>
             </Card>
+            <AIInvestigation key={incident.id} report={report} />
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Failure patterns</h3>
 

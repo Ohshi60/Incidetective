@@ -7,6 +7,14 @@ import {
 import type { ErrorGroup } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 
+function extractErrorCodes(message: string): string[] {
+  const matches = message.match(
+    /\b(?:ECONNREFUSED|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|ENETUNREACH|ENOTFOUND|EPIPE)\b/gi,
+  );
+
+  return [...new Set((matches ?? []).map((code) => code.toUpperCase()))].sort();
+}
+
 export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
   const miners = new Map<string, TemplateMiner>();
   const groups = new Map<string, ErrorGroup>();
@@ -14,7 +22,12 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
   for (const log of logs) {
     if (log.level !== "error") continue;
 
-    let miner = miners.get(log.service);
+    const errorCodes = extractErrorCodes(log.message);
+
+    // Keep diagnostically different errors in separate miners.
+    const minerKey = JSON.stringify([log.service, errorCodes]);
+
+    let miner = miners.get(minerKey);
 
     if (!miner) {
       miner = new TemplateMiner({
@@ -23,13 +36,21 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
         }),
       });
 
-      miners.set(log.service, miner);
+      miners.set(minerKey, miner);
     }
 
     const result = miner.addLogMessage(log.message);
 
-    // Cluster IDs are unique only within an individual miner.
-    const key = JSON.stringify([log.service, result.clusterId]);
+    const key = JSON.stringify([minerKey, result.clusterId]);
+
+    // Keep error codes visible even if Drain masks them.
+    const missingCodes = errorCodes.filter(
+      (code) => !result.templateMined.toUpperCase().includes(code),
+    );
+
+    const normalizedMessage = missingCodes.length
+      ? `${result.templateMined} [${missingCodes.join(", ")}]`
+      : result.templateMined;
 
     const existing = groups.get(key);
 
@@ -45,12 +66,11 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
         existing.lastSeen = log.timestamp;
       }
 
-      // Templates evolve as new messages arrive.
-      existing.normalizedMessage = result.templateMined;
+      existing.normalizedMessage = normalizedMessage;
     } else {
       groups.set(key, {
         service: log.service,
-        normalizedMessage: result.templateMined,
+        normalizedMessage,
         count: 1,
         firstSeen: log.timestamp,
         lastSeen: log.timestamp,
