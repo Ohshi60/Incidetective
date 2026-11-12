@@ -108,6 +108,28 @@ export function AIInvestigation({ report }: Props) {
                 </p>
               </div>
             ))}
+
+            {investigation.data.missingEvidence.length > 0 && (
+              <div className="rounded-lg border p-4 space-y-3">
+                <h3 className="font-semibold">
+                  Suggested Follow-up Investigations
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+                  Additional diagnostics that may help determine the underlying
+                  cause.
+                </p>
+
+                <ul className="list-disc space-y-2 pl-5">
+                  {investigation.data.missingEvidence.map((request, index) => (
+                    <li key={index} className="text-sm">
+                      {request}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <p className="text-xs text-muted-foreground">
               AI-generated hypotheses. Verify before acting.
             </p>

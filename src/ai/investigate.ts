@@ -16,9 +16,14 @@ const schema = {
             type: "array",
             items: { type: "string" },
           },
+          missingEvidence: {
+            type: "array",
+            items: { type: "string" },
+            maxItems: 2,
+          },
           nextStep: { type: "string" },
         },
-        required: ["cause", "evidenceIds", "nextStep"],
+        required: ["cause", "evidenceIds", "nextStep", "missingEvidence"],
       },
     },
   },
@@ -165,6 +170,33 @@ Context logs are observations, not confirmed causes.
 Only use finding IDs when citing main error findings.
 
 
+MISSING EVIDENCE:
+Your investigation must distinguish identifying a symptom
+from establishing its underlying cause.
+
+After generating hypotheses, evaluate what evidence is
+still needed to determine which explanation is correct.
+
+Rules:
+1. If the underlying cause remains unverified, request
+   1-2 specific pieces of additional diagnostic evidence.
+2. Do not return an empty missingEvidence array merely
+   because an error message describes what failed.
+3. Prefer evidence that distinguishes between competing
+   hypotheses, such as detailed process stderr,
+   relevant metrics, configuration, or dependency logs.
+4. Do not request evidence already present in the input.
+5. Each request must identify exactly what information
+   would help resolve the uncertainty.
+6. Return an empty array only when no additional evidence
+   is necessary for the investigation.
+7. Never claim a root cause is confirmed solely because
+   an exception names the failed operation.
+
+Return missing evidence requests in the missingEvidence
+JSON field.
+
+
 OUTPUT:
 - Write a summary of at most 2 sentences.
 - Generate at most 2 distinct hypotheses.
@@ -231,9 +263,32 @@ OUTPUT:
     ...findings.map((f) => f.id),
     ...contextEvidence.map((log) => log.id),
   ]);
+
+  const modelRequests = Array.isArray(result.missingEvidence)
+    ? result.missingEvidence
+        .filter(
+          (item): item is string =>
+            typeof item === "string" && item.trim().length > 0,
+        )
+        .slice(0, 2)
+    : [];
+
+  // If the model didn't request evidence, use the diagnostic
+  // steps it already proposed as follow-up evidence requests.
+  const fallbackRequests = result.hypotheses
+    .filter(
+      (h) => typeof h.nextStep === "string" && h.nextStep.trim().length > 0,
+    )
+    .slice(0, 2)
+    .map((h) => `Provide the results of this diagnostic check: ${h.nextStep}`);
+
+  const missingEvidence =
+    modelRequests.length > 0 ? modelRequests : fallbackRequests;
+
   return {
     summary: result.summary,
     contextEvidence,
+    missingEvidence,
     hypotheses: result.hypotheses.slice(0, 3).map((h) => {
       if (
         typeof h.cause !== "string" ||

@@ -15,8 +15,9 @@ import {
 
 interface LogUploadProps {
   incidentId: string;
+  onImported?: () => void;
 }
-export function LogUpload({ incidentId }: LogUploadProps) {
+export function LogUpload({ incidentId, onImported }: LogUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
 
@@ -24,8 +25,11 @@ export function LogUpload({ incidentId }: LogUploadProps) {
     mutationFn: (file: File) => importLogs(incidentId, file),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ["incidents", incidentId, "report"],
+        queryKey: ["incidents", incidentId],
       });
+      if (data.imported > 0) {
+        onImported?.();
+      }
       toast.success(`Successfully imported ${data.imported} logs`);
     },
     onError: (error) => {
