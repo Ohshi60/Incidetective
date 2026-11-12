@@ -34,4 +34,9 @@ export interface AIInvestigation {
     message: string;
   }[];
   missingEvidence: string[];
+  diagnosticEvidence: {
+    id: string;
+    fileName: string;
+    excerpt: string;
+  }[];
 }

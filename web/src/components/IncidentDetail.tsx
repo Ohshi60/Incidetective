@@ -10,6 +10,7 @@ import { LogUpload } from "./LogUpload";
 import { LogExplorer } from "./LogExplorer";
 import { AIInvestigation } from "./AIInvestigation";
 import { useState } from "react";
+import { DiagnosticUpload } from "./DiagnosticUpload";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -56,6 +57,10 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
           </p>
         )}
         <LogUpload
+          incidentId={incident.id}
+          onImported={() => setEvidenceVersion((v) => v + 1)}
+        />
+        <DiagnosticUpload
           incidentId={incident.id}
           onImported={() => setEvidenceVersion((v) => v + 1)}
         />{" "}
