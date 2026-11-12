@@ -7,6 +7,7 @@ import { ArrowArcLeftIcon } from "@phosphor-icons/react";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { LogUpload } from "./LogUpload";
+import { LogExplorer } from "./LogExplorer";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -70,6 +71,7 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
             </div>
           </div>
         )}
+        <LogExplorer incidentId={incident.id} />
       </section>
     </>
   );
