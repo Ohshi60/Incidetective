@@ -34,10 +34,35 @@ export function AIInvestigation({ report }: Props) {
           disabled={investigation.isPending || report.findings.length === 0}
           onClick={() => investigation.mutate()}
         >
-          {investigation.isPending
-            ? "Analysing evidence"
-            : "Investigate with AI"}
+          {investigation.isPending ? "Investigating..." : "Investigate with AI"}
         </Button>
+
+        {investigation.isPending && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-start gap-3 rounded-lg border bg-muted/30 p-4"
+          >
+            <span
+              aria-hidden="true"
+              className="mt-1 size-4 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent"
+            />
+
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Analyzing incident evidence</p>
+
+              <p className="text-sm text-muted-foreground">
+                Running the local AI model against error findings, contextual
+                logs, and diagnostic evidence. CPU inference may take a while.
+              </p>
+
+              <p className="text-xs text-muted-foreground">
+                Results will appear here when the request completes.
+              </p>
+            </div>
+          </div>
+        )}
+
         {investigation.isError && (
           <p role="alert" className="text-sm text-destructive">
             {investigation.error.message}
@@ -93,7 +118,7 @@ export function AIInvestigation({ report }: Props) {
                         >
                           <div className="mb-2 flex items-center gap-2">
                             <span className="font-semibold">{id}</span>
-                            <span className="text-muted-foreground">
+                            <span className="min-w-0 break-all text-muted-foreground">
                               {diagnostic
                                 ? `${diagnostic.fileName} · diagnostic file`
                                 : `${context?.service ?? finding?.service} · ${
