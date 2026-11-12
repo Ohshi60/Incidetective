@@ -55,7 +55,7 @@ export function LogUpload({ incidentId }: LogUploadProps) {
         >
           <Input
             type="file"
-            accept=".jsonl"
+            accept=".jsonl,.log"
             placeholder="Choose a logfile"
             onChange={(event) => {
               setFile(event.target.files?.[0] ?? null);

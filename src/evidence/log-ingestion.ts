@@ -1,6 +1,7 @@
 import { batchInsertLogs } from "./evidence-store.js";
 import { parseJsonL } from "./log-import.js";
 import { getIncident } from "../incidents/incident-store.js";
+import { parseTextLog } from "./text-log-import.js";
 
 export async function ingestLogs(
   incidentId: string,
@@ -12,8 +13,18 @@ export async function ingestLogs(
     throw new Error("Incident not found");
   }
 
-  const parsedLogs = parseJsonL(content, incident.service);
+  const firstLine = content
+    .split(/\r?\n/)
+    .find((line) => line.trim())
+    ?.trimStart();
 
+  if (!firstLine) {
+    return 0;
+  }
+
+  const parsedLogs = firstLine.startsWith("{")
+    ? parseJsonL(content, incident.service)
+    : parseTextLog(content, incident.service);
   if (parsedLogs.length === 0) {
     return 0;
   }

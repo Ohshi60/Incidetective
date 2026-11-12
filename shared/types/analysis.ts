@@ -26,4 +26,11 @@ export interface AIInvestigation {
     evidenceIds: string[];
     nextStep: string;
   }[];
+  contextEvidence: {
+    id: string;
+    timestamp: string;
+    service: string;
+    level: LogEntry["level"];
+    message: string;
+  }[];
 }

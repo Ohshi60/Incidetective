@@ -51,18 +51,58 @@ export function AIInvestigation({ report }: Props) {
               <div key={index} className="space-y-2 rounded-lg border p-4">
                 <h4 className="font-semibold">Hypothesis {index + 1}</h4>
                 <p className="text-sm">{h.cause}</p>
-                <div className="text-xs text-muted-foreground">
-                  Evidence:{" "}
-                  {h.evidenceIds
-                    .map((id) => {
-                      const findingIndex = Number(id.slice(1)) - 1;
+
+                <details className="rounded-md border p-3">
+                  <summary className="cursor-pointer text-sm font-medium">
+                    Supporting evidence ({h.evidenceIds.length})
+                  </summary>
+
+                  <div className="mt-3 space-y-2">
+                    {h.evidenceIds.length === 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        No direct supporting evidence cited.
+                      </p>
+                    )}
+
+                    {h.evidenceIds.map((id) => {
+                      const context = investigation.data?.contextEvidence.find(
+                        (log) => log.id === id,
+                      );
+
+                      const findingIndex = /^F\d+$/.test(id)
+                        ? Number(id.slice(1)) - 1
+                        : -1;
+
                       const finding = report.findings[findingIndex];
-                      return finding
-                        ? `${id} (${finding.service}: ${finding.pattern})`
-                        : id;
-                    })
-                    .join(", ") || "No supporting finding cited"}
-                </div>
+
+                      const message = context
+                        ? context.message
+                        : (finding?.evidence[0]?.message ?? finding?.pattern);
+
+                      if (!message) return null;
+
+                      return (
+                        <div
+                          key={id}
+                          className="rounded-md bg-muted/50 p-3 text-xs"
+                        >
+                          <div className="mb-2 flex items-center gap-2">
+                            <span className="font-semibold">{id}</span>
+                            <span className="text-muted-foreground">
+                              {context?.service ?? finding?.service}
+                              {context ? ` · ${context.level}` : " · error"}
+                            </span>
+                          </div>
+
+                          <pre className="whitespace-pre-wrap break-words font-mono text-xs">
+                            {message}
+                          </pre>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
+
                 <p className="text-sm">
                   <strong>Next step:</strong> {h.nextStep}
                 </p>

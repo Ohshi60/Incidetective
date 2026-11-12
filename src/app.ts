@@ -161,7 +161,7 @@ export function buildApp() {
       }
 
       try {
-        return await investigateWithAI(report);
+        return await investigateWithAI(report, logs);
       } catch (error) {
         req.log.error(error, "AI investigation failed");
 
