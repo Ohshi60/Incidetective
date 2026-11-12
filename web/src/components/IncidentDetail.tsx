@@ -38,14 +38,13 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
           All incidents
         </Button>
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
+            <h2 className="break-words text-xl font-semibold tracking-tight sm:text-2xl">
               {incident.title}
             </h2>
             <p className="text-sm text-muted-foreground">{incident.service}</p>
           </div>
-
           <Badge variant="outline">{incident.severity}</Badge>
         </div>
       </header>
