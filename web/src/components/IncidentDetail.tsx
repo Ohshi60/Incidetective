@@ -6,11 +6,10 @@ import { Button } from "./ui/button";
 import { ArrowArcLeftIcon } from "@phosphor-icons/react";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { LogUpload } from "./LogUpload";
 import { LogExplorer } from "./LogExplorer";
 import { AIInvestigation } from "./AIInvestigation";
 import { useState } from "react";
-import { DiagnosticUpload } from "./DiagnosticUpload";
+import { EvidenceUpload } from "./EvidenceUpload";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -29,66 +28,109 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
     queryKey: ["incidents", incident.id, "report"],
     queryFn: () => fetchReport(incident.id),
   });
+
   return (
-    <>
-      <section className="space-y-6">
+    <div className="space-y-6">
+      {/* Incident header */}
+      <header className="space-y-4">
         <Button variant="ghost" onClick={onBack}>
           <ArrowArcLeftIcon className="size-4" />
           All incidents
         </Button>
+
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
               {incident.title}
             </h2>
             <p className="text-sm text-muted-foreground">{incident.service}</p>
           </div>
+
           <Badge variant="outline">{incident.severity}</Badge>
         </div>
-      </section>
+      </header>
 
-      <section>
-        {isPending && (
-          <p className="text-muted-foreground">Loading incidents...</p>
-        )}
-        {isError && (
-          <p role="alert" className="text-destructive">
-            {error.message}
-          </p>
-        )}
-        <LogUpload
-          incidentId={incident.id}
-          onImported={() => setEvidenceVersion((v) => v + 1)}
-        />
-        <DiagnosticUpload
-          incidentId={incident.id}
-          onImported={() => setEvidenceVersion((v) => v + 1)}
-        />{" "}
-        {report && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Investigation summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {report.summary}
-                </p>
-              </CardContent>
-            </Card>
+      {isPending && (
+        <p className="text-sm text-muted-foreground">
+          Loading investigation...
+        </p>
+      )}
+
+      {isError && (
+        <p role="alert" className="text-sm text-destructive">
+          {error.message}
+        </p>
+      )}
+
+      {/* Investigation results */}
+      {report && (
+        <div className="space-y-6">
+          {report.findings.length > 0 ? (
             <AIInvestigation
               key={`${incident.id}-${evidenceVersion}`}
               report={report}
-            />{" "}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Failure patterns</h3>
-
-              <ReportFindings findings={report.findings} />
+            />
+          ) : (
+            <div className="rounded-lg border border-dashed p-6">
+              <h3 className="font-semibold">No error findings yet</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Import application logs below to begin investigating this
+                incident.
+              </p>
             </div>
-          </div>
-        )}
-        <LogExplorer incidentId={incident.id} />
-      </section>
-    </>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Investigation summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {report.summary}
+              </p>
+            </CardContent>
+          </Card>
+
+          {report.findings.length > 0 && (
+            <section className="space-y-4">
+              <h3 className="text-lg font-semibold">
+                Failure patterns ({report.findings.length})
+              </h3>
+              <ReportFindings findings={report.findings} />
+            </section>
+          )}
+        </div>
+      )}
+
+      {/* Evidence uploads */}
+      <details
+        key={
+          report
+            ? report.findings.length === 0
+              ? "empty"
+              : "populated"
+            : "loading"
+        }
+        defaultOpen={Boolean(report && report.findings.length === 0)}
+        className="rounded-xl border"
+      >
+        <summary className="cursor-pointer p-4 font-medium">
+          Add evidence
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
+            — Logs and diagnostic files
+          </span>
+        </summary>
+
+        <div className="border-t p-4">
+          <EvidenceUpload
+            incidentId={incident.id}
+            onImported={() => setEvidenceVersion((v) => v + 1)}
+          />
+        </div>
+      </details>
+
+      {/* Raw log exploration */}
+      <LogExplorer incidentId={incident.id} />
+    </div>
   );
 }
