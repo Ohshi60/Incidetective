@@ -11,6 +11,8 @@ import { generateReport } from "./analysis/reports/generate-report.js";
 import multipart from "@fastify/multipart";
 import { ingestLogs } from "./evidence/log-ingestion.js";
 import { LogImportError } from "./evidence/log-import.js";
+import { investigateWithAI } from "./ai/investigate.js";
+
 export function buildApp() {
   const app = Fastify({ logger: true });
 
@@ -134,6 +136,38 @@ export function buildApp() {
           });
         }
         throw error;
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/incidents/:id/ai-investigation",
+    async (req, reply) => {
+      const incident = await getIncident(req.params.id);
+
+      if (!incident) {
+        return reply.code(404).send({
+          error: "Incident not found",
+        });
+      }
+
+      const logs = await fetchIncidentLogs(incident.id);
+      const report = generateReport(incident, logs);
+
+      if (report.findings.length === 0) {
+        return reply.code(400).send({
+          error: "No error findings to investigate",
+        });
+      }
+
+      try {
+        return await investigateWithAI(report);
+      } catch (error) {
+        req.log.error(error, "AI investigation failed");
+
+        return reply.code(502).send({
+          error: "AI investigation failed",
+        });
       }
     },
   );
