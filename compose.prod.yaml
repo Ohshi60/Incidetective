@@ -1,0 +1,61 @@
+name: incidetective-prod
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: incidetective
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: incidetective
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U incidetective -d incidetective
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    image: incidetective-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: ["node", "scripts/migrate.mjs"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    image: incidetective-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      OLLAMA_BASE_URL: http://10.0.0.191:11434
+      OLLAMA_MODEL: qwen3:4b-instruct
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    image: incidetective-web:local
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

@@ -110,7 +110,7 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
               : "populated"
             : "loading"
         }
-        defaultOpen={Boolean(report && report.findings.length === 0)}
+        open={Boolean(report && report.findings.length === 0)}
         className="rounded-xl border"
       >
         <summary className="cursor-pointer p-4 font-medium">

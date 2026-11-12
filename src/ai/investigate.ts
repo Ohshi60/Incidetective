@@ -112,7 +112,7 @@ ${file.content.slice(-1200)}`;
       options: {
         num_thread: 4,
         num_ctx: 4096,
-        num_predict: 900,
+        num_predict: 1200,
         temperature: 0.2,
       },
       messages: [

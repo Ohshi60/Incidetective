@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { InvestigationReport } from "../../../shared/types/report";
-import type { AIInvestigation as AIResult } from "../../.../shared/types/analysis";
+import type { AIInvestigation as AIResult } from "../../../shared/types/analysis";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
