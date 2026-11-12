@@ -1,113 +1,168 @@
 # Incidetective
 
-Incidetective is a TypeScript/Fastify backend for investigating incidents in backend services. It associates logs with incidents, identifies recurring errors, and produces structured investigation reports with supporting evidence.
+**AI-assisted incident investigation for backend services.**
 
-The current MVP uses **synthetic logs and deterministic analysis**. It runs locally without a database, an AI API key, or paid services. AI-assisted investigation is a future goal, not an implemented feature.
+Incidetective is a self-hosted tool that helps developers investigate application failures by combining deterministic log analysis with local AI reasoning.
 
-## What it does
+Import application logs, identify recurring errors, examine supporting evidence, and generate AI-assisted hypotheses with suggested diagnostic steps.
 
-- Create and list incidents, including their service, severity, and description.
-- Associate synthetic log evidence with each newly created incident.
-- Retrieve logs associated with a specific incident.
-- Summarize error/warning counts, affected services, and time ranges.
-- Group recurring error messages by service, normalizing UUIDs and numeric identifiers.
-- Generate investigation reports that rank error patterns and include up to three original log entries per finding.
+**Status:** Working MVP — under active development.
 
-Reports describe observed evidence; they **do not assert a root cause**.
+## Features
+
+- **Incident management:** Create incidents and associate log evidence with them.
+- **Real-world log ingestion:** Import JSONL, Fastify/Pino, and common timestamped text logs.
+- **Error clustering:** Group recurring failures using the Drain algorithm while preserving meaningful error codes.
+- **Contextual analysis:** Include preceding warning messages when investigating errors.
+- **AI investigation:** Generate possible root causes and diagnostic recommendations using a locally hosted Ollama model.
+- **Evidence traceability:** Link AI hypotheses to error findings (`F1`, `F2`) and contextual warnings (`C1`, `C2`).
+- **Web interface:** Explore incidents, failure patterns, original log messages, and AI investigations.
+
+AI-generated findings are hypotheses, not confirmed root causes.
 
 ## Tech stack
 
-- Node.js, TypeScript, Fastify
-- Vitest for unit and API integration tests
-- In-memory incident and evidence stores
+| Component      | Technology                           |
+| -------------- | ------------------------------------ |
+| Backend        | Node.js, TypeScript, Fastify         |
+| Frontend       | React, Vite, Tailwind CSS, shadcn/ui |
+| Database       | PostgreSQL, Drizzle ORM              |
+| Log clustering | Drain (`@agentix-e/drain-ts`)        |
+| Local AI       | Ollama, Qwen3                        |
+| Testing        | Vitest                               |
+
+## How it works
+
+```text
+Application logs
+       |
+       v
+ Log normalization
+       |
+       v
+ PostgreSQL storage
+       |
+       v
+ Deterministic analysis
+ - Error grouping
+ - Frequency and timestamps
+ - Contextual warnings
+       |
+       v
+ Ollama / Local LLM
+       |
+       v
+ Investigation report
+ - Possible root causes
+ - Evidence references
+ - Diagnostic steps
+```
+
+Deterministic analysis identifies patterns and supporting evidence. The LLM then uses that evidence to propose explanations and next steps.
+
+This separation helps keep investigations grounded in actual log data.
 
 ## Getting started
 
-Prerequisites: Node.js 22 or later and npm.
+### Prerequisites
+
+- Node.js 22+
+- Docker with Compose
+- An Ollama instance accessible from the backend
+
+### 1. Install dependencies
 
 ```bash
+git clone https://github.com/Ohshi60/Incidetective.git
+cd Incidetective
+npm install
+```
+
+### 2. Start PostgreSQL
+
+```bash
+docker compose up -d postgres
+cp .env.example .env
+npx drizzle-kit migrate
+```
+
+The included Compose configuration provides a local PostgreSQL development database.
+
+### 3. Configure Ollama
+
+Install Ollama from https://ollama.com and download a supported model:
+
+```bash
+ollama pull qwen3:4b-instruct
+```
+
+Configure your root `.env`:
+
+```dotenv
+DATABASE_URL=postgresql://incidetective:localdev@localhost:5432/incidetective
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen3:4b-instruct
+```
+
+Ollama can also run on a separate machine, including a homelab server. Set `OLLAMA_BASE_URL` accordingly.
+
+### 4. Start the backend
+
+```bash
+npm run dev
+```
+
+The API runs at `http://localhost:3000`.
+
+### 5. Start the frontend
+
+In a second terminal:
+
+```bash
+cd web
 npm install
 npm run dev
 ```
 
-The server listens on `http://localhost:3000`.
+Open the URL displayed by Vite.
 
-For a single run without watch mode:
+## Example workflow
 
-```bash
-npm start
-```
-
-Run checks:
-
-```bash
-npm test
-npm run typecheck
-```
-
-## API
-
-| Method | Route | Description |
-| --- | --- | --- |
-| `GET` | `/health` | Health check |
-| `POST` | `/incidents` | Create an incident and attach synthetic evidence |
-| `GET` | `/incidents` | List incidents |
-| `GET` | `/incidents/:id` | Retrieve one incident |
-| `GET` | `/incidents/:id/logs` | Retrieve its log evidence |
-| `GET` | `/incidents/:id/analysis` | Get deterministic statistics and error groups |
-| `GET` | `/incidents/:id/report` | Generate a structured investigation report |
-
-The incident-specific GET endpoints return `404` when the incident ID does not exist.
-
-### Example workflow
-
-**1. Create an incident**
-
-```bash
-curl -s -X POST http://localhost:3000/incidents \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "title": "Checkout requests failing",
-    "service": "checkout-api",
-    "severity": "high",
-    "description": "HTTP 500 errors increased after deployment"
-  }'
-```
-
-The response includes a generated `id`. Copy that ID for the next requests (substitute it for `<incident-id>`).
-
-Valid severity values: `low`, `medium`, `high`, `critical`.
-
-**2. Inspect evidence and analysis**
-
-```bash
-curl -s http://localhost:3000/incidents/<incident-id>/logs
-curl -s http://localhost:3000/incidents/<incident-id>/analysis
-```
-
-**3. Generate the investigation report**
-
-```bash
-curl -s http://localhost:3000/incidents/<incident-id>/report
-```
-
-The JSON report contains incident metadata (`incidentId`, `title`, `service`, `severity`), a `generatedAt` timestamp, a human-readable `summary`, and a `findings` array. Each finding describes an error pattern, its occurrence count and time range, and up to three original matching log messages.
-
-## How investigation works
-
-1. `POST /incidents` creates an incident and loads synthetic evidence for its ID.
-2. Analysis counts log levels, finds the observation window, and identifies services.
-3. Error grouping normalizes UUIDs and standalone numeric values before grouping messages by service and normalized pattern.
-4. Report generation ranks the patterns, selects a few original log entries as evidence, and writes a deterministic summary.
+1. Create an incident describing an application failure.
+2. Upload a JSONL or supported text log file.
+3. Review the deterministic analysis and grouped errors.
+4. Click **Investigate with AI**.
+5. Examine possible root causes, cited evidence, and suggested diagnostic steps.
+6. Expand supporting evidence to inspect original log messages.
 
 ## Current limitations
 
-- **Synthetic evidence only:** no external log ingestion yet.
-- **In-memory storage:** incidents and logs are lost when the process restarts; no persistent database.
-- **No AI integration yet:** normalization and summaries are rule-based, not model-generated.
-- **Simple matching:** messages are grouped by exact normalized text, not semantic similarity; normalization can also merge messages with meaningfully different numbers.
-- **Development MVP:** authentication, authorization, and production deployment are not implemented.
+- Logs must currently be imported manually.
+- Plain-text log support covers common timestamp formats, not every application log format.
+- Investigations use a selected subset of error findings and contextual warnings.
+- AI-generated conclusions may contain incorrect assumptions or diagnostic advice.
+- AI investigations are generated on demand and are not persisted.
+- Inference speed depends on the hardware running Ollama.
+- Authentication, automated log collection, and production deployment are not implemented.
 
-## Next steps
+The MVP is intended for local development and trusted environments, not direct public exposure.
 
-The next milestone is a small frontend that demonstrates creating an incident, inspecting error patterns, and viewing its evidence-backed report. Persistent storage and real log ingestion can follow once that workflow is demonstrable end to end.
+## Roadmap
+
+- [x] Persistent incident and log storage
+- [x] JSONL and Pino log ingestion
+- [x] Plain-text log ingestion
+- [x] Deterministic error clustering
+- [x] Local LLM integration
+- [x] Evidence-referenced AI investigations
+- [ ] Evaluate multiple real-world incident scenarios
+- [ ] Guided follow-up investigations
+- [ ] Automated log collection
+- [ ] Public demo mode
+- [ ] Self-hosted deployment documentation
+
+## Project goals
+
+Incidetective is both an experimental developer tool and a practical project exploring how deterministic software analysis can complement local large language models.
+
+The goal is not to replace established observability platforms, but to explore a lightweight workflow for investigating failures using accessible, self-hosted technology.

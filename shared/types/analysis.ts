@@ -18,3 +18,19 @@ export interface IncidentAnalysis {
   lastTimestamp: string | null;
   errorGroups: ErrorGroup[];
 }
+
+export interface AIInvestigation {
+  summary: string;
+  hypotheses: {
+    cause: string;
+    evidenceIds: string[];
+    nextStep: string;
+  }[];
+  contextEvidence: {
+    id: string;
+    timestamp: string;
+    service: string;
+    level: LogEntry["level"];
+    message: string;
+  }[];
+}
