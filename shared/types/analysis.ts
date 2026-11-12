@@ -33,4 +33,5 @@ export interface AIInvestigation {
     level: LogEntry["level"];
     message: string;
   }[];
+  missingEvidence: string[];
 }

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { LogUpload } from "./LogUpload";
 import { LogExplorer } from "./LogExplorer";
 import { AIInvestigation } from "./AIInvestigation";
+import { useState } from "react";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -16,6 +17,8 @@ interface IncidentDetailProps {
 }
 
 export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
+  const [evidenceVersion, setEvidenceVersion] = useState(0);
+
   const {
     data: report,
     isPending,
@@ -52,7 +55,10 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
             {error.message}
           </p>
         )}
-        <LogUpload incidentId={incident.id} />
+        <LogUpload
+          incidentId={incident.id}
+          onImported={() => setEvidenceVersion((v) => v + 1)}
+        />{" "}
         {report && (
           <div className="space-y-6">
             <Card>
@@ -65,7 +71,10 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
                 </p>
               </CardContent>
             </Card>
-            <AIInvestigation key={incident.id} report={report} />
+            <AIInvestigation
+              key={`${incident.id}-${evidenceVersion}`}
+              report={report}
+            />{" "}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Failure patterns</h3>
 
