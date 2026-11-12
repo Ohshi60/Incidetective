@@ -1,0 +1,5 @@
+Redis diagnostic output
+Connection pool exhausted
+Active connections: 100
+Maximum connections: 100
+New connections refused

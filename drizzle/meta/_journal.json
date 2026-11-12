@@ -8,6 +8,13 @@
       "when": 1792769610801,
       "tag": "0000_initial_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794496958625,
+      "tag": "0001_short_omega_flight",
+      "breakpoints": true
     }
   ]
 }

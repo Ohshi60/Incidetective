@@ -68,16 +68,21 @@ export function AIInvestigation({ report }: Props) {
                       const context = investigation.data?.contextEvidence.find(
                         (log) => log.id === id,
                       );
-
+                      const diagnostic =
+                        investigation.data?.diagnosticEvidence.find(
+                          (file) => file.id === id,
+                        );
                       const findingIndex = /^F\d+$/.test(id)
                         ? Number(id.slice(1)) - 1
                         : -1;
 
                       const finding = report.findings[findingIndex];
 
-                      const message = context
-                        ? context.message
-                        : (finding?.evidence[0]?.message ?? finding?.pattern);
+                      const message =
+                        diagnostic?.excerpt ??
+                        context?.message ??
+                        finding?.evidence[0]?.message ??
+                        finding?.pattern;
 
                       if (!message) return null;
 
@@ -89,8 +94,11 @@ export function AIInvestigation({ report }: Props) {
                           <div className="mb-2 flex items-center gap-2">
                             <span className="font-semibold">{id}</span>
                             <span className="text-muted-foreground">
-                              {context?.service ?? finding?.service}
-                              {context ? ` · ${context.level}` : " · error"}
+                              {diagnostic
+                                ? `${diagnostic.fileName} · diagnostic file`
+                                : `${context?.service ?? finding?.service} · ${
+                                    context ? context.level : "error"
+                                  }`}
                             </span>
                           </div>
 

@@ -49,3 +49,18 @@ export const logs = pgTable("logs", {
   level: logLevelEnum("level").notNull(),
   message: text("message").notNull(),
 });
+
+export const diagnosticEvidence = pgTable("diagnostic_evidence", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  incidentId: uuid("incident_id")
+    .notNull()
+    .references(() => incidents.id, { onDelete: "cascade" }),
+  fileName: varchar("filename", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "string",
+  })
+    .notNull()
+    .defaultNow(),
+});

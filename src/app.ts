@@ -12,6 +12,10 @@ import multipart from "@fastify/multipart";
 import { ingestLogs } from "./evidence/log-ingestion.js";
 import { LogImportError } from "./evidence/log-import.js";
 import { investigateWithAI } from "./ai/investigate.js";
+import {
+  addDiagnosticEvidence,
+  fetchDiagnosticEvidence,
+} from "./evidence/diagnostic-store.js";
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -141,6 +145,68 @@ export function buildApp() {
   );
 
   app.post<{ Params: { id: string } }>(
+    "/incidents/:id/diagnostics",
+    async (req, res) => {
+      const incident = await getIncident(req.params.id);
+
+      if (!incident) {
+        return res.code(404).send({ error: "Incident not found" });
+      }
+
+      try {
+        const file = await req.file();
+
+        if (!file) {
+          return res.code(400).send({ error: "No file provided" });
+        }
+
+        const content = (await file.toBuffer()).toString("utf8");
+
+        if (!content.trim()) {
+          return res.code(400).send({ error: "File is empty" });
+        }
+
+        if (content.includes("\0")) {
+          return res.code(400).send({
+            error: "Only text diagnostic files are supported",
+          });
+        }
+
+        const saved = await addDiagnosticEvidence(
+          incident.id,
+          file.filename,
+          content,
+        );
+
+        return res.code(201).send(saved);
+      } catch (error) {
+        if (error instanceof app.multipartErrors.RequestFileTooLargeError) {
+          return res.code(413).send({
+            error: "File exceeds the 1 MiB upload limit",
+          });
+        }
+
+        throw error;
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>(
+    "/incidents/:id/diagnostics",
+    async (req, res) => {
+      const incident = await getIncident(req.params.id);
+
+      if (!incident) {
+        return res.code(404).send({ error: "Incident not found" });
+      }
+
+      const diagnostics = await fetchDiagnosticEvidence(incident.id);
+
+      return res.code(200).send(diagnostics);
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
     "/incidents/:id/ai-investigation",
     async (req, reply) => {
       const incident = await getIncident(req.params.id);
@@ -152,6 +218,7 @@ export function buildApp() {
       }
 
       const logs = await fetchIncidentLogs(incident.id);
+      const diagnostics = await fetchDiagnosticEvidence(incident.id);
       const report = generateReport(incident, logs);
 
       if (report.findings.length === 0) {
@@ -161,7 +228,7 @@ export function buildApp() {
       }
 
       try {
-        return await investigateWithAI(report, logs);
+        return await investigateWithAI(report, logs, diagnostics);
       } catch (error) {
         req.log.error(error, "AI investigation failed");
 
