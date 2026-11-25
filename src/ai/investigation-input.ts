@@ -7,6 +7,12 @@ import type { AIInvestigation } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 import type { InvestigationReport } from "../../shared/types/report.js";
 
+/**
+ * Hard cap on evidence IDs per hypothesis, one above what the prompt asks
+ * for: a safety net against runaway lists, not the target.
+ */
+export const MAX_EVIDENCE_IDS = 4;
+
 export const investigationSchema = {
   type: "object",
   properties: {
@@ -20,6 +26,7 @@ export const investigationSchema = {
           evidenceIds: {
             type: "array",
             items: { type: "string" },
+            maxItems: MAX_EVIDENCE_IDS,
           },
           missingEvidence: {
             type: "array",
@@ -56,7 +63,7 @@ RULES:
 
 Use all relevant evidence types.
 Prioritize original error messages over normalized patterns.
-Reference evidence IDs that directly support each hypothesis.
+Cite 1 to 3 evidence IDs per hypothesis, strongest first: only the lines that most directly show the cause. Fewer is better; one ID is enough when one line proves it.
 Never invent evidence IDs or cite unrelated evidence.
 A diagnostic file may come from a different execution or time period.
 
@@ -96,7 +103,7 @@ OUTPUT:
 - Hypotheses: maximum 2.
 - Each cause: one concise sentence.
 - Each nextStep: one actionable sentence.
-- Each evidenceIds array: only relevant supplied IDs.
+- Each evidenceIds array: 1 to 3 supplied IDs, strongest first.
 - Each missingEvidence item: one specific evidence request.
 - Avoid repetition and unsupported speculation.
 - Return valid JSON matching the provided schema.
