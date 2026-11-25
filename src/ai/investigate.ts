@@ -2,6 +2,7 @@ import type { AIInvestigation } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 import type { InvestigationReport } from "../../shared/types/report.js";
 import type { DiagnosticEvidence } from "../evidence/diagnostic-store.js";
+import { ollamaJsonChat } from "./ollama.js";
 
 const schema = {
   type: "object",
@@ -34,7 +35,8 @@ const schema = {
 export async function investigateWithAI(
   report: InvestigationReport,
   logs: LogEntry[],
-  diagnostics: DiagnosticEvidence[] = [],
+  diagnostics: Pick<DiagnosticEvidence, "fileName" | "content">[] = [],
+  options: { model?: string } = {},
 ): Promise<AIInvestigation> {
   // Limit input to keep CPU inference reasonably fast.
 
@@ -83,8 +85,6 @@ export async function investigateWithAI(
     message: log.message.slice(0, 800),
   }));
 
-  const baseUrl = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
-
   const diagnosticEvidence = diagnostics.slice(-2).map((file, index) => {
     const excerpt =
       file.content.length <= 1500
@@ -100,25 +100,10 @@ ${file.content.slice(-1200)}`;
     };
   });
 
-  const response = await fetch(`${baseUrl.replace(/\/$/, "")}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    signal: AbortSignal.timeout(300_000),
-    body: JSON.stringify({
-      model: process.env.OLLAMA_MODEL ?? "qwen3:4b-instruct",
-      stream: false,
-      think: false,
-      format: schema,
-      options: {
-        num_thread: 4,
-        num_ctx: 4096,
-        num_predict: 1200,
-        temperature: 0.2,
-      },
-      messages: [
-        {
-          role: "system",
-          content: `You are an experienced Site Reliability Engineer investigating application incidents.
+  const { json } = await ollamaJsonChat({
+    ...(options.model ? { model: options.model } : {}),
+    schema,
+    system: `You are an experienced Site Reliability Engineer investigating application incidents.
 
 Analyze the supplied evidence to identify likely causes, distinguish symptoms from underlying failures, and recommend actionable diagnostic steps.
 
@@ -183,53 +168,19 @@ OUTPUT:
 - Avoid repetition and unsupported speculation.
 - Return valid JSON matching the provided schema.
 - Do not include markdown or explanatory text outside JSON.`,
-        },
-        {
-          role: "user",
-          content: JSON.stringify({
-            incident: {
-              title: report.title,
-              service: report.service,
-              severity: report.severity,
-            },
-            findings,
-            contextLogs,
-            diagnosticEvidence,
-          }),
-        },
-      ],
+    user: JSON.stringify({
+      incident: {
+        title: report.title,
+        service: report.service,
+        severity: report.severity,
+      },
+      findings,
+      contextLogs,
+      diagnosticEvidence,
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Ollama error: HTTP ${response.status}`);
-  }
-
-  const data = (await response.json()) as {
-    message?: { content?: string };
-  };
-
-  const metrics = data as {
-    total_duration?: number;
-    prompt_eval_count?: number;
-    prompt_eval_duration?: number;
-    eval_count?: number;
-    eval_duration?: number;
-  };
-
-  console.log("Ollama performance:", {
-    totalSeconds: (metrics.total_duration ?? 0) / 1e9,
-    promptTokens: metrics.prompt_eval_count,
-    promptSeconds: (metrics.prompt_eval_duration ?? 0) / 1e9,
-    outputTokens: metrics.eval_count,
-    outputSeconds: (metrics.eval_duration ?? 0) / 1e9,
-  });
-
-  if (!data.message?.content) {
-    throw new Error("Empty Ollama response");
-  }
-
-  const result = JSON.parse(data.message.content) as AIInvestigation;
+  const result = json as AIInvestigation;
 
   if (typeof result.summary !== "string" || !Array.isArray(result.hypotheses)) {
     throw new Error("Invalid AI response");
