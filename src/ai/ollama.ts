@@ -10,8 +10,6 @@ export interface OllamaSettings {
   /** Maximum answer length in tokens. */
   numPredict: number;
   timeoutMs: number;
-  /** CPU threads. Unset lets Ollama decide, which is right on a GPU. */
-  numThread?: number;
 }
 
 function positiveInt(
@@ -31,7 +29,6 @@ function positiveInt(
 export function ollamaSettings(
   env: NodeJS.ProcessEnv = process.env,
 ): OllamaSettings {
-  const numThread = positiveInt(env, "OLLAMA_NUM_THREAD", 0);
   return {
     baseUrl: (env.OLLAMA_BASE_URL ?? "http://localhost:11434").replace(
       /\/$/,
@@ -41,7 +38,6 @@ export function ollamaSettings(
     numCtx: positiveInt(env, "OLLAMA_NUM_CTX", 4096),
     numPredict: positiveInt(env, "OLLAMA_NUM_PREDICT", 1200),
     timeoutMs: positiveInt(env, "OLLAMA_TIMEOUT_MS", 300_000),
-    ...(numThread > 0 ? { numThread } : {}),
   };
 }
 
@@ -79,7 +75,6 @@ export async function ollamaJsonChat(
       think: false,
       format: request.schema,
       options: {
-        ...(settings.numThread ? { num_thread: settings.numThread } : {}),
         num_ctx: settings.numCtx,
         num_predict: settings.numPredict,
         temperature: 0.2,

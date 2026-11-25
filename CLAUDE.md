@@ -33,7 +33,7 @@ Frontend (`web/`): `npm run dev`, `npm run build` (`tsc -b && vite build`), `npm
 
 Each project has its own `eslint.config.js`, and ESLint 10 uses the nearest config for each file. The backend stays on TypeScript 6.0 because typescript-eslint doesn't support TypeScript 7.
 
-Production: `docker compose -f compose.prod.yaml up -d --build` runs postgres, then a one-shot `migrate` service (`scripts/migrate.mjs`), then `api`, then `web` (nginx on 127.0.0.1:8080). Needs `POSTGRES_PASSWORD` and `DATABASE_URL`.
+Production: `docker compose -f compose.prod.yaml up -d --build` runs postgres, then `api`, then `web` (nginx, `${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8080}`). The API applies Drizzle migrations on startup (`src/db/migrate.ts`, called from `src/server.ts`; tests don't go through it). Only `POSTGRES_PASSWORD` is required; `DATABASE_URL` defaults to the bundled Postgres, Ollama to `host.docker.internal`. Keep the compose file free of machine-specific values: everything comes from `.env`. `API_IMAGE`/`WEB_IMAGE` let a prebuilt image replace the local build (none are published yet).
 
 `infra/terraform/` provisions a VM on the author's Proxmox homelab. It's one deployment target, not part of the app: the app must not depend on it, and running locally or with Compose never needs it.
 
@@ -65,4 +65,4 @@ Frontend calls go to `/api/*`. In dev the Vite proxy strips `/api` and forwards 
 
 ## Environment
 
-Root `.env` (see `.env.example`): `DATABASE_URL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`. Ollama often runs on a separate machine; `compose.prod.yaml` hardcodes its address.
+Root `.env` (see `.env.example`): `DATABASE_URL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`. Ollama often runs on a separate machine; set `OLLAMA_BASE_URL` in `.env` for Compose too.

@@ -66,13 +66,39 @@ This separation helps keep investigations grounded in actual log data.
 
 ## Getting started
 
-### Prerequisites
+There are two ways to run Incidetective: the whole stack with Docker Compose, or from source for development. Either way you need an [Ollama](https://ollama.com) instance with a model pulled, for example `ollama pull qwen3:4b-instruct`.
+
+### Run with Docker Compose
+
+```bash
+git clone https://github.com/Ohshi60/Incidetective.git
+cd Incidetective
+echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)" > .env
+docker compose -f compose.prod.yaml up -d --build
+```
+
+Open http://localhost:8080. The API applies database migrations when it starts.
+
+Settings go in `.env`; all of them are optional except `POSTGRES_PASSWORD` (see `.env.example`):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OLLAMA_BASE_URL` | `http://host.docker.internal:11434` | Ollama on the Docker host; set it if Ollama runs elsewhere |
+| `OLLAMA_MODEL` | `qwen3:4b-instruct` | Model used for investigations |
+| `WEB_BIND` / `WEB_PORT` | `127.0.0.1` / `8080` | Where the web UI listens |
+| `DATABASE_URL` | the bundled Postgres | Point at your own Postgres instead |
+
+To use your own Postgres, set `DATABASE_URL` and start only the app containers: `docker compose -f compose.prod.yaml up -d --build --no-deps api web`. `POSTGRES_PASSWORD` must still be set, but can be any value.
+
+### Run from source
+
+#### Prerequisites
 
 - Node.js 22+
 - Docker with Compose
 - An Ollama instance accessible from the backend
 
-### 1. Install dependencies
+#### 1. Install dependencies
 
 ```bash
 git clone https://github.com/Ohshi60/Incidetective.git
@@ -80,17 +106,16 @@ cd Incidetective
 npm install
 ```
 
-### 2. Start PostgreSQL
+#### 2. Start PostgreSQL
 
 ```bash
 docker compose up -d postgres
 cp .env.example .env
-npx drizzle-kit migrate
 ```
 
-The included Compose configuration provides a local PostgreSQL development database.
+The included Compose configuration provides a local PostgreSQL development database. The API applies migrations when it starts.
 
-### 3. Configure Ollama
+#### 3. Configure Ollama
 
 Install Ollama from https://ollama.com and download a supported model:
 
@@ -108,7 +133,7 @@ OLLAMA_MODEL=qwen3:4b-instruct
 
 Ollama can also run on a separate machine, including a homelab server. Set `OLLAMA_BASE_URL` accordingly.
 
-### 4. Start the backend
+#### 4. Start the backend
 
 ```bash
 npm run dev
@@ -116,7 +141,7 @@ npm run dev
 
 The API runs at `http://localhost:3000`.
 
-### 5. Start the frontend
+#### 5. Start the frontend
 
 In a second terminal:
 
@@ -145,7 +170,7 @@ Open the URL displayed by Vite.
 - AI-generated conclusions may contain incorrect assumptions or diagnostic advice.
 - AI investigations are generated on demand and are not persisted.
 - Inference speed depends on the hardware running Ollama.
-- Authentication, automated log collection, and production deployment are not implemented.
+- Authentication and automated log collection are not implemented.
 
 The MVP is intended for local development and trusted environments, not direct public exposure.
 
@@ -161,7 +186,7 @@ The MVP is intended for local development and trusted environments, not direct p
 - [ ] Guided follow-up investigations
 - [ ] Automated log collection
 - [ ] Public demo mode
-- [ ] Self-hosted deployment documentation
+- [x] Self-hosted deployment documentation
 
 ## Project goals
 

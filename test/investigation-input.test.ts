@@ -232,7 +232,6 @@ describe("ollamaSettings", () => {
         OLLAMA_NUM_CTX: "16384",
         OLLAMA_NUM_PREDICT: "2000",
         OLLAMA_TIMEOUT_MS: "60000",
-        OLLAMA_NUM_THREAD: "4",
       }),
     ).toEqual({
       baseUrl: "http://desktop:11434",
@@ -240,7 +239,6 @@ describe("ollamaSettings", () => {
       numCtx: 16384,
       numPredict: 2000,
       timeoutMs: 60000,
-      numThread: 4,
     });
   });
 
