@@ -36,6 +36,8 @@ The "key evidence cited" line is an automatic hint: it checks whether the cited 
 | `hadoop-disk-full` | Loghub Hadoop | ~3,700 lines | Disk full on one node; WARN/FATAL only |
 | `hadoop-network-disconnect` | Loghub Hadoop | ~2,000 lines | Node disconnected; datanodes unreachable |
 | `hadoop-network-large` | Loghub Hadoop | ~100,000 lines | Node disconnected; AM can't reach the ResourceManager |
+| `hadoop-machine-down` | Loghub Hadoop | ~4,200 lines | Node down; attempts killed on an unusable node (INFO lines only) |
+| `hadoop-machine-down-pagerank` | Loghub Hadoop | ~3,900 lines | Node down; 624 INFO "Retrying connect to server" lines |
 
 Add a case with a folder containing `case.json` (see the existing ones) and its log files. A case with a `source` downloads its logs into `data/`, which is gitignored.
 

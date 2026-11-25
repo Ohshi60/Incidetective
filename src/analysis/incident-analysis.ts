@@ -1,6 +1,6 @@
 import type { IncidentAnalysis } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
-import { groupErrors } from "./error-grouping.js";
+import { groupLogs } from "./error-grouping.js";
 
 export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
   // shortcircuit if no logs provided
@@ -13,6 +13,8 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
       firstTimestamp: null,
       lastTimestamp: null,
       errorGroups: [],
+      warningGroups: [],
+      notableInfoGroups: [],
     };
   }
 
@@ -20,7 +22,10 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
   const serviceSet = new Set<string>();
 
   const analysis = logs.reduce<
-    Omit<IncidentAnalysis, "affectedServices" | "errorGroups">
+    Omit<
+      IncidentAnalysis,
+      "affectedServices" | "errorGroups" | "warningGroups" | "notableInfoGroups"
+    >
   >(
     (acc, log) => {
       acc.totalLogs++;
@@ -50,6 +55,8 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
   return {
     ...analysis,
     affectedServices: Array.from(serviceSet).sort((a, b) => a.localeCompare(b)),
-    errorGroups: groupErrors(logs),
+    errorGroups: groupLogs(logs, "error"),
+    warningGroups: groupLogs(logs, "warn"),
+    notableInfoGroups: groupLogs(logs, "info"),
   };
 }

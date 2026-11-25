@@ -71,7 +71,9 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
             />
           ) : (
             <div className="rounded-lg border border-dashed p-6">
-              <h3 className="font-semibold">No error findings yet</h3>
+              <h3 className="font-semibold">
+                No problems found in the logs yet
+              </h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 Import application logs below to begin investigating this
                 incident.

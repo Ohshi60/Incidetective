@@ -1,0 +1,22 @@
+{
+  "title": "WordCount job had map tasks killed and re-run",
+  "service": "hadoop-mapreduce",
+  "severity": "medium",
+  "description": "Several map tasks of a WordCount MapReduce job were killed partway through and had to run again, so the job finished late.",
+  "source": {
+    "dataset": "loghub-hadoop",
+    "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
+    "path": "application_1445087491445_0001"
+  },
+  "logs": ["data/"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "One cluster node (04DN8IQ) went down, so YARN marked it unusable and killed the map attempts running on it, which were then re-run on other nodes.",
+    "keyEvidence": ["unusable node"],
+    "goodNextSteps": [
+      "Check whether node 04DN8IQ is up (ping, NodeManager status in the ResourceManager UI or `yarn node -list -all`)",
+      "Check that node's NodeManager and system logs for why it went down"
+    ]
+  },
+  "notes": "Loghub Hadoop run with an injected machine-down failure. The evidence is only in INFO lines (no ERROR, and the WARN lines are unrelated noise), so it tests whether the app can find a cause outside errors and warnings."
+}

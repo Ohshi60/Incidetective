@@ -4,7 +4,7 @@ import {
   DEFAULT_MASKING_INSTRUCTIONS,
 } from "@agentix-e/drain-ts";
 
-import type { ErrorGroup } from "../../shared/types/analysis.js";
+import type { LogGroup } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 
 function extractErrorCodes(message: string): string[] {
@@ -15,12 +15,33 @@ function extractErrorCodes(message: string): string[] {
   return [...new Set((matches ?? []).map((code) => code.toUpperCase()))].sort();
 }
 
-export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
+// Words that rarely appear in info lines during healthy operation. Checked
+// against Loghub's Hadoop runs: they match info lines in 23 of 28
+// machine-down runs and 1 of 11 normal runs. Broader words like "killed",
+// "retrying" or "exception" also match routine cleanup and were left out.
+const notableInfoPattern =
+  /\b(?:unusable|unreachable|unhealthy|refused|timed out|lost|no space|out of memory|disconnect(?:ed)?|dead|crash(?:ed)?|retrying connect|no route|not reachable|failed to connect|connection reset|broken pipe)\b/i;
+
+/** An info-level line that mentions a likely failure. */
+export function isNotableInfo(log: LogEntry): boolean {
+  return log.level === "info" && notableInfoPattern.test(log.message);
+}
+
+/**
+ * Cluster log messages of one level into patterns with the Drain algorithm,
+ * separately per service and per set of Node error codes. For "info", only
+ * notable info lines are clustered.
+ */
+export function groupLogs(
+  logs: LogEntry[],
+  level: LogGroup["level"],
+): LogGroup[] {
   const miners = new Map<string, TemplateMiner>();
-  const groups = new Map<string, ErrorGroup>();
+  const groups = new Map<string, LogGroup>();
 
   for (const log of logs) {
-    if (log.level !== "error") continue;
+    if (log.level !== level) continue;
+    if (level === "info" && !isNotableInfo(log)) continue;
 
     const errorCodes = extractErrorCodes(log.message);
 
@@ -69,6 +90,7 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
       existing.normalizedMessage = normalizedMessage;
     } else {
       groups.set(key, {
+        level,
         service: log.service,
         normalizedMessage,
         count: 1,
@@ -87,4 +109,8 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
 
     return a.normalizedMessage.localeCompare(b.normalizedMessage);
   });
+}
+
+export function groupErrors(logs: LogEntry[]): LogGroup[] {
+  return groupLogs(logs, "error");
 }

@@ -1,0 +1,22 @@
+{
+  "title": "PageRank job slow, containers not starting",
+  "service": "hadoop-mapreduce",
+  "severity": "medium",
+  "description": "A PageRank MapReduce job ran for about an hour instead of finishing normally; some of its tasks seemed to never start.",
+  "source": {
+    "dataset": "loghub-hadoop",
+    "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
+    "path": "application_1445062781478_0012"
+  },
+  "logs": ["data/"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "One cluster node (04DN8IQ, 10.86.164.9) went down, so the application master kept retrying to connect to it to launch containers and eventually killed the task attempts assigned to it.",
+    "keyEvidence": ["Retrying connect to server", "04DN8IQ"],
+    "goodNextSteps": [
+      "Check whether node 04DN8IQ (10.86.164.9) is reachable and its NodeManager is running",
+      "Check the ResourceManager's node list for that node's state (LOST or UNHEALTHY)"
+    ]
+  },
+  "notes": "Loghub Hadoop run with an injected machine-down failure. The strongest evidence is 624 INFO-level 'Retrying connect to server' lines; there is one unrelated ERROR line."
+}

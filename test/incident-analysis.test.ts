@@ -46,6 +46,7 @@ describe("analyzeIncident", () => {
       lastTimestamp: "2026-10-22T10:10:00.000Z",
       errorGroups: [
         {
+          level: "error",
           service: "payment-api",
           normalizedMessage: "Connection timeout",
           count: 1,
@@ -57,6 +58,7 @@ describe("analyzeIncident", () => {
           ),
         },
         {
+          level: "error",
           service: "payment-api",
           normalizedMessage: "Payment failed",
           count: 1,
@@ -67,6 +69,18 @@ describe("analyzeIncident", () => {
           ),
         },
       ],
+      warningGroups: [
+        {
+          level: "warn",
+          service: "checkout-api",
+          normalizedMessage: "Slow response",
+          count: 1,
+          firstSeen: "2026-10-22T10:03:00.000Z",
+          lastSeen: "2026-10-22T10:03:00.000Z",
+          evidence: logs.filter((log) => log.level === "warn"),
+        },
+      ],
+      notableInfoGroups: [],
     });
   });
 
@@ -79,6 +93,8 @@ describe("analyzeIncident", () => {
       firstTimestamp: null,
       lastTimestamp: null,
       errorGroups: [],
+      warningGroups: [],
+      notableInfoGroups: [],
     });
   });
 });

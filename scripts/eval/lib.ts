@@ -32,7 +32,9 @@ function isStringArray(value: unknown): value is string[] {
 
 export function parseCase(id: string, raw: unknown): EvalCase {
   const fail = (field: string): never => {
-    throw new Error(`eval/cases/${id}/case.json: invalid or missing "${field}"`);
+    throw new Error(
+      `eval/cases/${id}/case.json: invalid or missing "${field}"`,
+    );
   };
   if (typeof raw !== "object" || raw === null) fail("(root object)");
   const c = raw as Record<string, unknown>;
@@ -146,9 +148,6 @@ export function buildBaselineInput(
   };
 }
 
-/** Rough chars-per-token for log text, used to size the pasted logs. */
-export const CHARS_PER_TOKEN = 3;
-
 // --- Evidence checks ---------------------------------------------------------
 
 /** Which ground-truth substrings appear in the evidence an answer cited. */
@@ -181,7 +180,10 @@ export function appCitedText(
       if (id.startsWith("F")) {
         const finding = report.findings[index];
         if (finding) {
-          texts.push(finding.pattern, ...finding.evidence.map((e) => e.message));
+          texts.push(
+            finding.pattern,
+            ...finding.evidence.map((e) => e.message),
+          );
         }
       } else if (id.startsWith("C")) {
         const context = investigation.contextEvidence.find((c) => c.id === id);
@@ -212,6 +214,10 @@ export interface VariantResult {
   /** The evidence text the answer cited, for reading and scoring. */
   cited?: string[];
   keyEvidence?: { found: string[]; missing: string[] };
+  /** Prompt tokens as counted by the model. */
+  promptTokens?: number;
+  /** App only: evidence left out to fit the context. */
+  omitted?: { findings: number; contextLogs: number; diagnostics: number };
   /** Baseline only. */
   truncated?: boolean;
   keptFraction?: number;
@@ -239,7 +245,10 @@ function fence(value: unknown): string {
   return "```json\n" + JSON.stringify(value, null, 2) + "\n```";
 }
 
-function variantSection(name: string, result: VariantResult | undefined): string {
+function variantSection(
+  name: string,
+  result: VariantResult | undefined,
+): string {
   if (!result) return "";
   const lines = [`#### ${name}`];
   if (result.status !== "ok") {
@@ -247,6 +256,18 @@ function variantSection(name: string, result: VariantResult | undefined): string
     return lines.join("\n\n");
   }
   const meta = [`${result.seconds?.toFixed(1)} s`];
+  if (result.promptTokens !== undefined) {
+    meta.push(`prompt ${result.promptTokens.toLocaleString("en-US")} tokens`);
+  }
+  if (result.omitted) {
+    const { findings, contextLogs, diagnostics } = result.omitted;
+    const parts = [
+      findings && `${findings} findings`,
+      contextLogs && `${contextLogs} context warnings`,
+      diagnostics && `${diagnostics} diagnostics`,
+    ].filter(Boolean);
+    if (parts.length) meta.push(`left out to fit: ${parts.join(", ")}`);
+  }
   if (result.truncated !== undefined) {
     meta.push(
       result.truncated
@@ -258,7 +279,9 @@ function variantSection(name: string, result: VariantResult | undefined): string
     const { found, missing } = result.keyEvidence;
     meta.push(
       `key evidence cited: ${found.length}/${found.length + missing.length}` +
-        (missing.length ? ` (missing: ${missing.map((m) => `\`${m}\``).join(", ")})` : ""),
+        (missing.length
+          ? ` (missing: ${missing.map((m) => `\`${m}\``).join(", ")})`
+          : ""),
     );
   }
   const answer = result.answer as {
@@ -271,7 +294,9 @@ function variantSection(name: string, result: VariantResult | undefined): string
     fence({
       summary: answer.summary,
       hypotheses: answer.hypotheses,
-      ...(answer.missingEvidence ? { missingEvidence: answer.missingEvidence } : {}),
+      ...(answer.missingEvidence
+        ? { missingEvidence: answer.missingEvidence }
+        : {}),
     }),
   );
   if (result.cited?.length) {
@@ -300,7 +325,7 @@ export function renderMarkdown(run: RunResult): string {
   for (const c of run.cases) {
     out.push(
       `## ${c.id}: ${c.title}`,
-      `${c.logLines.toLocaleString("en-US")} log lines · ${c.parsedEntries.toLocaleString("en-US")} parsed entries · ${c.findings} error finding(s)`,
+      `${c.logLines.toLocaleString("en-US")} log lines · ${c.parsedEntries.toLocaleString("en-US")} parsed entries · ${c.findings} finding(s)`,
       `**Ground truth:** ${c.groundTruth.cause}\n\n**Good next steps:**\n${c.groundTruth.goodNextSteps.map((s) => `- ${s}`).join("\n")}`,
       variantSection("Incidetective", c.app),
       variantSection("Raw paste (baseline)", c.baseline),
