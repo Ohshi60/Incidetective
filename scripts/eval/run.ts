@@ -26,7 +26,10 @@ import {
   investigateWithAI,
   type InvestigationUsage,
 } from "../../src/ai/investigate.js";
-import { evidenceBudgetChars } from "../../src/ai/investigation-input.js";
+import {
+  RAW_LOG_CHARS_PER_TOKEN,
+  evidenceBudgetChars,
+} from "../../src/ai/investigation-input.js";
 import { ollamaJsonChat, ollamaSettings } from "../../src/ai/ollama.js";
 import { generateReport } from "../../src/analysis/reports/generate-report.js";
 import { parseLogContent } from "../../src/evidence/log-ingestion.js";
@@ -225,7 +228,11 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
   if (args.only !== "app") {
     log(`  baseline ...`);
     // Same budget rule as the app: what's left after the prompt and answer.
-    const maxChars = evidenceBudgetChars(settings, baselineSystemPrompt);
+    const maxChars = evidenceBudgetChars(
+      settings,
+      baselineSystemPrompt,
+      RAW_LOG_CHARS_PER_TOKEN,
+    );
     const input = buildBaselineInput(
       evalCase,
       [...diagnosticFiles, ...logFiles],
