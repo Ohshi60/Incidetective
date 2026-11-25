@@ -84,7 +84,9 @@ describe("POST /incidents/:id/logs/import", () => {
         url: `/incidents/${id}/report`,
       });
       expect(reportResponse.statusCode).toBe(200);
-      const report = reportResponse.json<{ findings: { pattern: string; occurrences: number }[] }>();
+      const report = reportResponse.json<{
+        findings: { pattern: string; occurrences: number }[];
+      }>();
       expect(report.findings).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -98,7 +100,7 @@ describe("POST /incidents/:id/logs/import", () => {
     }
   });
 
-  it("rejects malformed JSONL with its original line number without storing partial evidence", async () => {
+  it("rejects a file without timestamps with 400 and stores nothing", async () => {
     const app = buildApp();
     try {
       const created = await app.inject({
@@ -110,12 +112,12 @@ describe("POST /incidents/:id/logs/import", () => {
       const uploaded = await app.inject({
         method: "POST",
         url: `/incidents/${id}/logs/import`,
-        ...uploadPayload(`${validJsonl}\n{not valid JSON}`),
+        ...uploadPayload("just some text\nwithout any times"),
       });
       expect(uploaded.statusCode).toBe(400);
       expect(uploaded.json()).toMatchObject({
         error: "Invalid log file",
-        line: 3,
+        line: 1,
       });
 
       const logsResponse = await app.inject({
@@ -128,7 +130,7 @@ describe("POST /incidents/:id/logs/import", () => {
     }
   });
 
-  it("rejects a text log in an unsupported format with 400 and its line number", async () => {
+  it("imports a syslog file, using each program as the service", async () => {
     const app = buildApp();
     try {
       const created = await app.inject({
@@ -140,13 +142,23 @@ describe("POST /incidents/:id/logs/import", () => {
       const uploaded = await app.inject({
         method: "POST",
         url: `/incidents/${id}/logs/import`,
-        ...uploadPayload("Nov 12 13:10:20 pve sshd[123]: Accepted publickey"),
+        ...uploadPayload(
+          "Nov 12 13:10:20 pve sshd[123]: Accepted publickey\n" +
+            "Nov 12 13:10:21 pve kernel: EXT4-fs error (device sda1): unable to read inode",
+        ),
       });
-      expect(uploaded.statusCode).toBe(400);
-      expect(uploaded.json()).toMatchObject({
-        error: "Invalid log file",
-        line: 1,
+      expect(uploaded.statusCode).toBe(201);
+
+      const logsResponse = await app.inject({
+        method: "GET",
+        url: `/incidents/${id}/logs`,
       });
+      expect(
+        logsResponse.json<LogEntry[]>().map((log) => [log.service, log.level]),
+      ).toEqual([
+        ["sshd", "info"],
+        ["kernel", "error"],
+      ]);
     } finally {
       await app.close();
     }
