@@ -325,7 +325,7 @@ export function renderMarkdown(run: RunResult): string {
   for (const c of run.cases) {
     out.push(
       `## ${c.id}: ${c.title}`,
-      `${c.logLines.toLocaleString("en-US")} log lines · ${c.parsedEntries.toLocaleString("en-US")} parsed entries · ${c.findings} error finding(s)`,
+      `${c.logLines.toLocaleString("en-US")} log lines · ${c.parsedEntries.toLocaleString("en-US")} parsed entries · ${c.findings} finding(s) (errors and warnings)`,
       `**Ground truth:** ${c.groundTruth.cause}\n\n**Good next steps:**\n${c.groundTruth.goodNextSteps.map((s) => `- ${s}`).join("\n")}`,
       variantSection("Incidetective", c.app),
       variantSection("Raw paste (baseline)", c.baseline),
