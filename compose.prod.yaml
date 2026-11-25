@@ -1,5 +1,8 @@
 name: incidetective-prod
 
+# Everything specific to one machine comes from .env (see .env.example).
+# The API applies database migrations itself when it starts.
+
 services:
   postgres:
     image: postgres:17
@@ -18,44 +21,38 @@ services:
       timeout: 3s
       retries: 10
 
-  migrate:
-    image: incidetective-api:local
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    command: ["node", "scripts/migrate.mjs"]
-    environment:
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: "no"
-
   api:
-    image: incidetective-api:local
+    # Set API_IMAGE to use a prebuilt image instead of building locally.
+    image: ${API_IMAGE:-incidetective-api:local}
     build:
       context: .
       dockerfile: Dockerfile.api
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
-      OLLAMA_BASE_URL: http://10.0.0.191:11434
-      OLLAMA_MODEL: qwen3:4b-instruct
-      # CPU-only homelab host: keep inference to 4 threads.
-      OLLAMA_NUM_THREAD: "4"
+      # Defaults to the bundled Postgres. Set DATABASE_URL to use your own.
+      DATABASE_URL: ${DATABASE_URL:-postgresql://incidetective:${POSTGRES_PASSWORD}@postgres:5432/incidetective}
+      # Defaults to Ollama on the Docker host.
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b-instruct}
+      OLLAMA_NUM_CTX: ${OLLAMA_NUM_CTX:-}
+      OLLAMA_NUM_PREDICT: ${OLLAMA_NUM_PREDICT:-}
+      OLLAMA_TIMEOUT_MS: ${OLLAMA_TIMEOUT_MS:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
-      migrate:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
 
   web:
-    image: incidetective-web:local
+    # Set WEB_IMAGE to use a prebuilt image instead of building locally.
+    image: ${WEB_IMAGE:-incidetective-web:local}
     build:
       context: .
       dockerfile: Dockerfile.web
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8080:80"
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8080}:80"
     depends_on:
       - api
 
