@@ -3,14 +3,31 @@
   "service": "auth-service",
   "severity": "high",
   "description": "Login requests started failing with HTTP 500 shortly after the service started.",
-  "logs": ["incident-initial.log", "incident-followup.log"],
-  "diagnostics": ["diagnostic-test.txt"],
+  "logs": [
+    "incident-initial.log",
+    "incident-followup.log"
+  ],
+  "diagnostics": [
+    "diagnostic-test.txt"
+  ],
   "groundTruth": {
     "cause": "The Redis connection pool was exhausted (100/100 connections), so session lookups first timed out and then were refused, which made authentication requests fail with HTTP 500.",
-    "keyEvidence": ["connection pool", "ECONNREFUSED", "ETIMEDOUT"],
+    "keyEvidence": [
+      "connection pool",
+      "ECONNREFUSED",
+      "ETIMEDOUT"
+    ],
     "goodNextSteps": [
       "Check Redis client connection counts and pool configuration (max size, leaks from connections not being released)",
       "Check Redis server health and maxclients"
+    ],
+    "nextStepPatterns": [
+      "pool\\s+(size|config\\w*|metrics|usage|settings|limit)",
+      "max(imum)?\\s+(pool\\s+)?(size|connections)",
+      "maxclients",
+      "connected_clients|info clients|client list",
+      "connection\\s+(count|leak|limit)s?|\\bleak",
+      "(active|open|current)\\s+connections"
     ]
   },
   "notes": "Synthetic sanity-check case built from the hand-test fixtures."

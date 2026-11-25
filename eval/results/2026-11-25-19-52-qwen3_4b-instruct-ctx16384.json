@@ -1,0 +1,1315 @@
+{
+  "date": "2026-11-25T19:52:59.513Z",
+  "model": "qwen3:4b-instruct",
+  "numCtx": 16384,
+  "cases": [
+    {
+      "id": "hadoop-disk-full",
+      "title": "WordCount job had failing map tasks",
+      "logLines": 3759,
+      "parsedEntries": 3533,
+      "findings": 4,
+      "groundTruth": {
+        "cause": "The local disk on one cluster node filled up, so map tasks running there could not write their output (no valid local directory) and had to be killed and re-run on other nodes.",
+        "keyEvidence": [
+          "DiskErrorException",
+          "Could not find any valid local directory"
+        ],
+        "goodNextSteps": [
+          "Check free disk space on the node's YARN local directories (df on yarn.nodemanager.local-dirs)",
+          "Check which node the failed attempts ran on and whether YARN marked its disks unhealthy"
+        ],
+        "nextStepPatterns": [
+          "\\bdf\\b",
+          "(free|available|remaining)\\s+(disk\\s+)?space",
+          "disk\\s+(space|usage|capacity)",
+          "local[- ]dirs",
+          "disks?\\b.{0,30}\\bunhealthy|unhealthy\\b.{0,30}\\bdisks?"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 3.6406997920000004,
+        "answer": {
+          "summary": "Map tasks failed due to either insufficient local disk space or an inaccessible HDFS output path, with evidence pointing to both disk and file system issues as potential root causes.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2015-10-19T14:25:00.053Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000003_0"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2015-10-19T14:25:36.132Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000005_0"
+            },
+            {
+              "id": "C3",
+              "timestamp": "2015-10-19T14:25:47.460Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #3] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000002_0"
+            },
+            {
+              "id": "C4",
+              "timestamp": "2015-10-19T14:26:06.726Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #4] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000008_0"
+            },
+            {
+              "id": "C5",
+              "timestamp": "2015-10-19T14:26:20.742Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #0] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000004_0"
+            },
+            {
+              "id": "C6",
+              "timestamp": "2015-10-19T14:26:23.648Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000006_0"
+            },
+            {
+              "id": "C7",
+              "timestamp": "2015-10-19T14:26:28.867Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[main] org.apache.hadoop.mapred.YarnChild: Exception running child : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)"
+            },
+            {
+              "id": "C8",
+              "timestamp": "2015-10-19T14:26:28.977Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[main] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000007_0"
+            }
+          ],
+          "missingEvidence": [
+            "The disk usage and available space metrics for the node running the map tasks at the time of failure (e.g., /var/lib/hadoop/data or /tmp) during the 14:25–14:28 window on 2015-10-19.",
+            "The HDFS health and connectivity status of the namenode at msra-sa-41:9000 during the 14:25–14:28 window, including whether the path /out/out2 exists and is accessible."
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The map tasks failed due to a lack of valid local disk space, as evidenced by repeated DiskErrorException when attempting to allocate output directories.",
+              "nextStep": "Check the disk usage and available space on the node running the failing map tasks (identified by attempt_1445182159119_0002_m_000007_0) during the 14:25–14:28 time window to confirm if local disk space was exhausted.",
+              "evidenceIds": [
+                "F1",
+                "F3",
+                "C7"
+              ]
+            },
+            {
+              "cause": "The failure is a symptom of a corrupted or inaccessible HDFS path (hdfs://msra-sa-41:9000/out/out2), which prevented proper cleanup of temporary files and caused subsequent task failures.",
+              "nextStep": "Verify the HDFS path hdfs://msra-sa-41:9000/out/out2 is accessible and not corrupted by running a HDFS ls command on the namenode at that time.",
+              "evidenceIds": [
+                "F2",
+                "C1",
+                "C2",
+                "C3"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[IPC Server handler <NUM> on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Task: attempt_<NUM>_<NUM>_m_<NUM>_<NUM> - exited : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>/file.out at org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.run(MapTask.java:<NUM>) at org.apache.hadoop.mapred.YarnChild$<NUM>.run(YarnChild.java:<NUM>) at java.security.AccessController.doPrivileged(Native Method) at javax.security.auth.Subject.doAs(Subject.java:<NUM>) at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:<NUM>) at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:<NUM>)",
+          "[IPC Server handler 10 on 49792] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Task: attempt_1445182159119_0002_m_000007_0 - exited : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)",
+          "[main] org.apache.hadoop.mapred.YarnChild: Exception running child : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>/file.out at org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.run(MapTask.java:<NUM>) at org.apache.hadoop.mapred.YarnChild$<NUM>.run(YarnChild.java:<NUM>) at java.security.AccessController.doPrivileged(Native Method) at javax.security.auth.Subject.doAs(Subject.java:<NUM>) at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:<NUM>) at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:<NUM>)",
+          "[main] org.apache.hadoop.mapred.YarnChild: Exception running child : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)",
+          "[CommitterEvent Processor #<NUM>] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-<NUM>:<NUM>/out/out2/_temporary/<NUM>/_temporary/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000003_0",
+          "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000005_0",
+          "[CommitterEvent Processor #3] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000002_0"
+        ],
+        "keyEvidence": {
+          "found": [
+            "DiskErrorException",
+            "Could not find any valid local directory"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "(free|available|remaining)\\s+(disk\\s+)?space",
+            "disk\\s+(space|usage|capacity)"
+          ]
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            3,
+            4
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "DiskErrorException",
+              "Could not find any valid local directory"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.42857142857142855
+        },
+        "promptTokens": 2922,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 13.404884875,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Map tasks failed due to excessive memory usage, causing output shuffling to disk for all map outputs",
+              "evidence": [
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000001_0: Shuffling to disk since 217009502 is greater than maxSingleShuffleLimit (32663142)",
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000003_1: Shuffling to disk since 216972750 is greater than maxSingleShuffleLimit (32663142)",
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000004_1: Shuffling to disk since 216999709 is greater than maxSingleShuffleLimit (32663142)",
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000006_1: Shuffling to disk since 217011663 is greater than maxSingleShuffleLimit (32663142)",
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000007_1: Shuffling to disk since 216976206 is greater than maxSingleShuffleLimit (32663142)",
+                "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000008_1: Shuffling to disk since 217015228 is greater than maxSingleShuffleLimit (32663142)"
+              ],
+              "nextStep": "Check the job configuration for the `mapreduce.task.reduce.maxSingleShuffleLimit` and `mapreduce.task.reduce.memory.limit` settings. Adjust the memory limit to ensure it is sufficient for the input data size, and verify that the input data is not excessively large or skewed."
+            },
+            {
+              "cause": "Map tasks failed due to a failed map task (attempt_1445182159119_0002_m_000007_0) that was ignored by the reduce task, causing a failure in the shuffle phase",
+              "evidence": [
+                "INFO [EventFetcher for fetching Map Completion Events] org.apache.hadoop.mapreduce.task.reduce.ShuffleSchedulerImpl: Ignoring obsolete output of FAILED map-task: 'attempt_1445182159119_0002_m_000007_0'"
+              ],
+              "nextStep": "Inspect the logs for the specific map task `attempt_1445182159119_0002_m_000007_0` to determine the failure reason (e.g., OOM, timeout, or disk full). Look for any error messages or stack traces in the map task logs or YARN application logs."
+            }
+          ],
+          "summary": "The map tasks failed due to either excessive memory usage causing shuffling to disk or a failed map task that was ignored during the shuffle phase. The evidence points to both memory constraints and a failed map task. The next steps are to verify memory limits and investigate the specific failure of map task attempt_1445182159119_0002_m_000007_0."
+        },
+        "promptTokens": 13805,
+        "cited": [
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000001_0: Shuffling to disk since 217009502 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000003_1: Shuffling to disk since 216972750 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000004_1: Shuffling to disk since 216999709 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000006_1: Shuffling to disk since 217011663 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000007_1: Shuffling to disk since 216976206 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: attempt_1445182159119_0002_m_000008_1: Shuffling to disk since 217015228 is greater than maxSingleShuffleLimit (32663142)",
+          "INFO [EventFetcher for fetching Map Completion Events] org.apache.hadoop.mapreduce.task.reduce.ShuffleSchedulerImpl: Ignoring obsolete output of FAILED map-task: 'attempt_1445182159119_0002_m_000007_0'"
+        ],
+        "nextStep": {
+          "matched": []
+        },
+        "truncated": true,
+        "keptFraction": 0.046983184965380814,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "DiskErrorException",
+            "Could not find any valid local directory"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-machine-down",
+      "title": "WordCount job had map tasks killed and re-run",
+      "logLines": 4233,
+      "parsedEntries": 4036,
+      "findings": 5,
+      "groundTruth": {
+        "cause": "One cluster node (04DN8IQ) went down, so YARN marked it unusable and killed the map attempts running on it, which were then re-run on other nodes.",
+        "keyEvidence": [
+          "unusable node"
+        ],
+        "goodNextSteps": [
+          "Check whether node 04DN8IQ is up (ping, NodeManager status in the ResourceManager UI or `yarn node -list -all`)",
+          "Check that node's NodeManager and system logs for why it went down"
+        ],
+        "nextStepPatterns": [
+          "04DN8IQ",
+          "yarn node",
+          "node\\s*manager\\b.{0,40}\\b(status|running|state|health)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 4.356117959,
+        "answer": {
+          "summary": "Map tasks were killed due to either an unusable node or HDFS datanode failure, leading to re-execution of map tasks. The root cause is likely one of these two failures, with the node or datanode health being the key differentiator.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "The full node health status and disk I/O metrics for 04DN8IQ.fareast.corp.microsoft.com during the time window of 2015-10-17T21:27:32.624Z to 2015-10-17T21:45:10.906Z",
+            "The HDFS datanode logs for 10.86.169.121 from 2015-10-17T21:41:34.154Z to 2015-10-17T21:45:10.906Z to verify if the datanode was down or had a crash during the incident"
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "Map tasks were killed due to an unusable node (04DN8IQ.fareast.corp.microsoft.com:55452) being detected during execution, which caused the task attempts to fail and trigger re-execution.",
+              "nextStep": "Check the node health and disk I/O metrics for 04DN8IQ.fareast.corp.microsoft.com during the incident window to confirm if it was experiencing hardware or resource failure.",
+              "evidenceIds": [
+                "F5"
+              ]
+            },
+            {
+              "cause": "HDFS data node failure at 10.86.169.121:50010 caused a block read error, leading to data stream interruption and task failure, which may have triggered map task kill and re-run.",
+              "nextStep": "Retrieve the HDFS datanode logs for 10.86.169.121 during the incident to determine if it experienced a crash, restart, or I/O failure.",
+              "evidenceIds": [
+                "F2",
+                "F3",
+                "F4"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.JobImpl: TaskAttempt killed because it ran on unusable node 04DN8IQ.fareast.corp.microsoft.com:<NUM>. AttemptId:attempt_<NUM>_<NUM>_m_<NUM>_<NUM>",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.JobImpl: TaskAttempt killed because it ran on unusable node 04DN8IQ.fareast.corp.microsoft.com:55452. AttemptId:attempt_1445087491445_0001_m_000009_0",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.JobImpl: TaskAttempt killed because it ran on unusable node 04DN8IQ.fareast.corp.microsoft.com:55452. AttemptId:attempt_1445087491445_0001_m_000011_0",
+          "[DataStreamer for file /tmp/hadoop-yarn/staging/msrabi/.staging/job_<NUM>_<NUM>/job_<NUM>_<NUM>_<NUM>.jhist block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: Error Recovery for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> in pipeline <IP>:<NUM>, <IP>:<NUM>: bad datanode <IP>:<NUM>",
+          "[DataStreamer for file /tmp/hadoop-yarn/staging/msrabi/.staging/job_1445087491445_0001/job_1445087491445_0001_1.jhist block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: Error Recovery for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056 in pipeline 172.22.149.145:50010, 10.86.169.121:50010: bad datanode 10.86.169.121:50010",
+          "[ResponseProcessor for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: DFSOutputStream ResponseProcessor exception for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> java.io.IOException: Bad response ERROR for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> from datanode <IP>:<NUM> at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer$ResponseProcessor.run(DFSOutputStream.java:<NUM>)",
+          "[ResponseProcessor for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: DFSOutputStream ResponseProcessor exception  for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056\njava.io.IOException: Bad response ERROR for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056 from datanode 10.86.169.121:50010\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer$ResponseProcessor.run(DFSOutputStream.java:898)",
+          "[ResponseProcessor for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: Slow ReadProcessor read fields took 48944ms (threshold=30000ms); ack: seqno: <NUM> status: SUCCESS status: ERROR downstreamAckTimeNanos: <NUM>, targets: [<IP>:<NUM>, <IP>:<NUM>]",
+          "[ResponseProcessor for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: Slow ReadProcessor read fields took 48944ms (threshold=30000ms); ack: seqno: -2 status: SUCCESS status: ERROR downstreamAckTimeNanos: 0, targets: [172.22.149.145:50010, 10.86.169.121:50010]"
+        ],
+        "keyEvidence": {
+          "found": [
+            "unusable node"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "04DN8IQ"
+          ]
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            1,
+            3
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "unusable node"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.25
+        },
+        "promptTokens": 2515,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 11.898488374999998,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Memory exhaustion in map tasks",
+              "evidence": [
+                "2015-10-17 21:46:03,080 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 13589607 kvi 3397396(13589584)",
+                "2015-10-17 21:46:03,080 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 13589607 kvi 3397396(13589584)",
+                "2015-10-17 21:46:03,080 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 13589607 kvi 3397396(13589584)"
+              ],
+              "nextStep": "Check system-level memory usage and swap activity on the node hosting the map tasks during the period when the tasks were running. Look for spikes in memory consumption or high swap usage that correlate with the task failures."
+            },
+            {
+              "cause": "Disk I/O saturation or slow data access on the HDFS node",
+              "evidence": [
+                "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: mapreduce.task.io.sort.mb: 100",
+                "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+                "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufvoid = 104857600"
+              ],
+              "nextStep": "Monitor HDFS node disk I/O metrics and network latency during the execution of the job. Verify if the data access latency increased or if the HDFS node experienced high load, which could have caused map tasks to stall or fail."
+            }
+          ],
+          "summary": "The map tasks were killed and re-run due to either memory exhaustion or disk I/O saturation. The logs show consistent memory-related operations and spilling, which suggests memory pressure. However, no explicit error or crash is logged. The next steps involve monitoring system-level resource usage to confirm the root cause."
+        },
+        "promptTokens": 15641,
+        "cited": [
+          "2015-10-17 21:46:03,080 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 13589607 kvi 3397396(13589584)",
+          "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: mapreduce.task.io.sort.mb: 100",
+          "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+          "2015-10-17 21:45:19,844 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufvoid = 104857600"
+        ],
+        "nextStep": {
+          "matched": []
+        },
+        "truncated": true,
+        "keptFraction": 0.041728664901293205,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "unusable node"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-machine-down-pagerank",
+      "title": "PageRank job slow, containers not starting",
+      "logLines": 3948,
+      "parsedEntries": 3800,
+      "findings": 6,
+      "groundTruth": {
+        "cause": "One cluster node (04DN8IQ, 10.86.164.9) went down, so the application master kept retrying to connect to it to launch containers and eventually killed the task attempts assigned to it.",
+        "keyEvidence": [
+          "Retrying connect to server",
+          "04DN8IQ"
+        ],
+        "goodNextSteps": [
+          "Check whether node 04DN8IQ (10.86.164.9) is reachable and its NodeManager is running",
+          "Check the ResourceManager's node list for that node's state (LOST or UNHEALTHY)"
+        ],
+        "nextStepPatterns": [
+          "04DN8IQ",
+          "yarn node",
+          "node\\s*manager\\b.{0,40}\\b(status|running|state|health)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 4.125064166999997,
+        "answer": {
+          "summary": "The incident involves container launch failures and file deletion errors, likely stemming from either a node failure or HDFS-level file system issues, with the node failure being more directly linked to task termination events and container loss reports.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "The full health status and network connectivity logs for node 04DN8IQ.fareast.corp.microsoft.com during the period 15:38–15:53 on 2015-10-17",
+            "HDFS file system logs for the directory hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000004_0 during the period 15:46–15:46:43"
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "A container launch failure on node 04DN8IQ.fareast.corp.microsoft.com:64484 caused a lost node detection, leading to task attempts being killed and file output committer errors due to failed cleanup.",
+              "nextStep": "Check the node health and network connectivity logs for 04DN8IQ.fareast.corp.microsoft.com between 15:38 and 15:53 to verify if the node was unreachable or had a service outage.",
+              "evidenceIds": [
+                "F3",
+                "F5",
+                "F6"
+              ]
+            },
+            {
+              "cause": "A persistent HDFS file deletion failure in /pageout/out2/_temporary/ caused the FileOutputCommitter to fail, which may have triggered container restarts or task failures due to incomplete state handling.",
+              "nextStep": "Examine the HDFS file system logs for the specific temporary output directory to determine if a file lock, permission issue, or corruption prevented deletion.",
+              "evidenceIds": [
+                "F2"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[ContainerLauncher #<NUM>] org.apache.hadoop.ipc.Client: Retrying connect to server: 04DN8IQ.fareast.corp.microsoft.com/<IP>:<NUM>. Already tried <NUM> time(s); maxRetries=<NUM>",
+          "[ContainerLauncher #1] org.apache.hadoop.ipc.Client: Retrying connect to server: 04DN8IQ.fareast.corp.microsoft.com/10.86.164.9:64484. Already tried 0 time(s); maxRetries=45",
+          "[ContainerLauncher #1] org.apache.hadoop.ipc.Client: Retrying connect to server: 04DN8IQ.fareast.corp.microsoft.com/10.86.164.9:64484. Already tried 1 time(s); maxRetries=45",
+          "[ContainerLauncher #2] org.apache.hadoop.ipc.Client: Retrying connect to server: 04DN8IQ.fareast.corp.microsoft.com/10.86.164.9:64484. Already tried 0 time(s); maxRetries=45",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Diagnostics report from attempt_<NUM>_<NUM>_m_<NUM>_<NUM>: Container released on a *lost* node",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Diagnostics report from attempt_1445062781478_0012_m_000005_0: Container released on a *lost* node",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Diagnostics report from attempt_1445062781478_0012_m_000008_0: Container released on a *lost* node",
+          "[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Diagnostics report from attempt_1445062781478_0012_m_000001_0: Container released on a *lost* node",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Killing taskAttempt:attempt_<NUM>_<NUM>_m_<NUM>_<NUM> because it is running on unusable node:04DN8IQ.fareast.corp.microsoft.com:<NUM>",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Killing taskAttempt:attempt_1445062781478_0012_m_000001_0 because it is running on unusable node:04DN8IQ.fareast.corp.microsoft.com:64484",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Killing taskAttempt:attempt_1445062781478_0012_m_000003_0 because it is running on unusable node:04DN8IQ.fareast.corp.microsoft.com:64484",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Killing taskAttempt:attempt_1445062781478_0012_m_000005_0 because it is running on unusable node:04DN8IQ.fareast.corp.microsoft.com:64484",
+          "[CommitterEvent Processor #<NUM>] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-<NUM>:<NUM>/pageout/out2/_temporary/<NUM>/_temporary/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000004_0",
+          "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000006_1"
+        ],
+        "keyEvidence": {
+          "found": [
+            "Retrying connect to server",
+            "04DN8IQ"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "04DN8IQ"
+          ]
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            3,
+            1
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "Retrying connect to server",
+              "04DN8IQ"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.5
+        },
+        "promptTokens": 2547,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 12.012177040999996,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Memory exhaustion in map tasks due to large input splits",
+              "evidence": [
+                "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufend = 48215795; bufvoid = 104857600",
+                "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396(104857584); kvend = 17296824(69187296); length = 8917573/6553600",
+                "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 57284531 kvi 14321128(57284512)"
+              ],
+              "nextStep": "Check the Hadoop configuration for mapreduce.task.io.sort.mb and verify that the memory limit (e.g., mapreduce.map.memory.mb) is sufficient for the input split size. Monitor memory usage per container during execution to confirm if memory is being exceeded."
+            },
+            {
+              "cause": "Container startup delay due to missing or expired job tokens",
+              "evidence": [
+                "2015-10-17 15:43:42,545 INFO [main] org.apache.hadoop.mapred.YarnChild: Executing with tokens: Kind: mapreduce.job, Service: job_1445062781478_0012, Ident: (org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@1623b78d)",
+                "2015-10-17 15:43:42,717 INFO [main] org.apache.hadoop.mapred.YarnChild: Sleeping for 0ms before retrying again. Got null now."
+              ],
+              "nextStep": "Verify the job token validity in YARN by checking the job history server logs and ensuring that the job token is not expired or revoked. Validate token renewal configuration in the YARN and MapReduce settings."
+            }
+          ],
+          "summary": "The PageRank job is slow and containers are not starting due to either memory exhaustion from large input splits or a failure in job token acquisition during container startup. Both issues are supported by log evidence and require distinct diagnostic steps."
+        },
+        "promptTokens": 15636,
+        "cited": [
+          "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufend = 48215795; bufvoid = 104857600",
+          "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396(104857584); kvend = 17296824(69187296); length = 8917573/6553600",
+          "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: (EQUATOR) 57284531 kvi 14321128(57284512)",
+          "2015-10-17 15:43:42,545 INFO [main] org.apache.hadoop.mapred.YarnChild: Executing with tokens: Kind: mapreduce.job, Service: job_1445062781478_0012, Ident: (org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@1623b78d)",
+          "2015-10-17 15:43:42,717 INFO [main] org.apache.hadoop.mapred.YarnChild: Sleeping for 0ms before retrying again. Got null now."
+        ],
+        "nextStep": {
+          "matched": []
+        },
+        "truncated": true,
+        "keptFraction": 0.04205646955454049,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "Retrying connect to server",
+            "04DN8IQ"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-network-disconnect",
+      "title": "WordCount map tasks killed after retries",
+      "logLines": 1929,
+      "parsedEntries": 963,
+      "findings": 10,
+      "groundTruth": {
+        "cause": "One cluster node was disconnected from the network, so tasks could not reach HDFS datanodes on it (NoRouteToHost) to read their input blocks and were killed after retries.",
+        "keyEvidence": [
+          "NoRouteToHostException",
+          "deadNodes"
+        ],
+        "goodNextSteps": [
+          "Check network connectivity to the datanode address in the errors (ping, routes, switch port, firewall)",
+          "Check the HDFS datanode report for dead or unreachable nodes"
+        ],
+        "nextStepPatterns": [
+          "\\bping\\b",
+          "traceroute",
+          "\\broutes?\\b|routing",
+          "firewall",
+          "network connectivity|connectivity\\s+(to|between|from)",
+          "dfsadmin|datanode report|dead\\b.{0,20}\\bnodes?"
+        ]
+      },
+      "app": {
+        "status": "error",
+        "reason": "The model's answer was cut off after 1200 tokens (OLLAMA_NUM_PREDICT=1200, OLLAMA_NUM_CTX=16384)."
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 12.177704832999996,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Map task memory exhaustion due to large input split size",
+              "evidence": [
+                "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+                "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufvoid = 104857600",
+                "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396; length = 6553600"
+              ],
+              "nextStep": "Check the size of the input file (wordcount2.txt) and verify if any split exceeds the configured memory limit. Adjust mapreduce.task.io.sort.mb or increase the memory allocation for map tasks if necessary."
+            },
+            {
+              "cause": "Disk I/O bottleneck during map output spilling and merging",
+              "evidence": [
+                "2015-10-18 21:38:31,681 INFO [main] org.apache.hadoop.mapred.MapTask: Spilling map output",
+                "2015-10-18 21:38:54,058 INFO [main] org.apache.hadoop.mapred.MapTask: (RESET) equator 44661690 kv 11165416(44661664) kvi 8543992(34175968)",
+                "2015-10-18 21:39:18,342 INFO [main] org.apache.hadoop.mapred.MapTask: Spilling map output",
+                "2015-10-18 21:39:35,751 INFO [SpillThread] org.apache.hadoop.mapred.MapTask: Finished spill 1"
+              ],
+              "nextStep": "Monitor disk I/O utilization on the node during map task execution and check for high latency or saturation. Verify the disk performance and ensure sufficient space and I/O throughput for temporary spilling operations."
+            }
+          ],
+          "summary": "The map tasks are failing to make progress and being killed after retries due to either memory exhaustion from large input splits or disk I/O bottlenecks during spilling and merging. The logs show consistent spilling and merging activity, indicating that the tasks are not progressing due to resource constraints. The next steps are to validate input split sizes and disk I/O performance."
+        },
+        "promptTokens": 15442,
+        "cited": [
+          "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+          "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 0; bufvoid = 104857600",
+          "2015-10-18 21:38:16,257 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396; length = 6553600",
+          "2015-10-18 21:38:31,681 INFO [main] org.apache.hadoop.mapred.MapTask: Spilling map output",
+          "2015-10-18 21:38:54,058 INFO [main] org.apache.hadoop.mapred.MapTask: (RESET) equator 44661690 kv 11165416(44661664) kvi 8543992(34175968)",
+          "2015-10-18 21:39:18,342 INFO [main] org.apache.hadoop.mapred.MapTask: Spilling map output",
+          "2015-10-18 21:39:35,751 INFO [SpillThread] org.apache.hadoop.mapred.MapTask: Finished spill 1"
+        ],
+        "nextStep": {
+          "matched": []
+        },
+        "truncated": true,
+        "keptFraction": 0.14990343412396645,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "NoRouteToHostException",
+            "deadNodes"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-network-large",
+      "title": "WordCount job stopped making progress",
+      "logLines": 100667,
+      "parsedEntries": 8304,
+      "findings": 30,
+      "groundTruth": {
+        "cause": "The node running the job's application master was disconnected from the network, so it repeatedly failed to contact the ResourceManager and could not renew its HDFS lease.",
+        "keyEvidence": [
+          "ERROR IN CONTACTING RM",
+          "Failed to renew lease"
+        ],
+        "goodNextSteps": [
+          "Check network connectivity from the application master's node to the ResourceManager and NameNode",
+          "Check the ResourceManager for the node's status (lost or unhealthy NodeManager)"
+        ],
+        "nextStepPatterns": [
+          "\\bping\\b",
+          "traceroute",
+          "\\broutes?\\b|routing",
+          "firewall",
+          "network connectivity|connectivity\\s+(to|between|from)",
+          "resource\\s*manager\\b.{0,60}\\b(node|status|lost|unhealthy)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 9.108365166999997,
+        "answer": {
+          "summary": "The WordCount job failed to progress due to network communication failures between the local node and the Resource Manager and NameNode, primarily caused by either a network outage or a DNS misconfiguration that prevents proper resolution of msra-sa-41.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2015-10-18T21:45:03.016Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2015-10-18T21:45:03.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C3",
+              "timestamp": "2015-10-18T21:45:03.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 377 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C4",
+              "timestamp": "2015-10-18T21:45:04.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C5",
+              "timestamp": "2015-10-18T21:45:04.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 378 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C6",
+              "timestamp": "2015-10-18T21:45:05.016Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C7",
+              "timestamp": "2015-10-18T21:45:05.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C8",
+              "timestamp": "2015-10-18T21:45:05.594Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 379 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C9",
+              "timestamp": "2015-10-18T21:45:06.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C10",
+              "timestamp": "2015-10-18T21:45:06.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 380 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C11",
+              "timestamp": "2015-10-18T21:45:07.016Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C12",
+              "timestamp": "2015-10-18T21:45:07.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C13",
+              "timestamp": "2015-10-18T21:45:07.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 381 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C14",
+              "timestamp": "2015-10-18T21:45:08.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C15",
+              "timestamp": "2015-10-18T21:45:08.626Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 382 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C16",
+              "timestamp": "2015-10-18T21:45:09.016Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C17",
+              "timestamp": "2015-10-18T21:45:09.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C18",
+              "timestamp": "2015-10-18T21:45:09.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 383 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C19",
+              "timestamp": "2015-10-18T21:45:10.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C20",
+              "timestamp": "2015-10-18T21:45:10.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 384 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C21",
+              "timestamp": "2015-10-18T21:45:11.016Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C22",
+              "timestamp": "2015-10-18T21:45:11.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C23",
+              "timestamp": "2015-10-18T21:45:11.641Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 385 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C24",
+              "timestamp": "2015-10-18T21:45:12.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C25",
+              "timestamp": "2015-10-18T21:45:12.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 386 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C26",
+              "timestamp": "2015-10-18T21:45:13.017Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C27",
+              "timestamp": "2015-10-18T21:45:13.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C28",
+              "timestamp": "2015-10-18T21:45:13.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 387 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C29",
+              "timestamp": "2015-10-18T21:45:14.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C30",
+              "timestamp": "2015-10-18T21:45:14.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 388 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C31",
+              "timestamp": "2015-10-18T21:45:15.032Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C32",
+              "timestamp": "2015-10-18T21:45:15.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C33",
+              "timestamp": "2015-10-18T21:45:15.642Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 389 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C34",
+              "timestamp": "2015-10-18T21:45:16.048Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler: Found jobId job_1445175094696_0003 to have not been closed. Will close"
+            },
+            {
+              "id": "C35",
+              "timestamp": "2015-10-18T21:45:16.048Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.service.CompositeService: When stopping the service JobHistoryEventHandler : org.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:568)\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.serviceStop(JobHistoryEventHandler.java:389)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more"
+            },
+            {
+              "id": "C36",
+              "timestamp": "2015-10-18T21:45:16.048Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: cleanup failed for container container_1445175094696_0003_01_000012 : java.lang.IllegalArgumentException: java.net.UnknownHostException: MSRA-SA-39.fareast.corp.microsoft.com\n\tat org.apache.hadoop.security.SecurityUtil.buildTokenService(SecurityUtil.java:374)\n\tat org.apache.hadoop.security.SecurityUtil.setTokenService(SecurityUtil.java:353)\n\tat org.apache.hadoop.yarn.util.ConverterUtils.convertFromYarn(ConverterUtils.java:231)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy$ContainerManagementProtocolProxyData.newProxy(ContainerManagementProtocolProxy.java:266)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy$ContainerManagementProtocolProxyData.<init>(ContainerManagementProtocolProxy.java:244)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy.getProxy(ContainerManagementProtocolProxy.java:129)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.getCMProxy(ContainerLauncherImpl.java:403)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl$Container.kill(ContainerLauncherImpl.java:200)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.shutdownAllContainers(ContainerLauncherImpl.java:320)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.serviceStop(ContainerLauncherImpl.java:331)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$ContainerLauncherRouter.serviceStop(MRAppMaster.java:887)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.UnknownHostException: MSRA-SA-39.fareast.corp.microsoft.com\n\t... 23 more"
+            },
+            {
+              "id": "C37",
+              "timestamp": "2015-10-18T21:45:16.064Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030"
+            },
+            {
+              "id": "C38",
+              "timestamp": "2015-10-18T21:45:16.673Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C39",
+              "timestamp": "2015-10-18T21:45:16.673Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 390 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more"
+            },
+            {
+              "id": "C40",
+              "timestamp": "2015-10-18T21:45:17.064Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Graceful stop failed \norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:568)\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.serviceStop(JobHistoryEventHandler.java:389)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more"
+            }
+          ],
+          "missingEvidence": [
+            "Network connectivity test between MININT-FNANLI5 and msra-sa-41 on ports 8030 and 9000",
+            "DNS resolution logs showing the actual DNS lookup for msra-sa-41 and its resolved IP address"
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The WordCount job stopped progressing due to a network failure preventing communication between the local node (MININT-FNANLI5) and the Resource Manager (msra-sa-41) on port 8030, which is compounded by a DNS resolution failure when attempting to reach msra-sa-41:9000 for HDFS lease renewal.",
+              "nextStep": "Run a ping and telnet test from MININT-FNANLI5 to msra-sa-41 on ports 8030 and 9000 to verify network reachability and port accessibility.",
+              "evidenceIds": [
+                "F1",
+                "F6",
+                "F11",
+                "F2"
+              ]
+            },
+            {
+              "cause": "The job failed to progress due to a misconfigured or stale DNS entry for msra-sa-41, causing the application to resolve the host incorrectly to a non-existent or unreachable IP, leading to repeated NoRouteToHostException errors during both RM communication and HDFS lease renewal.",
+              "nextStep": "Check DNS logs or use dig/nslookup to verify the DNS resolution of msra-sa-41 and confirm it resolves to 10.190.173.170, the IP used in earlier logs.",
+              "evidenceIds": [
+                "F10",
+                "F12",
+                "F13",
+                "C36"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. java.io.IOException: Failed on local exception: java.io.IOException: Couldn't set up IO streams; Host Details : local host is: \"MININT-FNANLI5/<IP>\"; destination host is: \"msra-sa-<NUM>\":<NUM>; at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy35.allocate(Unknown Source) at org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:<NUM>) at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy36.allocate(Unknown Source) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$<NUM>.run(RMCommunicator.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.io.IOException: Couldn't set up IO streams at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more Caused by: java.nio.channels.UnresolvedAddressException at sun.nio.ch.Net.checkAddress(Net.java:<NUM>) at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) ... <NUM> more",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. \njava.io.IOException: Failed on local exception: java.io.IOException: Couldn't set up IO streams; Host Details : local host is: \"MININT-FNANLI5/127.0.0.1\"; destination host is: \"msra-sa-41\":8030; \n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:772)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy35.allocate(Unknown Source)\n\tat org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:77)\n\tat sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy36.allocate(Unknown Source)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:188)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:667)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:244)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$1.run(RMCommunicator.java:282)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.io.IOException: Couldn't set up IO streams\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:786)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 15 more\nCaused by: java.nio.channels.UnresolvedAddressException\n\tat sun.nio.ch.Net.checkAddress(Net.java:127)\n\tat sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:640)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:192)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\t... 18 more",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. java.io.IOException: Failed on local exception: java.io.IOException: An existing connection was forcibly closed by the remote host; Host Details : local host is: \"MININT-FNANLI5/<IP>\"; destination host is: \"msra-sa-<NUM>\":<NUM>; at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy35.allocate(Unknown Source) at org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:<NUM>) at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy36.allocate(Unknown Source) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$<NUM>.run(RMCommunicator.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.io.IOException: An existing connection was forcibly closed by the remote host at sun.nio.ch.SocketDispatcher.read0(Native Method) at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:<NUM>) at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:<NUM>) at sun.nio.ch.IOUtil.read(IOUtil.java:<NUM>) at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketInputStream$Reader.performIO(SocketInputStream.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.doIO(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:<NUM>) at org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:<NUM>) at java.io.FilterInputStream.read(FilterInputStream.java:<NUM>) at java.io.FilterInputStream.read(FilterInputStream.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection$PingInputStream.read(Client.java:<NUM>) at java.io.BufferedInputStream.fill(BufferedInputStream.java:<NUM>) at java.io.BufferedInputStream.read(BufferedInputStream.java:<NUM>) at java.io.DataInputStream.readInt(DataInputStream.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.receiveRpcResponse(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.run(Client.java:<NUM>)",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. \njava.io.IOException: Failed on local exception: java.io.IOException: An existing connection was forcibly closed by the remote host; Host Details : local host is: \"MININT-FNANLI5/127.0.0.1\"; destination host is: \"msra-sa-41\":8030; \n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:772)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy35.allocate(Unknown Source)\n\tat org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:77)\n\tat sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy36.allocate(Unknown Source)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:188)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:667)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:244)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$1.run(RMCommunicator.java:282)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.io.IOException: An existing connection was forcibly closed by the remote host\n\tat sun.nio.ch.SocketDispatcher.read0(Native Method)\n\tat sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)\n\tat sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)\n\tat sun.nio.ch.IOUtil.read(IOUtil.java:197)\n\tat sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:379)\n\tat org.apache.hadoop.net.SocketInputStream$Reader.performIO(SocketInputStream.java:57)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.doIO(SocketIOWithTimeout.java:142)\n\tat org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:161)\n\tat org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:131)\n\tat java.io.FilterInputStream.read(FilterInputStream.java:133)\n\tat java.io.FilterInputStream.read(FilterInputStream.java:133)\n\tat org.apache.hadoop.ipc.Client$Connection$PingInputStream.read(Client.java:513)\n\tat java.io.BufferedInputStream.fill(BufferedInputStream.java:235)\n\tat java.io.BufferedInputStream.read(BufferedInputStream.java:254)\n\tat java.io.DataInputStream.readInt(DataInputStream.java:387)\n\tat org.apache.hadoop.ipc.Client$Connection.receiveRpcResponse(Client.java:1071)\n\tat org.apache.hadoop.ipc.Client$Connection.run(Client.java:966)",
+          "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-<NUM>/<IP>:<NUM> New: msra-sa-<NUM>:<NUM>",
+          "[RMCommunicator Allocator] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:8030 New: msra-sa-41:8030",
+          "[eventHandlingThread] org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler: Error writing History Event: org.apache.hadoop.mapreduce.jobhistory.JobUnsuccessfulCompletionEvent@13bb724a java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<NUM>) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[eventHandlingThread] org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler: Error writing History Event: org.apache.hadoop.mapreduce.jobhistory.JobUnsuccessfulCompletionEvent@13bb724a\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more",
+          "[LeaseRenewer:msrabi@msra-sa-<NUM>:<NUM>] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_<NUM>_<NUM>] for <NUM> seconds. Will retry shortly ... java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.renewLease(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.renewLease(Unknown Source) at org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.access$<NUM>(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer$<NUM>.run(LeaseRenewer.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 46 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 47 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 48 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-<NUM>:<NUM>] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_<NUM>_<NUM>] for <NUM> seconds. Will retry shortly ... java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:<NUM>) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.renewLease(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.renewLease(Unknown Source) at org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.access$<NUM>(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer$<NUM>.run(LeaseRenewer.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 35 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 36 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 37 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.GeneratedMethodAccessor8.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 16 more",
+          "[LeaseRenewer:msrabi@msra-sa-<NUM>:<NUM>] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_<NUM>_<NUM>] for <NUM> seconds. Will retry shortly ... java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:<NUM>) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.renewLease(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<NUM>) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.renewLease(Unknown Source) at org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer.access$<NUM>(LeaseRenewer.java:<NUM>) at org.apache.hadoop.hdfs.LeaseRenewer$<NUM>.run(LeaseRenewer.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 30 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 17 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 31 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 17 more",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.hdfs.LeaseRenewer: Failed to renew lease for [DFSClient_NONMAPREDUCE_-1547462655_1] for 32 seconds.  Will retry shortly ...\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.renewLease(ClientNamenodeProtocolTranslatorPB.java:571)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.renewLease(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSClient.renewLease(DFSClient.java:879)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.renew(LeaseRenewer.java:417)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.run(LeaseRenewer.java:442)\n\tat org.apache.hadoop.hdfs.LeaseRenewer.access$700(LeaseRenewer.java:71)\n\tat org.apache.hadoop.hdfs.LeaseRenewer$1.run(LeaseRenewer.java:298)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 17 more",
+          "[Thread-626] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: cleanup failed for container container_1445175094696_0003_01_000012 : java.lang.IllegalArgumentException: java.net.UnknownHostException: MSRA-SA-39.fareast.corp.microsoft.com\n\tat org.apache.hadoop.security.SecurityUtil.buildTokenService(SecurityUtil.java:374)\n\tat org.apache.hadoop.security.SecurityUtil.setTokenService(SecurityUtil.java:353)\n\tat org.apache.hadoop.yarn.util.ConverterUtils.convertFromYarn(ConverterUtils.java:231)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy$ContainerManagementProtocolProxyData.newProxy(ContainerManagementProtocolProxy.java:266)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy$ContainerManagementProtocolProxyData.<init>(ContainerManagementProtocolProxy.java:244)\n\tat org.apache.hadoop.yarn.client.api.impl.ContainerManagementProtocolProxy.getProxy(ContainerManagementProtocolProxy.java:129)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.getCMProxy(ContainerLauncherImpl.java:403)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl$Container.kill(ContainerLauncherImpl.java:200)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.shutdownAllContainers(ContainerLauncherImpl.java:320)\n\tat org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl.serviceStop(ContainerLauncherImpl.java:331)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$ContainerLauncherRouter.serviceStop(MRAppMaster.java:887)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.UnknownHostException: MSRA-SA-39.fareast.corp.microsoft.com\n\t... 23 more"
+        ],
+        "keyEvidence": {
+          "found": [
+            "ERROR IN CONTACTING RM",
+            "Failed to renew lease"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "\\bping\\b"
+          ]
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            4,
+            4
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "ERROR IN CONTACTING RM"
+            ],
+            "missing": [
+              "Failed to renew lease"
+            ]
+          },
+          "keyShare": 0.625
+        },
+        "promptTokens": 12468,
+        "omitted": {
+          "findings": 15,
+          "contextLogs": 784,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "error",
+        "reason": "The model's answer was cut off after 1200 tokens (OLLAMA_NUM_PREDICT=1200, OLLAMA_NUM_CTX=16384)."
+      }
+    },
+    {
+      "id": "ollama-rocm-grammar",
+      "title": "Ollama returns HTTP 500 for structured-output requests",
+      "logLines": 2774,
+      "parsedEntries": 2604,
+      "findings": 3,
+      "groundTruth": {
+        "cause": "Inference on Ollama's ROCm GPU backend produced corrupted output, so the JSON-schema grammar rejected it (\"Unexpected empty grammar stack\") and requests failed with HTTP 500; forcing the Vulkan backend (HIP_VISIBLE_DEVICES=-1) fixed it. The logs alone can't prove the backend is at fault: a good answer treats the grammar errors as a symptom of corrupted generation and proposes isolating it (another backend, the CPU, no schema) or looking the error up for this backend. The \"llama-server terminated\" lines are runners being stopped on model unload or restart, not crashes.",
+        "keyEvidence": [
+          "Unexpected empty grammar stack"
+        ],
+        "goodNextSteps": [
+          "Run the same request on another GPU backend (Vulkan via HIP_VISIBLE_DEVICES=-1) or on the CPU, to see whether the failures follow the ROCm backend",
+          "Retry without a JSON schema and check whether the raw output is corrupted (e.g. repeated \"0\") rather than just failing the grammar"
+        ],
+        "nextStepPatterns": [
+          "vulkan",
+          "hip_visible_devices",
+          "(another|other|different|alternative|switch\\w*|chang\\w*|fall\\s?back)\\s+(\\w+\\s+){0,2}backend",
+          "(another|other|different)\\s+gpu",
+          "\\b(on|with|using|to)\\s+(the\\s+)?cpu\\b",
+          "without\\s+(a\\s+|the\\s+)?(json\\s+)?(schema|format|grammar)",
+          "raw\\s+(model\\s+)?output",
+          "known\\s+(issue|bug)s?|bug\\s+report|issue\\s+tracker|github\\s+issues?",
+          "disabl\\w*\\s+(\\w+\\s+){0,3}(gpu|acceleration|structured|schema|grammar)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 3.4355952090000064,
+        "answer": {
+          "summary": "Ollama returns HTTP 500 errors due to either a parser stack failure during structured output or a llama-server crash from resource exhaustion, with the former being more directly linked to the observed grammar stack exceptions and the latter possibly a secondary effect of the initial failure or independent issue.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "A diagnostic log from the llama-server process showing the exact stack trace or internal state at the time of the grammar stack emptying event",
+            "A memory or resource usage metric (e.g., memory usage, CPU load) from the llama-server during the period 13:20:39 to 13:34:28 to determine if resource exhaustion contributed to the crash"
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The HTTP 500 errors are caused by a parsing failure in the grammar stack during structured output processing, which occurs when the parser accepts an input piece but fails to maintain a valid stack state, leading to an exception that propagates to the HTTP layer.",
+              "nextStep": "Retrieve the llama-server logs from the same time window as F1 and F2 (13:18:37 to 13:27:52) to inspect the internal parser state and identify where the grammar stack becomes empty.",
+              "evidenceIds": [
+                "F1",
+                "F2"
+              ]
+            },
+            {
+              "cause": "The HTTP 500 errors are triggered by the llama-server process terminating with exit status 1, which may be a consequence of a memory or resource exhaustion event that occurred after the initial parsing failure.",
+              "nextStep": "Check the system-level resource metrics (CPU, memory, disk) for the llama-server instance during the time of F3 to assess whether resource exhaustion preceded the termination.",
+              "evidenceIds": [
+                "F3"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "slot iterate: id <NUM> | task <NUM> | got exception: Unexpected empty grammar stack after accepting piece: <NUM> (<NUM>)",
+          "slot      iterate: id  0 | task 6802 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 351 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 739 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv send_error: task id = <NUM>, error: got exception: Unexpected empty grammar stack after accepting piece: <NUM> (<NUM>)",
+          "srv    send_error: task id = 6802, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv    send_error: task id = 351, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv    send_error: task id = 739, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "llama-server terminated error=\"exit status <NUM>\" exit=<NUM>",
+          "llama-server terminated error=\"exit status 1\" exit=1"
+        ],
+        "keyEvidence": {
+          "found": [
+            "Unexpected empty grammar stack"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": []
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            2,
+            1
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "Unexpected empty grammar stack"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.6666666666666666
+        },
+        "promptTokens": 1405,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 11.896150125,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Memory exhaustion in the prompt cache due to high token count and limited memory limits",
+              "evidence": [
+                "srv        update:    - cache state: 8 prompts, 5519.787 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+                "srv        update:  - cache state: 9 prompts, 6623.306 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+                "srv        update:  - cache state: 10 prompts, 7600.566 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+                "srv        update:  - cache state: 9 prompts, 8173.576 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+                "srv        update:  - cache state: 10 prompts, 7554.469 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+                "srv         alloc:  - making room for prompt cache entry, removing oldest entry (size = 4.533 MiB)",
+                "srv         alloc:  - making room for prompt cache entry, removing oldest entry (size = 504.569 MiB)"
+              ],
+              "nextStep": "Check the system's available RAM and verify if the AMD RX 7900 XT has sufficient VRAM and memory bandwidth to support Ollama's memory footprint. Monitor Ollama's memory usage with `htop` or `nvidia-smi` (if applicable) and confirm whether the memory limit of 8192 MiB is being exceeded during execution."
+            },
+            {
+              "cause": "GPU driver or hardware instability on the AMD RX 7900 XT causing malformed or corrupted model output",
+              "evidence": [
+                "slot      iterate: id  0 | task 2102 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+                "slot      iterate: id  0 | task 2109 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+                "slot      iterate: id  0 | task 2118 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+                "slot      iterate: id  0 | task 2127 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+                "srv    send_error: task id = 2102, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)"
+              ],
+              "nextStep": "Verify GPU driver compatibility and stability for the AMD RX 7900 XT by updating the GPU driver to the latest version. Run `glxinfo | grep "
+            }
+          ],
+          "summary": "The Ollama instance is experiencing memory pressure and potential GPU driver instability on the AMD RX 7900 XT. The prompt cache grows beyond its memory limit, leading to crashes or malformed outputs. Restarting Ollama temporarily resolves the issue, indicating a memory or hardware-level instability."
+        },
+        "promptTokens": 13294,
+        "cited": [
+          "srv        update:    - cache state: 8 prompts, 5519.787 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+          "srv        update:  - cache state: 9 prompts, 6623.306 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+          "srv        update:  - cache state: 10 prompts, 7600.566 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+          "srv        update:  - cache state: 9 prompts, 8173.576 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+          "srv        update:  - cache state: 10 prompts, 7554.469 MiB (limits: 8192.000 MiB, 8192 tokens, 52424 est)",
+          "srv         alloc:  - making room for prompt cache entry, removing oldest entry (size = 4.533 MiB)",
+          "srv         alloc:  - making room for prompt cache entry, removing oldest entry (size = 504.569 MiB)",
+          "slot      iterate: id  0 | task 2102 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 2109 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 2118 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 2127 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv    send_error: task id = 2102, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)"
+        ],
+        "nextStep": {
+          "matched": []
+        },
+        "truncated": true,
+        "keptFraction": 0.12362408965448439,
+        "keyEvidence": {
+          "found": [
+            "Unexpected empty grammar stack"
+          ],
+          "missing": []
+        }
+      }
+    },
+    {
+      "id": "redis-pool",
+      "title": "Users can't log in",
+      "logLines": 9,
+      "parsedEntries": 7,
+      "findings": 6,
+      "groundTruth": {
+        "cause": "The Redis connection pool was exhausted (100/100 connections), so session lookups first timed out and then were refused, which made authentication requests fail with HTTP 500.",
+        "keyEvidence": [
+          "connection pool",
+          "ECONNREFUSED",
+          "ETIMEDOUT"
+        ],
+        "goodNextSteps": [
+          "Check Redis client connection counts and pool configuration (max size, leaks from connections not being released)",
+          "Check Redis server health and maxclients"
+        ],
+        "nextStepPatterns": [
+          "pool\\s+(size|config\\w*|metrics|usage|settings|limit)",
+          "max(imum)?\\s+(pool\\s+)?(size|connections)",
+          "maxclients",
+          "connected_clients|info clients|client list",
+          "connection\\s+(count|leak|limit)s?|\\bleak",
+          "(active|open|current)\\s+connections"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 3.6150042079999984,
+        "answer": {
+          "summary": "Users cannot log in due to authentication failures in the auth-service, primarily caused by Redis connection issues stemming from either pool exhaustion or high latency from increased request volume. The root cause is likely a combination of connection pool saturation and elevated request load on Redis, leading to timeouts and failed authentication attempts.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2026-11-12T12:10:21.200Z",
+              "service": "auth-service",
+              "level": "warn",
+              "message": "auth-service: Redis response latency increased to 1500ms"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2026-11-12T12:10:24.100Z",
+              "service": "auth-service",
+              "level": "warn",
+              "message": "auth-service: Redis connection pool has reached maximum capacity"
+            }
+          ],
+          "missingEvidence": [
+            "The full Redis server logs from 10.0.0.9 showing connection attempts and rejection reasons during the incident window",
+            "Metrics from Redis showing request volume and response times during the incident to determine if there was a surge in session lookups"
+          ],
+          "diagnosticEvidence": [
+            {
+              "id": "D1",
+              "fileName": "diagnostic-test.txt",
+              "excerpt": "Redis diagnostic output\nConnection pool exhausted\nActive connections: 100\nMaximum connections: 100\nNew connections refused\n"
+            }
+          ],
+          "hypotheses": [
+            {
+              "cause": "The auth-service failed to authenticate users because it could not establish a Redis connection due to the connection pool being exhausted and Redis rejecting new connections with ECONNREFUSED.",
+              "nextStep": "Check the Redis server logs on 10.0.0.9 for connection attempts and rejection reasons between 2026-11-12T12:10:21Z and 2026-11-12T12:10:26Z to confirm if the server was overloaded or misconfigured.",
+              "evidenceIds": [
+                "F3",
+                "F4",
+                "F5",
+                "D1"
+              ]
+            },
+            {
+              "cause": "The auth-service experienced a temporary spike in session lookup requests, causing high Redis latency and timeouts, which led to authentication failures despite Redis being accessible.",
+              "nextStep": "Query Redis performance metrics for the period around 2026-11-12T12:10:21Z to verify if there was a spike in session lookup requests causing high latency and timeouts.",
+              "evidenceIds": [
+                "F6",
+                "F4",
+                "F1"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "auth-service: Redis connection refused: ECONNREFUSED <IP>:<NUM>",
+          "auth-service: Redis connection refused: ECONNREFUSED 10.0.0.9:6379",
+          "auth-service: Session lookup failed: ETIMEDOUT <IP>:<NUM>",
+          "auth-service: Session lookup failed: ETIMEDOUT 10.0.0.9:6379",
+          "auth-service: Redis connection pool has reached maximum capacity",
+          "Redis diagnostic output\nConnection pool exhausted\nActive connections: 100\nMaximum connections: 100\nNew connections refused\n",
+          "auth-service: Redis response latency increased to 1500ms",
+          "auth-service: Authentication request failed with HTTP <NUM>",
+          "auth-service: Authentication request failed with HTTP 500"
+        ],
+        "keyEvidence": {
+          "found": [
+            "connection pool",
+            "ECONNREFUSED",
+            "ETIMEDOUT"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": []
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            4,
+            3
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "connection pool",
+              "ECONNREFUSED",
+              "ETIMEDOUT"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.6666666666666666
+        },
+        "promptTokens": 1829,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 1.9783806660000118,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Redis connection pool exhaustion due to high concurrent login requests",
+              "evidence": [
+                "Active connections: 100\nMaximum connections: 100\nNew connections refused"
+              ],
+              "nextStep": "Check the login request volume during the incident period and correlate with Redis connection pool usage to determine if request rate exceeded capacity."
+            },
+            {
+              "cause": "Redis server unreachable or unresponsive at 10.0.0.9:6379",
+              "evidence": [
+                "auth-service: Redis response latency increased to 1500ms",
+                "auth-service: Session lookup failed: ETIMEDOUT 10.0.0.9:6379",
+                "auth-service: Redis connection refused: ECONNREFUSED 10.0.0.9:6379"
+              ],
+              "nextStep": "Verify the health and availability of the Redis server at 10.0.0.9:6379 using a direct ping or telnet command from the auth-service host."
+            }
+          ],
+          "summary": "The login failures are likely caused by either Redis connection pool exhaustion or Redis server unavailability. Both are supported by log evidence and are common in high-load scenarios. Immediate diagnostics should focus on request volume and Redis server health."
+        },
+        "promptTokens": 549,
+        "cited": [
+          "Active connections: 100\nMaximum connections: 100\nNew connections refused",
+          "auth-service: Redis response latency increased to 1500ms",
+          "auth-service: Session lookup failed: ETIMEDOUT 10.0.0.9:6379",
+          "auth-service: Redis connection refused: ECONNREFUSED 10.0.0.9:6379"
+        ],
+        "nextStep": {
+          "matched": [
+            "pool\\s+(size|config\\w*|metrics|usage|settings|limit)"
+          ]
+        },
+        "truncated": false,
+        "keptFraction": 1,
+        "keyEvidence": {
+          "found": [
+            "connection pool",
+            "ECONNREFUSED",
+            "ETIMEDOUT"
+          ],
+          "missing": []
+        }
+      }
+    }
+  ]
+}

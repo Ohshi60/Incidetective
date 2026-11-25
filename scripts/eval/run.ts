@@ -41,6 +41,7 @@ import {
   baselineSystemPrompt,
   buildBaselineInput,
   keyEvidenceHits,
+  nextStepHits,
   parseCase,
   renderMarkdown,
   type BaselineAnswer,
@@ -215,6 +216,10 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
           answer: investigation,
           cited: [...new Set(cited.filter((text) => !causes.has(text)))],
           keyEvidence: keyEvidenceHits(evalCase.groundTruth.keyEvidence, cited),
+          nextStep: nextStepHits(
+            evalCase.groundTruth.nextStepPatterns,
+            investigation.hypotheses.map((h) => h.nextStep),
+          ),
           focus: appEvidenceFocus(
             report,
             investigation,
@@ -268,6 +273,12 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
           ? { promptTokens: chat.promptTokens }
           : {}),
         cited: [...new Set(hypotheses.flatMap((h) => h.evidence ?? []))],
+        nextStep: nextStepHits(
+          evalCase.groundTruth.nextStepPatterns,
+          hypotheses.map((h) =>
+            typeof h.nextStep === "string" ? h.nextStep : "",
+          ),
+        ),
         truncated: input.truncated,
         keptFraction: input.keptFraction,
         keyEvidence: keyEvidenceHits(

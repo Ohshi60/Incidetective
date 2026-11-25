@@ -6,6 +6,7 @@ import {
   appEvidenceFocus,
   buildBaselineInput,
   keyEvidenceHits,
+  nextStepHits,
   parseCase,
 } from "../scripts/eval/lib.js";
 import type { AIInvestigation } from "../shared/types/analysis.js";
@@ -215,5 +216,20 @@ describe("appEvidenceFocus", () => {
     );
     expect(focus.topKeyEvidence.missing).toEqual(["DiskErrorException"]);
     expect(focus.keyShare).toBe(0.5);
+  });
+});
+
+describe("nextStepHits", () => {
+  it("matches patterns case-insensitively against any next step", () => {
+    expect(
+      nextStepHits(
+        ["vulkan", String.raw`\bping\b`],
+        ["Retry with Vulkan", "Check memory usage"],
+      ),
+    ).toEqual({ matched: ["vulkan"] });
+  });
+
+  it("matches nothing when no step fits", () => {
+    expect(nextStepHits(["vulkan"], ["Check logs"])).toEqual({ matched: [] });
   });
 });

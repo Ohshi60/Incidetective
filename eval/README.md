@@ -26,7 +26,7 @@ Score each answer by hand in the `.md` file, 0–2 per column:
 - **Evidence:** cites the lines that prove it.
 - **Next step:** gives a concrete check that would confirm it.
 
-The "key evidence cited" line is an automatic hint: it checks whether the cited evidence contains the case's `groundTruth.keyEvidence` strings. For the app, three more hints show how focused the citations are: **IDs per hypothesis** (fewer is easier to read), **key evidence in hypothesis 1** (whether the leading hypothesis alone cites the proof), and **cited IDs with key evidence** (the share of cited IDs that contain it; a rough measure of noise, since other cited lines can still be relevant). Commit scored results with the PR that changes the analysis, as evidence that the change helped.
+The "key evidence cited" line is an automatic hint: it checks whether the cited evidence contains the case's `groundTruth.keyEvidence` strings. **Useful next step** checks each answer's next steps against the case's `groundTruth.nextStepPatterns`: regular expressions for steps that would really help, e.g. "ping node 04DN8IQ" or "retry on another GPU backend". This matters most where the logs can't prove the cause and the right answer is how to isolate it (`ollama-rocm-grammar`). For the app, three more hints show how focused the citations are: **IDs per hypothesis** (fewer is easier to read), **key evidence in hypothesis 1** (whether the leading hypothesis alone cites the proof), and **cited IDs with key evidence** (the share of cited IDs that contain it; a rough measure of noise, since other cited lines can still be relevant). Commit scored results with the PR that changes the analysis, as evidence that the change helped.
 
 ## Cases
 
@@ -38,6 +38,7 @@ The "key evidence cited" line is an automatic hint: it checks whether the cited 
 | `hadoop-network-large` | Loghub Hadoop | ~100,000 lines | Node disconnected; AM can't reach the ResourceManager |
 | `hadoop-machine-down` | Loghub Hadoop | ~4,200 lines | Node down; attempts killed on an unusable node (INFO lines only) |
 | `hadoop-machine-down-pagerank` | Loghub Hadoop | ~3,900 lines | Node down; 624 INFO "Retrying connect to server" lines |
+| `ollama-rocm-grammar` | Real: the author's desktop | ~2,800 lines (two Ollama server logs) | Ollama's ROCm GPU backend corrupted output, so JSON-schema requests failed; "llama-server terminated" lines are unloads, not crashes |
 
 Add a case with a folder containing `case.json` (see the existing ones) and its log files. A case with a `source` downloads its logs into `data/`, which is gitignored.
 

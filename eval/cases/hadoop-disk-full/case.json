@@ -8,14 +8,26 @@
     "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
     "path": "application_1445182159119_0002"
   },
-  "logs": ["data/"],
+  "logs": [
+    "data/"
+  ],
   "diagnostics": [],
   "groundTruth": {
     "cause": "The local disk on one cluster node filled up, so map tasks running there could not write their output (no valid local directory) and had to be killed and re-run on other nodes.",
-    "keyEvidence": ["DiskErrorException", "Could not find any valid local directory"],
+    "keyEvidence": [
+      "DiskErrorException",
+      "Could not find any valid local directory"
+    ],
     "goodNextSteps": [
       "Check free disk space on the node's YARN local directories (df on yarn.nodemanager.local-dirs)",
       "Check which node the failed attempts ran on and whether YARN marked its disks unhealthy"
+    ],
+    "nextStepPatterns": [
+      "\\bdf\\b",
+      "(free|available|remaining)\\s+(disk\\s+)?space",
+      "disk\\s+(space|usage|capacity)",
+      "local[- ]dirs",
+      "disks?\\b.{0,30}\\bunhealthy|unhealthy\\b.{0,30}\\bdisks?"
     ]
   },
   "notes": "Loghub Hadoop run with an injected disk-full failure. The run has no ERROR lines: the evidence is in WARN lines and one FATAL."
