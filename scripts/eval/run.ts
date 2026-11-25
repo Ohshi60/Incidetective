@@ -22,12 +22,15 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import type { LogEntry } from "../../shared/types/evidence.js";
 import type { Incident } from "../../shared/types/incident.js";
-import { investigateWithAI } from "../../src/ai/investigate.js";
-import { OLLAMA_NUM_CTX, ollamaJsonChat } from "../../src/ai/ollama.js";
+import {
+  investigateWithAI,
+  type InvestigationUsage,
+} from "../../src/ai/investigate.js";
+import { evidenceBudgetChars } from "../../src/ai/investigation-input.js";
+import { ollamaJsonChat, ollamaSettings } from "../../src/ai/ollama.js";
 import { generateReport } from "../../src/analysis/reports/generate-report.js";
 import { parseLogContent } from "../../src/evidence/log-ingestion.js";
 import {
-  CHARS_PER_TOKEN,
   appCitedText,
   baselineCitedText,
   baselineSchema,
@@ -60,7 +63,8 @@ if (args.only && args.only !== "app" && args.only !== "baseline") {
   throw new Error('--only must be "app" or "baseline"');
 }
 
-const model = args.model ?? process.env.OLLAMA_MODEL ?? "qwen3:4b-instruct";
+const settings = ollamaSettings();
+const model = args.model ?? settings.model;
 
 function log(message: string) {
   process.stderr.write(`${message}\n`);
@@ -100,7 +104,14 @@ function ensureData(evalCase: EvalCase) {
 
   const extractDir = join(cacheDir, source.dataset);
   if (!existsSync(join(extractDir, source.path))) {
-    execFileSync("unzip", ["-q", "-o", zipPath, `${source.path}/*`, "-d", extractDir]);
+    execFileSync("unzip", [
+      "-q",
+      "-o",
+      zipPath,
+      `${source.path}/*`,
+      "-d",
+      extractDir,
+    ]);
   }
 
   mkdirSync(dataDir, { recursive: true });
@@ -180,11 +191,17 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
     } else {
       log(`  app ...`);
       try {
+        let usage: InvestigationUsage | undefined;
         const [investigation, seconds] = await timed(() =>
-          investigateWithAI(report, logs, diagnosticFiles.map((f) => ({
-            fileName: f.name,
-            content: f.content,
-          })), { model }),
+          investigateWithAI(
+            report,
+            logs,
+            diagnosticFiles.map((f) => ({
+              fileName: f.name,
+              content: f.content,
+            })),
+            { model, onUsage: (u) => (usage = u) },
+          ),
         );
         const cited = appCitedText(report, investigation);
         const causes = new Set(investigation.hypotheses.map((h) => h.cause));
@@ -194,6 +211,10 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
           answer: investigation,
           cited: [...new Set(cited.filter((text) => !causes.has(text)))],
           keyEvidence: keyEvidenceHits(evalCase.groundTruth.keyEvidence, cited),
+          ...(usage?.promptTokens !== undefined
+            ? { promptTokens: usage.promptTokens }
+            : {}),
+          ...(usage ? { omitted: usage.omitted } : {}),
         };
       } catch (error) {
         result.app = errorResult(error);
@@ -203,8 +224,8 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
 
   if (args.only !== "app") {
     log(`  baseline ...`);
-    // Leave room for the system prompt and the answer.
-    const maxChars = (OLLAMA_NUM_CTX - 1200 - 300) * CHARS_PER_TOKEN;
+    // Same budget rule as the app: what's left after the prompt and answer.
+    const maxChars = evidenceBudgetChars(settings, baselineSystemPrompt);
     const input = buildBaselineInput(
       evalCase,
       [...diagnosticFiles, ...logFiles],
@@ -212,19 +233,27 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
     );
     try {
       const [chat, seconds] = await timed(() =>
-        ollamaJsonChat({
-          model,
-          schema: baselineSchema,
-          system: baselineSystemPrompt,
-          user: input.text,
-        }),
+        ollamaJsonChat(
+          {
+            model,
+            schema: baselineSchema,
+            system: baselineSystemPrompt,
+            user: input.text,
+          },
+          settings,
+        ),
       );
       const answer = chat.json as BaselineAnswer;
-      const hypotheses = Array.isArray(answer.hypotheses) ? answer.hypotheses : [];
+      const hypotheses = Array.isArray(answer.hypotheses)
+        ? answer.hypotheses
+        : [];
       result.baseline = {
         status: "ok",
         seconds,
         answer,
+        ...(chat.promptTokens !== undefined
+          ? { promptTokens: chat.promptTokens }
+          : {}),
         cited: [...new Set(hypotheses.flatMap((h) => h.evidence ?? []))],
         truncated: input.truncated,
         keptFraction: input.keptFraction,
@@ -242,12 +271,14 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
 }
 
 async function checkOllama() {
-  const baseUrl = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
+  const { baseUrl } = settings;
   try {
-    const response = await fetch(`${baseUrl.replace(/\/$/, "")}/api/tags`, {
+    const response = await fetch(`${baseUrl}/api/tags`, {
       signal: AbortSignal.timeout(5000),
     });
-    const { models } = (await response.json()) as { models: { name: string }[] };
+    const { models } = (await response.json()) as {
+      models: { name: string }[];
+    };
     if (!models.some((m) => m.name === model)) {
       throw new Error(
         `model "${model}" is not pulled on ${baseUrl}. Available: ${models.map((m) => m.name).join(", ") || "none"}`,
@@ -267,7 +298,7 @@ await checkOllama();
 const run: RunResult = {
   date: new Date().toISOString(),
   model,
-  numCtx: OLLAMA_NUM_CTX,
+  numCtx: settings.numCtx,
   cases: [],
 };
 
@@ -278,7 +309,10 @@ for (const evalCase of cases) {
 
 mkdirSync(resultsDir, { recursive: true });
 const stamp = run.date.slice(0, 16).replace(/[:T]/g, "-");
-const base = join(resultsDir, `${stamp}-${model.replace(/[^a-z0-9.-]+/gi, "_")}`);
+const base = join(
+  resultsDir,
+  `${stamp}-${model.replace(/[^a-z0-9.-]+/gi, "_")}-ctx${settings.numCtx}`,
+);
 writeFileSync(`${base}.json`, JSON.stringify(run, null, 2) + "\n");
 writeFileSync(`${base}.md`, renderMarkdown(run));
 log(`Wrote ${base}.md and ${base}.json`);

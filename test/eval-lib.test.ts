@@ -65,7 +65,9 @@ describe("buildBaselineInput", () => {
     expect(input.text).toContain("earlier log lines omitted");
     expect(input.text.trimEnd().endsWith("line 99")).toBe(true);
     // No partial first line after the cut.
-    const afterMarker = input.text.split("omitted to fit the model's context ...]\n")[1];
+    const afterMarker = input.text.split(
+      "omitted to fit the model's context ...]\n",
+    )[1];
     expect(afterMarker).toMatch(/^line \d+\n/);
   });
 });
@@ -75,7 +77,10 @@ describe("keyEvidenceHits", () => {
     expect(
       keyEvidenceHits(
         ["DiskErrorException", "valid local directory", "NoRouteToHost"],
-        ["exited: org.apache.hadoop.util.DiskChecker$DiskErrorException", "Could not find any VALID LOCAL DIRECTORY"],
+        [
+          "exited: org.apache.hadoop.util.DiskChecker$DiskErrorException",
+          "Could not find any VALID LOCAL DIRECTORY",
+        ],
       ),
     ).toEqual({
       found: ["DiskErrorException", "valid local directory"],
@@ -100,20 +105,34 @@ describe("appCitedText", () => {
           occurrences: 2,
           firstSeen: "",
           lastSeen: "",
-          evidence: [{ timestamp: "", message: "Session lookup failed: ETIMEDOUT" }],
+          evidence: [
+            { timestamp: "", message: "Session lookup failed: ETIMEDOUT" },
+          ],
         },
       ],
     };
     const investigation: AIInvestigation = {
       summary: "",
       hypotheses: [
-        { cause: "Redis pool exhausted", evidenceIds: ["F1", "C1", "D1", "F9"], nextStep: "" },
+        {
+          cause: "Redis pool exhausted",
+          evidenceIds: ["F1", "C1", "D1", "F9"],
+          nextStep: "",
+        },
       ],
       contextEvidence: [
-        { id: "C1", timestamp: "", service: "s", level: "warn", message: "pool at max" },
+        {
+          id: "C1",
+          timestamp: "",
+          service: "s",
+          level: "warn",
+          message: "pool at max",
+        },
       ],
       missingEvidence: [],
-      diagnosticEvidence: [{ id: "D1", fileName: "d.txt", excerpt: "100/100 connections" }],
+      diagnosticEvidence: [
+        { id: "D1", fileName: "d.txt", excerpt: "100/100 connections" },
+      ],
     };
 
     expect(appCitedText(report, investigation)).toEqual([
