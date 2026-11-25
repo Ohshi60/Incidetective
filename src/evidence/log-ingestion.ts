@@ -1,11 +1,13 @@
 import { batchInsertLogs } from "./evidence-store.js";
 import { parseJsonL, type ImportedLog } from "./log-import.js";
 import { getIncident } from "../incidents/incident-store.js";
+import { isLogfmtLine, parseLogfmtLog } from "./logfmt-log-import.js";
 import { parseTextLog } from "./text-log-import.js";
 
 /**
  * Parse an uploaded log file, choosing the parser from the first non-empty
- * line: JSON objects (JSONL / Pino) or timestamped text. Lines without their
+ * line: JSON objects (JSONL / Pino), logfmt starting with `time=` (Go's slog,
+ * logrus, Ollama), or timestamped text. Lines without their
  * own service name get `defaultService`. Throws LogImportError on bad input.
  */
 export function parseLogContent(
@@ -21,9 +23,9 @@ export function parseLogContent(
     return [];
   }
 
-  return firstLine.startsWith("{")
-    ? parseJsonL(content, defaultService)
-    : parseTextLog(content, defaultService);
+  if (firstLine.startsWith("{")) return parseJsonL(content, defaultService);
+  if (isLogfmtLine(firstLine)) return parseLogfmtLog(content, defaultService);
+  return parseTextLog(content, defaultService);
 }
 
 export async function ingestLogs(
