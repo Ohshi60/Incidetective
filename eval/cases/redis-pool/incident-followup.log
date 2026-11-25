@@ -1,0 +1,3 @@
+[2026-11-12 13:10:24.100 +01:00] [WRN] [101] auth-service: Redis connection pool has reached maximum capacity
+[2026-11-12 13:10:25.200 +01:00] [ERR] [101] auth-service: Redis connection refused: ECONNREFUSED 10.0.0.9:6379
+[2026-11-12 13:10:26.300 +01:00] [ERR] [101] auth-service: Failed to acquire Redis connection after 3000ms

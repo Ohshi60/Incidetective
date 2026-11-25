@@ -24,7 +24,10 @@ npm test                        # vitest run
 npx vitest run test/error-grouping.test.ts   # single file
 npx vitest run -t "creates incident"         # single test by name
 npx tsx scripts/seed.ts         # seed 3 demo incidents via the running API (append-only; never against prod)
+npm run eval                    # app vs raw-paste baseline on eval/cases (needs Ollama, no DB); see eval/README.md
 ```
+
+Changes to the analysis or AI prompt should be measured with `npm run eval` before and after, on the same model. Keep a change only if it scores better. The goal is output that beats pasting the raw logs into the same model.
 
 Frontend (`web/`): `npm run dev`, `npm run build` (`tsc -b && vite build`), `npm run lint` (ESLint).
 
@@ -44,10 +47,10 @@ Production: `docker compose -f compose.prod.yaml up -d --build` runs postgres, t
 
 Request flow (all routes are in `src/app.ts`; `src/server.ts` only listens):
 
-1. **Ingestion**: `POST /incidents/:id/logs/import` (multipart, 1 MiB, one file) → `src/evidence/log-ingestion.ts`. It picks the parser by sniffing the first non-empty line: `{` → `parseJsonL` (`log-import.ts`, JSONL/Pino), otherwise `parseTextLog` (`text-log-import.ts`, timestamped text). Parsers default `service` to the incident's service and normalize to `LogEntry`. Parse failures throw `LogImportError` with a line number, which becomes a 400.
+1. **Ingestion**: `POST /incidents/:id/logs/import` (multipart, 1 MiB, one file) → `src/evidence/log-ingestion.ts`. `parseLogContent` picks the parser by sniffing the first non-empty line: `{` → `parseJsonL` (`log-import.ts`, JSONL/Pino), otherwise `parseTextLog` (`text-log-import.ts`, timestamped text; timestamps without a timezone are read as UTC). Parsers default `service` to the incident's service and normalize to `LogEntry`. Parse failures throw `LogImportError` with a line number, which becomes a 400.
 2. **Storage**: `src/db/schema.ts` has three tables: `incidents`, `logs`, `diagnostic_evidence`. Children cascade on incident delete. Timestamps use `mode: "string"`, so code compares ISO strings with `localeCompare` instead of using `Date`. Data access goes through the `*-store.ts` modules.
 3. **Deterministic analysis**: `analyseIncident` (`src/analysis/incident-analysis.ts`) computes counts and the time range, then calls `groupErrors` (`error-grouping.ts`). `groupErrors` keeps one Drain `TemplateMiner` per `[service, errorCodes]` key, so errors with different Node error codes (ECONNREFUSED, ETIMEDOUT…) never merge. Codes that Drain masked are appended back to the pattern. `generateReport` (`analysis/reports/generate-report.ts`) turns the error groups into `findings`.
-4. **AI investigation**: `POST /incidents/:id/ai-investigation` → `src/ai/investigate.ts`. It builds evidence with stable IDs and makes one non-streaming Ollama `/api/chat` call with a JSON-schema `format`:
+4. **AI investigation**: `POST /incidents/:id/ai-investigation` → `src/ai/investigate.ts`. It builds evidence with stable IDs and makes one structured-output call through `src/ai/ollama.ts`, the only file that talks to Ollama:
    - `F1..F5`: the top 5 findings
    - `C1..C12`: `warn` logs from up to 5 minutes before any error
    - `D1..D2`: the last 2 uploaded diagnostic files, truncated head/tail
