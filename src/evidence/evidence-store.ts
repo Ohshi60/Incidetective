@@ -38,7 +38,15 @@ export async function fetchIncidentLogs(
   return result.map(toLogEntry);
 }
 
-export async function batchInsertLogs(logArray: LogEntry[]) {
-  const result = await db.insert(logs).values(logArray);
-  return result;
+// PostgreSQL allows at most 65,535 bind parameters per statement, and each
+// row uses 5, so large files are inserted in chunks.
+const INSERT_CHUNK_ROWS = 1000;
+
+/** Insert all entries, or none if any chunk fails. */
+export async function batchInsertLogs(logArray: LogEntry[]): Promise<void> {
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < logArray.length; i += INSERT_CHUNK_ROWS) {
+      await tx.insert(logs).values(logArray.slice(i, i + INSERT_CHUNK_ROWS));
+    }
+  });
 }

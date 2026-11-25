@@ -92,7 +92,18 @@ export async function ollamaJsonChat(
   });
 
   if (!response.ok) {
-    throw new Error(`Ollama error: HTTP ${response.status}`);
+    // Ollama explains the problem in the body, e.g. a prompt that exceeds
+    // the context window.
+    const body = await response.text().catch(() => "");
+    let detail = body.trim();
+    try {
+      detail = (JSON.parse(body) as { error?: string }).error ?? detail;
+    } catch {
+      // Not JSON; use the raw text.
+    }
+    throw new Error(
+      `Ollama error: HTTP ${response.status}${detail ? `: ${detail.slice(0, 300)}` : ""}`,
+    );
   }
 
   const data = (await response.json()) as {
