@@ -64,3 +64,18 @@ export const diagnosticEvidence = pgTable("diagnostic_evidence", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * What the user knows about a service's setup (versions, hardware, what's
+ * normal), sent to the AI with every investigation of that service.
+ */
+export const serviceNotes = pgTable("service_notes", {
+  service: varchar("service", { length: 255 }).primaryKey(),
+  notes: text("notes").notNull(),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "string",
+  })
+    .notNull()
+    .defaultNow(),
+});

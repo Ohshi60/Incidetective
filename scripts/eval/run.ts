@@ -35,6 +35,7 @@ import { generateReport } from "../../src/analysis/reports/generate-report.js";
 import { parseLogContent } from "../../src/evidence/log-ingestion.js";
 import {
   appCitedText,
+  appEvidenceText,
   appEvidenceFocus,
   baselineCitedText,
   baselineSchema,
@@ -43,6 +44,7 @@ import {
   keyEvidenceHits,
   nextStepHits,
   parseCase,
+  redHerringCheck,
   renderMarkdown,
   shrinkToFit,
   type BaselineAnswer,
@@ -206,7 +208,13 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
               fileName: f.name,
               content: f.content,
             })),
-            { model, onUsage: (u) => (usage = u) },
+            {
+              model,
+              onUsage: (u) => (usage = u),
+              ...(evalCase.setupNotes
+                ? { setupNotes: evalCase.setupNotes }
+                : {}),
+            },
           ),
         );
         const cited = appCitedText(report, investigation);
@@ -221,6 +229,25 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
             evalCase.groundTruth.nextStepPatterns,
             investigation.hypotheses.map((h) => h.nextStep),
           ),
+          ...(evalCase.groundTruth.redHerrings
+            ? {
+                redHerring: redHerringCheck(
+                  evalCase.groundTruth.redHerrings,
+                  investigation.hypotheses.map((h) => [
+                    h.cause,
+                    ...h.evidenceIds.flatMap((id) =>
+                      appEvidenceText(report, investigation, id),
+                    ),
+                  ]),
+                  investigation.ruledOut.flatMap((r) => [
+                    r.reason,
+                    ...r.evidenceIds.flatMap((id) =>
+                      appEvidenceText(report, investigation, id),
+                    ),
+                  ]),
+                ),
+              }
+            : {}),
           focus: appEvidenceFocus(
             report,
             investigation,
@@ -298,6 +325,17 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
             typeof h.nextStep === "string" ? h.nextStep : "",
           ),
         ),
+        ...(evalCase.groundTruth.redHerrings
+          ? {
+              redHerring: redHerringCheck(
+                evalCase.groundTruth.redHerrings,
+                hypotheses.map((h) => [
+                  typeof h.cause === "string" ? h.cause : "",
+                  ...(h.evidence ?? []),
+                ]),
+              ),
+            }
+          : {}),
         truncated: input.truncated,
         keptFraction: input.keptFraction,
         keyEvidence: keyEvidenceHits(

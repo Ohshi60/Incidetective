@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { investigateWithAI } from "../src/ai/investigate.js";
+import { investigateWithAI, settleRuledOut } from "../src/ai/investigate.js";
 import type { InvestigationReport } from "../shared/types/report.js";
 
 const report: InvestigationReport = {
@@ -163,5 +163,39 @@ describe("investigateWithAI", () => {
     expect(body.options.num_ctx).toBe(8192);
     expect(body.options.num_thread).toBeUndefined();
     vi.unstubAllEnvs();
+  });
+});
+
+describe("settleRuledOut", () => {
+  const h = (evidenceIds: string[]) => ({
+    cause: "c",
+    nextStep: "n",
+    evidenceIds,
+  });
+
+  it("drops a later hypothesis resting only on ruled-out evidence", () => {
+    const result = settleRuledOut(
+      [h(["F1"]), h(["F2"]), h(["F2", "F3"])],
+      [{ evidenceIds: ["F2"], reason: "routine" }],
+    );
+
+    expect(result.hypotheses.map((x) => x.evidenceIds)).toEqual([
+      ["F1"],
+      ["F2", "F3"],
+    ]);
+    expect(result.ruledOut).toHaveLength(1);
+  });
+
+  it("lets the leading hypothesis win over a contradicting ruling-out", () => {
+    const result = settleRuledOut(
+      [h(["F1", "F2"]), h(["F3"])],
+      [
+        { evidenceIds: ["F1"], reason: "contradicts hypothesis 1" },
+        { evidenceIds: ["F3"], reason: "shutdown noise" },
+      ],
+    );
+
+    expect(result.ruledOut.map((r) => r.reason)).toEqual(["shutdown noise"]);
+    expect(result.hypotheses.map((x) => x.evidenceIds)).toEqual([["F1", "F2"]]);
   });
 });

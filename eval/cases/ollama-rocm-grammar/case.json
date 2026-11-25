@@ -27,7 +27,11 @@
       "raw\\s+(model\\s+)?output",
       "known\\s+(issue|bug)s?|bug\\s+report|issue\\s+tracker|github\\s+issues?",
       "disabl\\w*\\s+(\\w+\\s+){0,3}(gpu|acceleration|structured|schema|grammar)"
+    ],
+    "redHerrings": [
+      "llama-server terminated"
     ]
   },
-  "notes": "Real incident on the author's desktop, 25 November 2026: Ollama 0.40.18 on Windows 11, RX 7900 XT, ROCm 7.1 backend. Two server logs covering 14:18–14:34 local time. Every line in these files is at INFO except the grammar errors and the runner terminations. The cause was confirmed by experiment (switching to Vulkan), not from the logs, so the next step carries this case: nextStepPatterns accept isolating the backend or looking the error up. Sending rare INFO patterns (which mention ROCm) was tried and didn't help, with qwen3:4b-instruct or qwen3:14b."
+  "notes": "Real incident on the author's desktop, 25 November 2026: Ollama 0.40.18 on Windows 11, RX 7900 XT, ROCm 7.1 backend. Two server logs covering 14:18–14:34 local time. Every line in these files is at INFO except the grammar errors and the runner terminations. The cause was confirmed by experiment (switching to Vulkan), not from the logs, so the next step carries this case: nextStepPatterns accept isolating the backend or looking the error up. Sending rare INFO patterns (which mention ROCm) was tried and didn't help, with qwen3:4b-instruct or qwen3:14b.",
+  "setupNotes": "Ollama 0.40.18 on a Windows 11 desktop with an AMD Radeon RX 7900 XT (20 GB). Ollama uses the GPU through AMD's ROCm backend. Models are switched often (qwen3:4b-instruct and qwen3:14b), and unloading a model stops its llama-server runner."
 }

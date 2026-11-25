@@ -13,6 +13,11 @@ import { ingestLogs } from "./evidence/log-ingestion.js";
 import { LogImportError } from "./evidence/log-import.js";
 import { investigateWithAI } from "./ai/investigate.js";
 import {
+  MAX_SERVICE_NOTES_CHARS,
+  getServiceNotes,
+  setServiceNotes,
+} from "./services/service-notes-store.js";
+import {
   addDiagnosticEvidence,
   fetchDiagnosticEvidence,
 } from "./evidence/diagnostic-store.js";
@@ -231,8 +236,12 @@ export function buildApp() {
         });
       }
 
+      const setupNotes = await getServiceNotes(incident.service);
+
       try {
-        return await investigateWithAI(report, logs, diagnostics);
+        return await investigateWithAI(report, logs, diagnostics, {
+          setupNotes,
+        });
       } catch (error) {
         req.log.error(error, "AI investigation failed");
 
@@ -240,6 +249,34 @@ export function buildApp() {
           error: "AI investigation failed",
         });
       }
+    },
+  );
+
+  app.get<{ Params: { service: string } }>(
+    "/services/:service/notes",
+    async (req) => ({
+      service: req.params.service,
+      notes: await getServiceNotes(req.params.service),
+    }),
+  );
+
+  app.put<{ Params: { service: string }; Body: { notes: string } }>(
+    "/services/:service/notes",
+    {
+      schema: {
+        body: {
+          type: "object",
+          required: ["notes"],
+          additionalProperties: false,
+          properties: {
+            notes: { type: "string", maxLength: MAX_SERVICE_NOTES_CHARS },
+          },
+        },
+      },
+    },
+    async (req) => {
+      await setServiceNotes(req.params.service, req.body.notes);
+      return { service: req.params.service, notes: req.body.notes };
     },
   );
 

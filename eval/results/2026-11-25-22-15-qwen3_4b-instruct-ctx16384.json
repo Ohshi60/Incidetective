@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-25T22:15:16.082Z",
+  "model": "qwen3:4b-instruct",
+  "numCtx": 16384,
+  "cases": [
+    {
+      "id": "ollama-rocm-grammar",
+      "title": "Ollama returns HTTP 500 for structured-output requests",
+      "logLines": 2774,
+      "parsedEntries": 2604,
+      "findings": 3,
+      "groundTruth": {
+        "cause": "Inference on Ollama's ROCm GPU backend produced corrupted output, so the JSON-schema grammar rejected it (\"Unexpected empty grammar stack\") and requests failed with HTTP 500; forcing the Vulkan backend (HIP_VISIBLE_DEVICES=-1) fixed it. The logs alone can't prove the backend is at fault: a good answer treats the grammar errors as a symptom of corrupted generation and proposes isolating it (another backend, the CPU, no schema) or looking the error up for this backend. The \"llama-server terminated\" lines are runners being stopped on model unload or restart, not crashes.",
+        "keyEvidence": [
+          "Unexpected empty grammar stack"
+        ],
+        "goodNextSteps": [
+          "Run the same request on another GPU backend (Vulkan via HIP_VISIBLE_DEVICES=-1) or on the CPU, to see whether the failures follow the ROCm backend",
+          "Retry without a JSON schema and check whether the raw output is corrupted (e.g. repeated \"0\") rather than just failing the grammar"
+        ],
+        "nextStepPatterns": [
+          "vulkan",
+          "hip_visible_devices",
+          "(another|other|different|alternative|switch\\w*|chang\\w*|fall\\s?back)\\s+(\\w+\\s+){0,2}backend",
+          "(another|other|different)\\s+gpu",
+          "\\b(on|with|using|to)\\s+(the\\s+)?cpu\\b",
+          "without\\s+(a\\s+|the\\s+)?(json\\s+)?(schema|format|grammar)",
+          "raw\\s+(model\\s+)?output",
+          "known\\s+(issue|bug)s?|bug\\s+report|issue\\s+tracker|github\\s+issues?",
+          "disabl\\w*\\s+(\\w+\\s+){0,3}(gpu|acceleration|structured|schema|grammar)"
+        ],
+        "redHerrings": [
+          "llama-server terminated"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 3.966909458,
+        "answer": {
+          "summary": "Ollama returns HTTP 500 for structured-output requests due to either parsing errors in input syntax or backend process failures during model handling, with the former being more directly tied to the observed error messages.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "A raw request payload from a structured-output request that triggered the error, to verify input format or structure.",
+            "The output of the llama-server logs or crash dump from the termination at 2026-11-25T13:20:39Z to identify the root cause of the exit status 1."
+          ],
+          "diagnosticEvidence": [],
+          "ruledOut": [
+            {
+              "evidenceIds": [
+                "F3"
+              ],
+              "reason": "The 'llama-server terminated' error occurs after the parsing errors (F1/F2), so it is more likely a consequence than a cause of the HTTP 500, and thus not the primary origin of the structured-output failure."
+            }
+          ],
+          "hypotheses": [
+            {
+              "cause": "The repeated 'Unexpected empty grammar stack' errors in F1 and F2 indicate a parsing failure in the structured output handling, likely due to malformed or incomplete input during model generation, which propagates to an HTTP 500 response via the server error chain.",
+              "nextStep": "Retrieve and inspect a raw request payload from a structured-output request that occurred between 2026-11-25T13:18:37Z and 2026-11-25T13:27:52Z to determine if the input contains malformed or incomplete syntax.",
+              "evidenceIds": [
+                "F1",
+                "F2"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "slot iterate: id <NUM> | task <NUM> | got exception: Unexpected empty grammar stack after accepting piece: <NUM> (<NUM>)",
+          "slot      iterate: id  0 | task 6802 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 351 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "slot      iterate: id  0 | task 739 | got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv send_error: task id = <NUM>, error: got exception: Unexpected empty grammar stack after accepting piece: <NUM> (<NUM>)",
+          "srv    send_error: task id = 6802, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv    send_error: task id = 351, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)",
+          "srv    send_error: task id = 739, error: got exception: Unexpected empty grammar stack after accepting piece: 0 (15)"
+        ],
+        "keyEvidence": {
+          "found": [
+            "Unexpected empty grammar stack"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": []
+        },
+        "redHerring": {
+          "blamedBy": 0,
+          "ruledOut": true
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            2
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "Unexpected empty grammar stack"
+            ],
+            "missing": []
+          },
+          "keyShare": 1
+        },
+        "promptTokens": 1647,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      }
+    },
+    {
+      "id": "coolify-port-conflict",
+      "title": "Deploying Incidetective on Coolify fails",
+      "logLines": 740,
+      "parsedEntries": 740,
+      "findings": 2,
+      "groundTruth": {
+        "cause": "The web container publishes host port 8080, which another app on the same Coolify server (the Night City dashboard) already uses, so Docker could not start it: \"Bind for 0.0.0.0:8080 failed: port is already allocated\". Postgres and the API started fine; the leading \"Error:\" lines are Docker Compose's normal progress output on stderr.",
+        "keyEvidence": [
+          "port is already allocated",
+          "0.0.0.0:8080"
+        ],
+        "goodNextSteps": [
+          "Find what already uses port 8080 on the server (docker ps, ss -ltnp or lsof) and give this app a different host port",
+          "Remove the host port mapping, since Coolify's proxy reaches the container without one"
+        ],
+        "nextStepPatterns": [
+          "docker\\s+ps",
+          "\\b(ss|netstat|lsof)\\b",
+          "8080.{0,60}\\b(in use|used by|allocated|occupied|taken|another|other|conflict\\w*)",
+          "\\b(which|what)\\b.{0,40}\\b(using|uses|occup\\w+|holds?|bound)\\b.{0,30}\\b(port|8080)",
+          "(change|different|another|free|unused|other)\\s+(\\w+\\s+){0,2}(host\\s+)?port",
+          "WEB_PORT",
+          "(remove|drop|delete)\\b.{0,30}\\bport\\s+(mapping|binding)"
+        ],
+        "redHerrings": [
+          "postgres-data Creating"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 2.775242375,
+        "answer": {
+          "summary": "The deployment of Incidetective fails because port 8080 is already in use by another container or misconfigured in the Docker Compose file. The root cause is likely either a port conflict or a configuration error in the app's setup.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "List of currently running containers and their exposed ports on the homelab server (e.g., via 'docker ps' or 'docker port') to confirm if another service is using port 8080.",
+            "The Docker Compose YAML file used to deploy Incidetective, to verify port mappings and service definitions."
+          ],
+          "diagnosticEvidence": [],
+          "ruledOut": [
+            {
+              "evidenceIds": [
+                "F2"
+              ],
+              "reason": "The volume creation message is a routine operation and does not indicate a failure; it occurs independently of the port allocation error and is not related to the deployment failure."
+            }
+          ],
+          "hypotheses": [
+            {
+              "cause": "The error indicates that port 8080 is already in use by another container, preventing Incidetective from binding to it during deployment.",
+              "nextStep": "Run `docker ps` to list all running containers and verify if any are exposing port 8080, then identify and either stop or reconfigure the conflicting service.",
+              "evidenceIds": [
+                "F1"
+              ]
+            },
+            {
+              "cause": "The deployment may have failed due to a configuration mismatch in the Docker Compose file for Incidetective, such as an incorrect port mapping or conflicting service name, leading to network setup failure.",
+              "nextStep": "Review the Docker Compose configuration for Incidetective to ensure it does not map port 8080 and that it uses a unique, unused port instead.",
+              "evidenceIds": [
+                "F1"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for <IP>:<NUM> failed: port is already allocated",
+          "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for 0.0.0.0:8080 failed: port is already allocated"
+        ],
+        "keyEvidence": {
+          "found": [
+            "port is already allocated",
+            "0.0.0.0:8080"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "docker\\s+ps",
+            "8080.{0,60}\\b(in use|used by|allocated|occupied|taken|another|other|conflict\\w*)",
+            "(change|different|another|free|unused|other)\\s+(\\w+\\s+){0,2}(host\\s+)?port"
+          ]
+        },
+        "redHerring": {
+          "blamedBy": 0,
+          "ruledOut": true
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            1,
+            1
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "port is already allocated",
+              "0.0.0.0:8080"
+            ],
+            "missing": []
+          },
+          "keyShare": 1
+        },
+        "promptTokens": 1536,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      }
+    }
+  ]
+}

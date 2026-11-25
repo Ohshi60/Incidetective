@@ -18,6 +18,8 @@ Import application logs, identify recurring errors, examine supporting evidence,
 - **Contextual analysis:** Include preceding warning messages when investigating errors.
 - **AI investigation:** Generate possible root causes and diagnostic recommendations using a locally hosted Ollama model.
 - **Evidence traceability:** Link AI hypotheses to error findings (`F1`, `F2`) and contextual warnings (`C1`, `C2`).
+- **Setup notes:** Tell the AI what's normal for each service (versions, hardware, routine messages), so it stops blaming them.
+- **Ruled-out evidence:** The AI lists alarming-looking lines it judged unrelated, with a reason, instead of building hypotheses on them.
 - **Web interface:** Explore incidents, failure patterns, original log messages, and AI investigations.
 
 AI-generated findings are hypotheses, not confirmed root causes.
