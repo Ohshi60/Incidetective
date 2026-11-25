@@ -45,6 +45,7 @@ const levelWords: Record<string, Level> = {
   inf: "info",
   information: "info",
   notice: "info",
+  log: "info", // PostgreSQL
   warn: "warn",
   wrn: "warn",
   warning: "warn",
@@ -110,12 +111,11 @@ interface TimestampFormat {
   toDate: (match: RegExpMatchArray, now: Date) => Date | undefined;
 }
 
-const zonePart = String.raw`(?:\s?(Z|[+-]\d{2}:?\d{2}))?`;
+const zonePart = String.raw`(?:\s?(Z|UTC\b|GMT\b|[+-]\d{2}:?\d{2}))?`;
 
 function withZone(local: string, zone: string | undefined): Date {
-  const offset = !zone
-    ? "Z"
-    : zone === "Z"
+  const offset =
+    !zone || zone === "Z" || zone === "UTC" || zone === "GMT"
       ? "Z"
       : zone.replace(/^([+-]\d{2})(\d{2})$/, "$1:$2");
   return new Date(local + offset);
@@ -391,17 +391,26 @@ function parseTextLine(line: string, now: Date): ParsedLine | undefined {
     .trim();
   let rest = line.slice(found.end).replace(/^[\])]?\s*/, "");
 
-  // Syslog/journald: "host program[pid]: message". The host can't be a
-  // level word, so "WARN org.apache.Foo: message" isn't read as one.
+  // A second timestamp right after the first: the program's own, behind
+  // the one `docker logs -t` or `kubectl logs --timestamps` adds. Keep the
+  // outer one, which always has a timezone.
+  const inner = findTimestamp(rest, now);
+  if (inner?.start === 0) rest = rest.slice(inner.end).trimStart();
+
+  // Syslog/journald: "host program[pid]: message". The host must look like
+  // a hostname and not be a level word, so neither
+  // "WARN org.apache.Foo: message" nor "initdb: warning: ..." is read as one.
   let service: string | undefined;
-  const syslog = /^(\S+) ([\w./@-]+?)(?:\[\d+\])?: /.exec(rest);
-  if (
-    syslog?.[1] &&
-    syslog[2] &&
-    !levelWords[syslog[1].replace(/\W/g, "").toLowerCase()]
-  ) {
+  const syslog = /^([\w.-]+) ([\w./@-]+?)(?:\[\d+\])?: /.exec(rest);
+  if (syslog?.[1] && syslog[2] && !levelWords[syslog[1].toLowerCase()]) {
     service = syslog[2];
     rest = rest.slice(syslog[0].length);
+  }
+
+  // A process ID before the level, e.g. PostgreSQL's "[1] ERROR:".
+  const pid = /^\[\d+\]\s+/.exec(rest);
+  if (pid && textLevel(rest.slice(pid[0].length))) {
+    rest = rest.slice(pid[0].length);
   }
 
   let level: Level | undefined;

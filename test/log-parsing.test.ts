@@ -133,6 +133,29 @@ describe("parseLogs: plain text", () => {
     });
   });
 
+  it("reads docker logs -t output from PostgreSQL", () => {
+    const logs = parse(
+      "2026-10-23T14:53:08.885123456Z initdb: warning: enabling trust authentication\n" +
+        '2026-10-23T14:53:09.779123456Z 2026-10-23 14:53:09.778 UTC [1] ERROR:  relation "x" does not exist',
+      "postgres",
+    );
+
+    expect(logs).toEqual([
+      {
+        timestamp: "2026-10-23T14:53:08.885Z",
+        service: "postgres",
+        level: "warn",
+        message: "initdb: warning: enabling trust authentication",
+      },
+      {
+        timestamp: "2026-10-23T14:53:09.779Z",
+        service: "postgres",
+        level: "error",
+        message: 'relation "x" does not exist',
+      },
+    ]);
+  });
+
   it("lets an explicit level win over words in the message", () => {
     const [log] = parse("2026-11-25T10:00:00Z INFO no errors found");
 
