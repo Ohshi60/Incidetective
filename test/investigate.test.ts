@@ -99,6 +99,27 @@ describe("investigateWithAI", () => {
     ]);
   });
 
+  it("includes Ollama's error message when a request fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              error:
+                "request (17738 tokens) exceeds the available context size (16384 tokens)",
+            }),
+            { status: 400 },
+          ),
+        ),
+      ),
+    );
+
+    await expect(investigateWithAI(report, [])).rejects.toThrow(
+      "Ollama error: HTTP 400: request (17738 tokens) exceeds the available context size (16384 tokens)",
+    );
+  });
+
   it("explains when the answer was cut off by the output limit", async () => {
     mockOllama({ summary: "unfinished" }, { done_reason: "length" });
 

@@ -106,6 +106,8 @@ OUTPUT:
 // 2.3–2.8 characters per token, English prose at about 5. Round down to stay
 // safely inside the context window.
 export const LOG_CHARS_PER_TOKEN = 2.5;
+/** Raw log text heavy with stack traces measured as low as 2.1. */
+export const RAW_LOG_CHARS_PER_TOKEN = 2;
 const PROSE_CHARS_PER_TOKEN = 4;
 /** Chat template and JSON-schema overhead not visible in the text. */
 const OVERHEAD_TOKENS = 64;
@@ -162,11 +164,12 @@ ${content.slice(-DIAGNOSTIC_TAIL_CHARS)}`;
 export function evidenceBudgetChars(
   budget: InvestigationBudget,
   system = investigationSystemPrompt,
+  charsPerToken = LOG_CHARS_PER_TOKEN,
 ): number {
   const systemTokens = Math.ceil(system.length / PROSE_CHARS_PER_TOKEN);
   const tokens =
     budget.numCtx - budget.numPredict - systemTokens - OVERHEAD_TOKENS;
-  return Math.max(0, Math.floor(tokens * LOG_CHARS_PER_TOKEN));
+  return Math.max(0, Math.floor(tokens * charsPerToken));
 }
 
 export function buildInvestigationInput(
