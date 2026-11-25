@@ -18,6 +18,7 @@ npx drizzle-kit migrate         # apply migrations in ./drizzle
 npx drizzle-kit generate        # create a migration after editing src/db/schema.ts
 npm run dev                     # tsx watch src/server.ts, API on :3000
 npm run typecheck
+npm run lint                    # ESLint; root config ignores web/
 npm run build                   # tsc -p tsconfig.build.json -> dist/
 npm test                        # vitest run
 npx vitest run test/error-grouping.test.ts   # single file
@@ -25,7 +26,9 @@ npx vitest run -t "creates incident"         # single test by name
 npx tsx scripts/seed.ts         # seed 3 demo incidents via the running API (append-only; never against prod)
 ```
 
-Frontend (`web/`): `npm run dev`, `npm run build` (`tsc -b && vite build`), `npm run lint` (ESLint). There is no linter on the backend.
+Frontend (`web/`): `npm run dev`, `npm run build` (`tsc -b && vite build`), `npm run lint` (ESLint).
+
+Each project has its own `eslint.config.js`, and ESLint 10 uses the nearest config for each file. The backend stays on TypeScript 6.0 because typescript-eslint doesn't support TypeScript 7.
 
 Production: `docker compose -f compose.prod.yaml up -d --build` runs postgres, then a one-shot `migrate` service (`scripts/migrate.mjs`), then `api`, then `web` (nginx on 127.0.0.1:8080). Needs `POSTGRES_PASSWORD` and `DATABASE_URL`.
 
