@@ -1,5 +1,7 @@
 # Incidetective
 
+[![CI](https://github.com/Ohshi60/Incidetective/actions/workflows/ci.yml/badge.svg)](https://github.com/Ohshi60/Incidetective/actions/workflows/ci.yml)
+
 **AI-assisted incident investigation for backend services.**
 
 Incidetective is a self-hosted tool that helps developers investigate application failures by combining deterministic log analysis with local AI reasoning.
