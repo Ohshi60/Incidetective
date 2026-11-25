@@ -3,6 +3,20 @@ import type { Incident } from "../../../shared/types/incident.js";
 import type { InvestigationReport } from "../../../shared/types/report.js";
 import { analyseIncident } from "../incident-analysis.js";
 
+const HEADLINE_CHARS = 160;
+
+/**
+ * A pattern short enough to quote in a sentence. Patterns from Java-style
+ * logs include the whole stack trace; keep the start, cut at a word.
+ */
+export function headline(pattern: string, max = HEADLINE_CHARS): string {
+  const text = pattern.replace(/\s+/g, " ").trim();
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max / 2 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
 export function generateReport(
   incident: Incident,
   logs: LogEntry[],
@@ -32,15 +46,21 @@ export function generateReport(
       evidence,
     };
   });
-  const topGroup = analysis.errorGroups[0];
+  const topError = analysis.errorGroups[0];
+  const topWarning = analysis.warningGroups[0];
 
-  const summary = topGroup
+  const summary = topError
     ? `${analysis.errorCount} errors found across ${analysis.totalLogs} logs. ` +
-      `The most frequent failure was "${topGroup.normalizedMessage}" ` +
-      `in ${topGroup.service}, occurring ${topGroup.count} times. ` +
+      `The most frequent failure was "${headline(topError.normalizedMessage)}" ` +
+      `in ${topError.service}, occurring ${topError.count} times. ` +
       `Root cause has not been determined.`
-    : `No errors found across ${analysis.totalLogs} logs. ` +
-      `Root cause has not been determined.`;
+    : topWarning
+      ? `No errors found across ${analysis.totalLogs} logs, but ${analysis.warningCount} warnings. ` +
+        `The most frequent warning was "${headline(topWarning.normalizedMessage)}" ` +
+        `in ${topWarning.service}, occurring ${topWarning.count} times. ` +
+        `Root cause has not been determined.`
+      : `No errors found across ${analysis.totalLogs} logs. ` +
+        `Root cause has not been determined.`;
 
   return {
     incidentId: incident.id,
