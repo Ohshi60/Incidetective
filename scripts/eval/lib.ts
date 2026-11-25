@@ -29,6 +29,11 @@ export interface EvalCase {
     redHerrings?: string[];
   };
   notes?: string;
+  /**
+   * Setup notes a user would plausibly have written before the incident
+   * (versions, hardware, what's normal), passed like the app's service notes.
+   */
+  setupNotes?: string;
 }
 
 const severities: IncidentSeverity[] = ["low", "medium", "high", "critical"];
@@ -99,6 +104,7 @@ export function parseCase(id: string, raw: unknown): EvalCase {
     diagnostics: (c.diagnostics as string[] | undefined) ?? [],
     groundTruth: gt as EvalCase["groundTruth"],
     ...(typeof c.notes === "string" ? { notes: c.notes } : {}),
+    ...(typeof c.setupNotes === "string" ? { setupNotes: c.setupNotes } : {}),
   };
 }
 

@@ -15,6 +15,13 @@
       "when": 1794496958625,
       "tag": "0001_short_omega_flight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795644803163,
+      "tag": "0002_cloudy_havok",
+      "breakpoints": true
     }
   ]
 }

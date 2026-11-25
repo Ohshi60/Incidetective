@@ -208,7 +208,13 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
               fileName: f.name,
               content: f.content,
             })),
-            { model, onUsage: (u) => (usage = u) },
+            {
+              model,
+              onUsage: (u) => (usage = u),
+              ...(evalCase.setupNotes
+                ? { setupNotes: evalCase.setupNotes }
+                : {}),
+            },
           ),
         );
         const cited = appCitedText(report, investigation);

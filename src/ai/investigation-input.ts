@@ -80,6 +80,7 @@ RULES:
 - F1, F2, etc.: Grouped log patterns, each with a level: error, warn, or info. Warnings can be the only sign of a failure. Info patterns are routine-level lines that mention failure words (e.g. "unusable node", "connection refused"); they can reveal a cause the application never logged as an error.
 - C1, C2, etc.: Contextual warning logs.
 - D1, D2, etc.: Raw diagnostic file excerpts.
+- setupNotes, when present: facts the user wrote about their own setup (versions, hardware, what is normal). Trust them over guesses: use them to recognize routine messages and to tailor causes and next steps to this setup. They are not evidence IDs.
 - timeline: when each finding first appeared, oldest first. Patterns that started before the first error are candidate causes; patterns that started after it are more likely symptoms.
 
 Use all relevant evidence types.
@@ -162,6 +163,8 @@ const MAX_FINDINGS = 15;
 const MAX_CONTEXT = 40;
 const EXAMPLES_PER_FINDING = 2;
 const MAX_DIAGNOSTICS = 2;
+/** Matches MAX_SERVICE_NOTES_CHARS, which the API enforces. */
+const MAX_SETUP_NOTES_CHARS = 2000;
 
 export interface InvestigationBudget {
   numCtx: number;
@@ -211,7 +214,9 @@ export function buildInvestigationInput(
   logs: LogEntry[],
   diagnostics: { fileName: string; content: string }[],
   budget: InvestigationBudget,
+  setupNotes = "",
 ): InvestigationInput {
+  const notes = clip(setupNotes.trim(), MAX_SETUP_NOTES_CHARS);
   const budgetChars = evidenceBudgetChars(budget);
 
   // Candidates, in priority order within each kind.
@@ -261,6 +266,7 @@ export function buildInvestigationInput(
     title: report.title,
     service: report.service,
     severity: report.severity,
+    ...(notes ? { setupNotes: notes } : {}),
   };
   const findings: typeof findingCandidates = [];
   const context: LogEntry[] = [];

@@ -23,12 +23,20 @@ export async function investigateWithAI(
   diagnostics: Pick<DiagnosticEvidence, "fileName" | "content">[] = [],
   options: {
     model?: string;
+    /** What the user wrote about this service's setup. */
+    setupNotes?: string;
     /** Called with prompt size details, e.g. by the eval. */
     onUsage?: (usage: InvestigationUsage) => void;
   } = {},
 ): Promise<AIInvestigation> {
   const settings = ollamaSettings();
-  const input = buildInvestigationInput(report, logs, diagnostics, settings);
+  const input = buildInvestigationInput(
+    report,
+    logs,
+    diagnostics,
+    settings,
+    options.setupNotes,
+  );
   const { contextEvidence, diagnosticEvidence, validIds } = input;
 
   const chat = await ollamaJsonChat(

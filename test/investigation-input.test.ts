@@ -54,6 +54,27 @@ function warning(seconds: number, message: string): LogEntry {
 const small = { numCtx: 4096, numPredict: 1200 };
 
 describe("buildInvestigationInput", () => {
+  it("sends setup notes with the incident, and nothing when there are none", () => {
+    const withNotes = buildInvestigationInput(
+      report([finding(0, "timeout")]),
+      [],
+      [],
+      small,
+      "  Redis runs on the same VM; restarts nightly at 03:00.  ",
+    );
+    const without = buildInvestigationInput(
+      report([finding(0, "timeout")]),
+      [],
+      [],
+      small,
+    );
+
+    expect(JSON.parse(withNotes.user).incident.setupNotes).toBe(
+      "Redis runs on the same VM; restarts nightly at 03:00.",
+    );
+    expect(JSON.parse(without.user).incident).not.toHaveProperty("setupNotes");
+  });
+
   it("sends everything when it fits, with full messages kept for the UI", () => {
     const longWarning = `pool at max ${"x".repeat(700)}`;
     const input = buildInvestigationInput(

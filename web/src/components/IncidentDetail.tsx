@@ -10,6 +10,7 @@ import { LogExplorer } from "./LogExplorer";
 import { AIInvestigation } from "./AIInvestigation";
 import { useState } from "react";
 import { EvidenceUpload } from "./EvidenceUpload";
+import { ServiceNotes } from "./ServiceNotes";
 
 interface IncidentDetailProps {
   incident: Incident;
@@ -102,6 +103,20 @@ export function IncidentDetail({ incident, onBack }: IncidentDetailProps) {
           )}
         </div>
       )}
+
+      {/* What the user knows about the service's setup */}
+      <details className="rounded-xl border">
+        <summary className="cursor-pointer p-4 font-medium">
+          Setup notes
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
+            — Context the AI gets for {incident.service}
+          </span>
+        </summary>
+
+        <div className="border-t p-4">
+          <ServiceNotes service={incident.service} />
+        </div>
+      </details>
 
       {/* Evidence uploads */}
       <details
