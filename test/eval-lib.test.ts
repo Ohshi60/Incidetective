@@ -8,6 +8,7 @@ import {
   keyEvidenceHits,
   nextStepHits,
   parseCase,
+  redHerringCheck,
   shrinkToFit,
 } from "../scripts/eval/lib.js";
 import type { AIInvestigation } from "../shared/types/analysis.js";
@@ -117,6 +118,7 @@ describe("appCitedText", () => {
     };
     const investigation: AIInvestigation = {
       summary: "",
+      ruledOut: [],
       hypotheses: [
         {
           cause: "Redis pool exhausted",
@@ -176,6 +178,7 @@ describe("appEvidenceFocus", () => {
     hypotheses: AIInvestigation["hypotheses"],
   ): AIInvestigation => ({
     summary: "",
+    ruledOut: [],
     hypotheses,
     contextEvidence: [],
     missingEvidence: [],
@@ -250,5 +253,20 @@ describe("shrinkToFit", () => {
 
   it("ignores other errors", () => {
     expect(shrinkToFit("HTTP 500: boom", 30000, budget)).toBeUndefined();
+  });
+});
+
+describe("redHerringCheck", () => {
+  it("counts hypotheses resting on a red herring and notices a ruling-out", () => {
+    expect(
+      redHerringCheck(
+        ["llama-server terminated"],
+        [
+          ["grammar error", "Unexpected empty grammar stack"],
+          ["crash", "llama-server terminated error=exit status 1"],
+        ],
+        ["LLAMA-SERVER TERMINATED lines are unloads"],
+      ),
+    ).toEqual({ blamedBy: 1, ruledOut: true });
   });
 });

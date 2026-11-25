@@ -28,6 +28,9 @@
       "disk\\s+(space|usage|capacity)",
       "local[- ]dirs",
       "disks?\\b.{0,30}\\bunhealthy|unhealthy\\b.{0,30}\\bdisks?"
+    ],
+    "redHerrings": [
+      "Could not delete hdfs"
     ]
   },
   "notes": "Loghub Hadoop run with an injected disk-full failure. The run has no ERROR lines: the evidence is in WARN lines and one FATAL."

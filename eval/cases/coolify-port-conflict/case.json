@@ -25,6 +25,9 @@
       "(change|different|another|free|unused|other)\\s+(\\w+\\s+){0,2}(host\\s+)?port",
       "WEB_PORT",
       "(remove|drop|delete)\\b.{0,30}\\bport\\s+(mapping|binding)"
+    ],
+    "redHerrings": [
+      "postgres-data Creating"
     ]
   },
   "notes": "Real incident: the author's homelab Coolify (4.7.6), 25 November 2026. The full deployment log as exported from Coolify (739 lines: git clone, image builds, [DEBUG] commands), with the failure at the end. Fixed by setting WEB_PORT=8090. Checked for secrets: build-arg names only, no values. The cause is stated in one line, so this checks that Coolify and Docker Compose output is read well, including the misleading \"Error:\" prefix Coolify puts on Compose's progress lines. The copy-from-UI layout (timestamp on its own line) is covered by a parser test instead."

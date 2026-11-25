@@ -26,6 +26,9 @@
       "04DN8IQ",
       "yarn node",
       "node\\s*manager\\b.{0,40}\\b(status|running|state|health)"
+    ],
+    "redHerrings": [
+      "Could not delete hdfs"
     ]
   },
   "notes": "Loghub Hadoop run with an injected machine-down failure. The strongest evidence is 624 INFO-level 'Retrying connect to server' lines; there is one unrelated ERROR line."

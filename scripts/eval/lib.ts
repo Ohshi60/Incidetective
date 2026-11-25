@@ -25,6 +25,8 @@ export interface EvalCase {
      * help; an answer passes if any hypothesis's next step matches one.
      */
     nextStepPatterns: string[];
+    /** Text of misleading lines that a good answer doesn't blame. */
+    redHerrings?: string[];
   };
   notes?: string;
 }
@@ -59,6 +61,9 @@ export function parseCase(id: string, raw: unknown): EvalCase {
     fail("groundTruth.keyEvidence");
   }
   if (!isStringArray(gt?.goodNextSteps)) fail("groundTruth.goodNextSteps");
+  if (gt?.redHerrings !== undefined && !isStringArray(gt.redHerrings)) {
+    fail("groundTruth.redHerrings");
+  }
   if (
     !isStringArray(gt?.nextStepPatterns) ||
     gt.nextStepPatterns.length === 0
@@ -202,6 +207,26 @@ export function keyEvidenceHits(
   };
 }
 
+/**
+ * How an answer treats the case's red herrings: how many hypotheses rest on
+ * one (in their cause or cited evidence), and whether the answer explicitly
+ * ruled one out.
+ */
+export function redHerringCheck(
+  redHerrings: string[],
+  hypotheses: string[][],
+  ruledOut: string[] = [],
+): { blamedBy: number; ruledOut: boolean } {
+  const mentions = (texts: string[]) => {
+    const haystack = texts.join("\n").toLowerCase();
+    return redHerrings.some((r) => haystack.includes(r.toLowerCase()));
+  };
+  return {
+    blamedBy: hypotheses.filter(mentions).length,
+    ruledOut: mentions(ruledOut),
+  };
+}
+
 /** Which next-step patterns the answer's next steps match. */
 export function nextStepHits(
   patterns: string[],
@@ -317,6 +342,8 @@ export interface VariantResult {
   keyEvidence?: { found: string[]; missing: string[] };
   /** Next-step patterns the answer matched; none means no useful next step. */
   nextStep?: { matched: string[] };
+  /** Cases with red herrings: hypotheses resting on one; ruled out or not. */
+  redHerring?: { blamedBy: number; ruledOut: boolean };
   /** App only: how focused the citations are. */
   focus?: EvidenceFocus;
   /** Prompt tokens as counted by the model. */
@@ -378,6 +405,12 @@ function variantSection(
       `useful next step: ${result.nextStep.matched.length ? "yes" : "no"}`,
     );
   }
+  if (result.redHerring) {
+    meta.push(
+      `red herring blamed by ${result.redHerring.blamedBy} hypothesis(es)` +
+        (result.redHerring.ruledOut ? ", ruled out" : ""),
+    );
+  }
   if (result.focus) {
     const { idsPerHypothesis, topKeyEvidence, keyShare } = result.focus;
     const keyTotal =
@@ -406,6 +439,7 @@ function variantSection(
   }
   const answer = result.answer as {
     summary?: unknown;
+    ruledOut?: unknown;
     hypotheses?: unknown;
     missingEvidence?: unknown;
   };
@@ -413,6 +447,7 @@ function variantSection(
     meta.join(" · "),
     fence({
       summary: answer.summary,
+      ...(answer.ruledOut ? { ruledOut: answer.ruledOut } : {}),
       hypotheses: answer.hypotheses,
       ...(answer.missingEvidence
         ? { missingEvidence: answer.missingEvidence }
