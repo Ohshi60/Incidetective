@@ -1,5 +1,5 @@
 import type { LogEntry } from "../../shared/types/evidence.js";
-import { addLogEntry, fetchIncidentLogs } from "./evidence-store.js";
+import { batchInsertLogs, fetchIncidentLogs } from "./evidence-store.js";
 import { generateLogsForIncident } from "./sample-logs.js";
 
 export async function loadSampleLogsForIncident(
@@ -10,9 +10,7 @@ export async function loadSampleLogsForIncident(
     return logs;
   } else {
     const generatedLogs = generateLogsForIncident(incidentId);
-    generatedLogs.forEach((log) => {
-      addLogEntry(log);
-    });
+    await batchInsertLogs(generatedLogs);
     return generatedLogs;
   }
 }
