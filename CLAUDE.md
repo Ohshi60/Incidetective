@@ -55,7 +55,7 @@ Request flow (all routes are in `src/app.ts`; `src/server.ts` only listens):
    - `C1..C12`: `warn` logs from up to 5 minutes before any error
    - `D1..D2`: the last 2 uploaded diagnostic files, truncated head/tail
 
-   Afterward it validates the response and drops any `evidenceIds` that weren't supplied. Input sizes and model options (`num_ctx` 4096, 300s timeout) are tuned for CPU inference on a small model (default `qwen3:4b-instruct`), so be careful about growing the prompt. Investigations are not persisted. Ollama failures return 502.
+   Afterward it validates the response, drops any `evidenceIds` that weren't supplied, and keeps at most `MAX_EVIDENCE_IDS` (4) per hypothesis; the prompt asks for 1–3, since the small model fills whatever cap it's given. Input sizes and model options (`num_ctx` 4096, 300s timeout) are tuned for CPU inference on a small model (default `qwen3:4b-instruct`), so be careful about growing the prompt. Investigations are not persisted. Ollama failures return 502.
 
    The goal is to make the LLM provider swappable later. Ollama is the current backend, so keep new Ollama-specific code inside `src/ai/` instead of spreading it through routes or analysis.
 

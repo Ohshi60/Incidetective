@@ -79,6 +79,28 @@ describe("investigateWithAI", () => {
     expect(result.hypotheses[0]?.evidenceIds).toEqual(["F1"]);
   });
 
+  it("keeps at most 4 distinct evidence IDs per hypothesis", async () => {
+    const findings = Array.from({ length: 6 }, (_, i) => ({
+      ...report.findings[0]!,
+      pattern: `pattern ${i}`,
+    }));
+    mockOllama({
+      summary: "s",
+      hypotheses: [
+        {
+          cause: "c",
+          evidenceIds: ["F2", "F2", "F1", "F3", "F4", "F5", "F6"],
+          nextStep: "n",
+          missingEvidence: [],
+        },
+      ],
+    });
+
+    const result = await investigateWithAI({ ...report, findings }, []);
+
+    expect(result.hypotheses[0]?.evidenceIds).toEqual(["F2", "F1", "F3", "F4"]);
+  });
+
   it("falls back to the next steps when the model requests no evidence", async () => {
     mockOllama({
       summary: "s",

@@ -2,7 +2,10 @@ import type { AIInvestigation } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 import type { InvestigationReport } from "../../shared/types/report.js";
 import type { DiagnosticEvidence } from "../evidence/diagnostic-store.js";
-import { buildInvestigationInput } from "./investigation-input.js";
+import {
+  MAX_EVIDENCE_IDS,
+  buildInvestigationInput,
+} from "./investigation-input.js";
 import { ollamaJsonChat, ollamaSettings } from "./ollama.js";
 
 export interface InvestigationUsage {
@@ -94,9 +97,13 @@ export async function investigateWithAI(
       return {
         cause: h.cause,
         nextStep: h.nextStep,
-        evidenceIds: h.evidenceIds.filter(
-          (id) => typeof id === "string" && validIds.has(id),
-        ),
+        evidenceIds: [
+          ...new Set(
+            h.evidenceIds.filter(
+              (id): id is string => typeof id === "string" && validIds.has(id),
+            ),
+          ),
+        ].slice(0, MAX_EVIDENCE_IDS),
       };
     }),
   };
