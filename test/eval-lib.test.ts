@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   appCitedText,
+  appEvidenceFocus,
   buildBaselineInput,
   keyEvidenceHits,
   parseCase,
@@ -143,5 +144,76 @@ describe("appCitedText", () => {
       "pool at max",
       "100/100 connections",
     ]);
+  });
+});
+
+describe("appEvidenceFocus", () => {
+  const finding = (pattern: string) => ({
+    level: "error" as const,
+    service: "s",
+    pattern,
+    occurrences: 1,
+    firstSeen: "",
+    lastSeen: "",
+    evidence: [],
+  });
+  const report: InvestigationReport = {
+    incidentId: "i",
+    title: "t",
+    service: "s",
+    severity: "high",
+    generatedAt: "2026-01-01T00:00:00Z",
+    summary: "",
+    findings: [
+      finding("DiskErrorException: no valid local directory"),
+      finding("Could not delete temp file"),
+      finding("Spilling map output"),
+    ],
+  };
+  const investigation = (
+    hypotheses: AIInvestigation["hypotheses"],
+  ): AIInvestigation => ({
+    summary: "",
+    hypotheses,
+    contextEvidence: [],
+    missingEvidence: [],
+    diagnosticEvidence: [],
+  });
+
+  it("counts IDs, checks hypothesis 1, and measures the key share", () => {
+    const focus = appEvidenceFocus(
+      report,
+      investigation([
+        // The cause mentions the key evidence, but only evidence counts.
+        {
+          cause: "DiskErrorException",
+          evidenceIds: ["F1", "F3"],
+          nextStep: "",
+        },
+        { cause: "HDFS", evidenceIds: ["F2", "F3"], nextStep: "" },
+      ]),
+      ["DiskErrorException", "valid local directory"],
+    );
+    expect(focus).toEqual({
+      idsPerHypothesis: [2, 2],
+      topKeyEvidence: {
+        found: ["DiskErrorException", "valid local directory"],
+        missing: [],
+      },
+      keyShare: 1 / 3,
+    });
+  });
+
+  it("reports key evidence missing from hypothesis 1 even if cited later", () => {
+    const focus = appEvidenceFocus(
+      report,
+      investigation([
+        { cause: "HDFS", evidenceIds: ["F2"], nextStep: "" },
+        { cause: "Disk", evidenceIds: ["F1"], nextStep: "" },
+      ]),
+      ["DiskErrorException"],
+    );
+    expect(focus.topKeyEvidence.missing).toEqual(["DiskErrorException"]);
+    expect(focus.keyShare).toBe(0.5);
   });
 });

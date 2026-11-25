@@ -35,6 +35,7 @@ import { generateReport } from "../../src/analysis/reports/generate-report.js";
 import { parseLogContent } from "../../src/evidence/log-ingestion.js";
 import {
   appCitedText,
+  appEvidenceFocus,
   baselineCitedText,
   baselineSchema,
   baselineSystemPrompt,
@@ -214,6 +215,11 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
           answer: investigation,
           cited: [...new Set(cited.filter((text) => !causes.has(text)))],
           keyEvidence: keyEvidenceHits(evalCase.groundTruth.keyEvidence, cited),
+          focus: appEvidenceFocus(
+            report,
+            investigation,
+            evalCase.groundTruth.keyEvidence,
+          ),
           ...(usage?.promptTokens !== undefined
             ? { promptTokens: usage.promptTokens }
             : {}),

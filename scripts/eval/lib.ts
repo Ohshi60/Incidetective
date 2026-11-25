@@ -164,39 +164,89 @@ export function keyEvidenceHits(
 }
 
 /**
- * Resolve an app investigation's evidence IDs to the text they stand for,
- * matching how investigateWithAI() numbers them: F = report findings
- * (top 5), C = context warnings, D = diagnostic excerpts.
+ * Resolve one app evidence ID to the text it stands for, matching how
+ * investigateWithAI() numbers them: F = report findings, C = context
+ * warnings, D = diagnostic excerpts.
  */
+export function appEvidenceText(
+  report: InvestigationReport,
+  investigation: AIInvestigation,
+  id: string,
+): string[] {
+  const index = Number(id.slice(1)) - 1;
+  if (id.startsWith("F")) {
+    const finding = report.findings[index];
+    return finding
+      ? [finding.pattern, ...finding.evidence.map((e) => e.message)]
+      : [];
+  }
+  if (id.startsWith("C")) {
+    const context = investigation.contextEvidence.find((c) => c.id === id);
+    return context ? [context.message] : [];
+  }
+  if (id.startsWith("D")) {
+    const diagnostic = investigation.diagnosticEvidence.find(
+      (d) => d.id === id,
+    );
+    return diagnostic ? [diagnostic.excerpt] : [];
+  }
+  return [];
+}
+
+/** Each hypothesis's cause followed by the text of the evidence it cites. */
 export function appCitedText(
   report: InvestigationReport,
   investigation: AIInvestigation,
 ): string[] {
-  const texts: string[] = [];
-  for (const hypothesis of investigation.hypotheses) {
-    texts.push(hypothesis.cause);
-    for (const id of hypothesis.evidenceIds) {
-      const index = Number(id.slice(1)) - 1;
-      if (id.startsWith("F")) {
-        const finding = report.findings[index];
-        if (finding) {
-          texts.push(
-            finding.pattern,
-            ...finding.evidence.map((e) => e.message),
-          );
-        }
-      } else if (id.startsWith("C")) {
-        const context = investigation.contextEvidence.find((c) => c.id === id);
-        if (context) texts.push(context.message);
-      } else if (id.startsWith("D")) {
-        const diagnostic = investigation.diagnosticEvidence.find(
-          (d) => d.id === id,
-        );
-        if (diagnostic) texts.push(diagnostic.excerpt);
-      }
-    }
-  }
-  return texts;
+  return investigation.hypotheses.flatMap((hypothesis) => [
+    hypothesis.cause,
+    ...hypothesis.evidenceIds.flatMap((id) =>
+      appEvidenceText(report, investigation, id),
+    ),
+  ]);
+}
+
+export interface EvidenceFocus {
+  /** Evidence IDs cited by each hypothesis, in order. */
+  idsPerHypothesis: number[];
+  /** Key evidence found in the first hypothesis's cited evidence alone. */
+  topKeyEvidence: { found: string[]; missing: string[] };
+  /** Share of distinct cited IDs whose text contains any key evidence. */
+  keyShare: number;
+}
+
+/**
+ * How focused an app answer's citations are: few IDs, with the proof in the
+ * leading hypothesis. Cause text is left out, so only evidence counts.
+ */
+export function appEvidenceFocus(
+  report: InvestigationReport,
+  investigation: AIInvestigation,
+  keyEvidence: string[],
+): EvidenceFocus {
+  const hasKey = (texts: string[]) => {
+    const haystack = texts.join("\n").toLowerCase();
+    return keyEvidence.some((k) => haystack.includes(k.toLowerCase()));
+  };
+  const top = investigation.hypotheses[0];
+  const ids = [
+    ...new Set(investigation.hypotheses.flatMap((h) => h.evidenceIds)),
+  ];
+  const keyIds = ids.filter((id) =>
+    hasKey(appEvidenceText(report, investigation, id)),
+  );
+  return {
+    idsPerHypothesis: investigation.hypotheses.map((h) => h.evidenceIds.length),
+    topKeyEvidence: keyEvidenceHits(
+      keyEvidence,
+      top
+        ? top.evidenceIds.flatMap((id) =>
+            appEvidenceText(report, investigation, id),
+          )
+        : [],
+    ),
+    keyShare: ids.length ? keyIds.length / ids.length : 0,
+  };
 }
 
 export function baselineCitedText(answer: BaselineAnswer): string[] {
@@ -214,6 +264,8 @@ export interface VariantResult {
   /** The evidence text the answer cited, for reading and scoring. */
   cited?: string[];
   keyEvidence?: { found: string[]; missing: string[] };
+  /** App only: how focused the citations are. */
+  focus?: EvidenceFocus;
   /** Prompt tokens as counted by the model. */
   promptTokens?: number;
   /** App only: evidence left out to fit the context. */
@@ -267,6 +319,16 @@ function variantSection(
       diagnostics && `${diagnostics} diagnostics`,
     ].filter(Boolean);
     if (parts.length) meta.push(`left out to fit: ${parts.join(", ")}`);
+  }
+  if (result.focus) {
+    const { idsPerHypothesis, topKeyEvidence, keyShare } = result.focus;
+    const keyTotal =
+      topKeyEvidence.found.length + topKeyEvidence.missing.length;
+    meta.push(
+      `IDs per hypothesis: ${idsPerHypothesis.join(", ") || "none"}`,
+      `key evidence in hypothesis 1: ${topKeyEvidence.found.length}/${keyTotal}`,
+      `cited IDs with key evidence: ${Math.round(keyShare * 100)}%`,
+    );
   }
   if (result.truncated !== undefined) {
     meta.push(
