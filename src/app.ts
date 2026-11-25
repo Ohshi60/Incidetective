@@ -26,7 +26,7 @@ export function buildApp() {
       files: 1,
     },
   });
-  app.get("/health", async () => {
+  app.get("/health", () => {
     return { status: "ok" };
   });
 

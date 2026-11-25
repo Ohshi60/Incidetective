@@ -14,4 +14,24 @@ export default defineConfig([
       globals: globals.node,
     },
   },
+  {
+    // Type-aware rules for code covered by tsconfig.json.
+    files: ["src/**/*.ts", "shared/**/*.ts", "test/**/*.ts"],
+    extends: [tseslint.configs.recommendedTypeChecked],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
+    // Fastify's inject().json() returns any; asserting on it in tests is fine.
+    files: ["test/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
 ]);
