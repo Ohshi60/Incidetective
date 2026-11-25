@@ -14,6 +14,7 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
       lastTimestamp: null,
       errorGroups: [],
       warningGroups: [],
+      notableInfoGroups: [],
     };
   }
 
@@ -21,7 +22,10 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
   const serviceSet = new Set<string>();
 
   const analysis = logs.reduce<
-    Omit<IncidentAnalysis, "affectedServices" | "errorGroups" | "warningGroups">
+    Omit<
+      IncidentAnalysis,
+      "affectedServices" | "errorGroups" | "warningGroups" | "notableInfoGroups"
+    >
   >(
     (acc, log) => {
       acc.totalLogs++;
@@ -53,5 +57,6 @@ export function analyseIncident(logs: LogEntry[]): IncidentAnalysis {
     affectedServices: Array.from(serviceSet).sort((a, b) => a.localeCompare(b)),
     errorGroups: groupLogs(logs, "error"),
     warningGroups: groupLogs(logs, "warn"),
+    notableInfoGroups: groupLogs(logs, "info"),
   };
 }

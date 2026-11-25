@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { groupErrors, groupLogs } from "../src/analysis/error-grouping.js";
+import {
+  groupErrors,
+  groupLogs,
+  isNotableInfo,
+} from "../src/analysis/error-grouping.js";
 import { generateReport } from "../src/analysis/reports/generate-report.js";
 import type { LogEntry } from "../shared/types/evidence.js";
 
@@ -143,6 +147,53 @@ describe("generateReport", () => {
     expect(report.findings.map((f) => [f.level, f.pattern])).toEqual([
       ["error", "Job failed"],
       ["warn", "Slow read"],
+    ]);
+  });
+});
+
+describe("notable info lines", () => {
+  const info = (message: string) =>
+    makeLog("yarn", message, "2026-10-22T10:00:00Z", "info");
+
+  it.each([
+    "TaskAttempt killed because it ran on unusable node 04DN8IQ:55452",
+    "Retrying connect to server: 04DN8IQ/10.86.164.9:64484. Already tried 3 time(s)",
+    "Connection refused by upstream",
+    "Request timed out after 30s",
+    "Write failed: no space left on device",
+  ])("flags %s", (message) => {
+    expect(isNotableInfo(info(message))).toBe(true);
+  });
+
+  it.each([
+    "KILLING attempt_1445087491445_0005_m_000001_0",
+    "Sleeping for 500ms before retrying again. Got null now.",
+    "Request started",
+  ])("ignores routine %s", (message) => {
+    expect(isNotableInfo(info(message))).toBe(false);
+  });
+
+  it("only flags info lines", () => {
+    expect(
+      isNotableInfo(
+        makeLog("yarn", "Connection refused", "2026-10-22T10:00:00Z", "warn"),
+      ),
+    ).toBe(false);
+  });
+
+  it("clusters only notable info lines", () => {
+    const logs = [
+      info(
+        "Retrying connect to server: host-a/10.0.0.1:1. Already tried 1 time(s)",
+      ),
+      info(
+        "Retrying connect to server: host-a/10.0.0.1:1. Already tried 2 time(s)",
+      ),
+      info("Request started"),
+    ];
+
+    expect(groupLogs(logs, "info")).toEqual([
+      expect.objectContaining({ level: "info", count: 2 }),
     ]);
   });
 });

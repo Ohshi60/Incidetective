@@ -49,7 +49,7 @@ RULES:
 - Never invent events, infrastructure, configuration, or confirmed root causes.
 
 2. EVIDENCE TYPES
-- F1, F2, etc.: Grouped log patterns, each with a level (error or warn). Warnings can be the only sign of a failure.
+- F1, F2, etc.: Grouped log patterns, each with a level: error, warn, or info. Warnings can be the only sign of a failure. Info patterns are routine-level lines that mention failure words (e.g. "unusable node", "connection refused"); they can reveal a cause the application never logged as an error.
 - C1, C2, etc.: Contextual warning logs.
 - D1, D2, etc.: Raw diagnostic file excerpts.
 - timeline: when each finding first appeared, oldest first. Patterns that started before the first error are candidate causes; patterns that started after it are more likely symptoms.

@@ -2,6 +2,23 @@ import type { ReportFinding } from "../../../shared/types/report";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
+const levelLabels: Record<
+  ReportFinding["level"],
+  {
+    badge: string;
+    pattern: string;
+    variant: "destructive" | "outline" | "ghost";
+  }
+> = {
+  error: { badge: "Error", pattern: "Error pattern", variant: "destructive" },
+  warn: { badge: "Warning", pattern: "Warning pattern", variant: "outline" },
+  info: {
+    badge: "Notable info",
+    pattern: "Info pattern mentioning a failure",
+    variant: "ghost",
+  },
+};
+
 interface ReportFindingProps {
   findings: ReportFinding[];
 }
@@ -18,12 +35,8 @@ export function ReportFindings({ findings }: ReportFindingProps) {
               </span>
 
               <div className="flex gap-2">
-                <Badge
-                  variant={
-                    finding.level === "error" ? "destructive" : "outline"
-                  }
-                >
-                  {finding.level === "error" ? "Error" : "Warning"}
+                <Badge variant={levelLabels[finding.level].variant}>
+                  {levelLabels[finding.level].badge}
                 </Badge>
                 <Badge variant="secondary">
                   {finding.occurrences} occurrences
@@ -33,9 +46,7 @@ export function ReportFindings({ findings }: ReportFindingProps) {
 
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
-                {finding.level === "error"
-                  ? "Error pattern"
-                  : "Warning pattern"}
+                {levelLabels[finding.level].pattern}
               </p>
 
               <p className="break-all font-mono text-sm font-medium leading-relaxed">

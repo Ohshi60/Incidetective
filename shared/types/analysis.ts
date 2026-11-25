@@ -1,8 +1,11 @@
 import type { LogEntry } from "./evidence.js";
 
-/** Recurring error or warning messages, clustered into one pattern. */
+/**
+ * Recurring messages clustered into one pattern. "info" groups only contain
+ * info lines that mention failure words (see isNotableInfo).
+ */
 export interface LogGroup {
-  level: "error" | "warn";
+  level: "error" | "warn" | "info";
   service: string;
   normalizedMessage: string;
   count: number;
@@ -20,6 +23,8 @@ export interface IncidentAnalysis {
   lastTimestamp: string | null;
   errorGroups: LogGroup[];
   warningGroups: LogGroup[];
+  /** Info-level lines mentioning failure words, e.g. "unusable node". */
+  notableInfoGroups: LogGroup[];
 }
 
 export interface AIInvestigation {

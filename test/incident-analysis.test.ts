@@ -80,6 +80,7 @@ describe("analyzeIncident", () => {
           evidence: logs.filter((log) => log.level === "warn"),
         },
       ],
+      notableInfoGroups: [],
     });
   });
 
@@ -93,6 +94,7 @@ describe("analyzeIncident", () => {
       lastTimestamp: null,
       errorGroups: [],
       warningGroups: [],
+      notableInfoGroups: [],
     });
   });
 });

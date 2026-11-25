@@ -223,7 +223,7 @@ export function buildApp() {
 
       if (report.findings.length === 0) {
         return reply.code(400).send({
-          error: "No errors or warnings to investigate",
+          error: "No errors, warnings or notable info lines to investigate",
         });
       }
 

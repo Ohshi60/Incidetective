@@ -8,8 +8,12 @@ export function generateReport(
   logs: LogEntry[],
 ): InvestigationReport {
   const analysis = analyseIncident(logs);
-  // Errors first, then warnings; each sorted by how often they occur.
-  const groups = [...analysis.errorGroups, ...analysis.warningGroups];
+  // Errors, then warnings, then notable info; each sorted by frequency.
+  const groups = [
+    ...analysis.errorGroups,
+    ...analysis.warningGroups,
+    ...analysis.notableInfoGroups,
+  ];
   const findings = groups.map((group) => {
     const evidence = [...group.evidence]
       .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
