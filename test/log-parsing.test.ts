@@ -124,6 +124,37 @@ describe("parseLogs: plain text", () => {
     });
   });
 
+  it("reads a timestamp alone on its line, as Coolify's UI shows them", () => {
+    const logs = parse(
+      "2026-Nov-25 21:00:31\n" +
+        "Container web-1 Starting\n" +
+        "2026-Nov-25 21:00:32\n" +
+        "Error response from daemon: port is already allocated\n" +
+        "2026-Nov-25 21:00:33",
+    );
+
+    expect(logs).toEqual([
+      {
+        timestamp: "2026-11-25T21:00:31.000Z",
+        service: "svc",
+        level: "info",
+        message: "Container web-1 Starting",
+      },
+      {
+        timestamp: "2026-11-25T21:00:32.000Z",
+        service: "svc",
+        level: "error",
+        message: "Error response from daemon: port is already allocated",
+      },
+      {
+        timestamp: "2026-11-25T21:00:33.000Z",
+        service: "svc",
+        level: "info",
+        message: "2026-Nov-25 21:00:33",
+      },
+    ]);
+  });
+
   it("reads Unix time at the start of a line", () => {
     const [log] = parse("1764080282 backup failed with error 5");
 

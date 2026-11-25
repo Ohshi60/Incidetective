@@ -26,6 +26,8 @@ interface ParsedLine {
   service?: string;
   message: string;
   structured: boolean;
+  /** A timestamp alone on its line: the message is on the next line. */
+  bare?: boolean;
 }
 
 export interface ParseOptions {
@@ -135,6 +137,20 @@ const timestampFormats: TimestampFormat[] = [
         `${y}-${mo}-${d}T${time}${fraction ? `.${fraction.slice(0, 3).padEnd(3, "0")}` : ""}`,
         zone,
       ),
+  },
+  // Month as a word: 2026-Nov-25 21:00:31 (Coolify's deployment log).
+  {
+    pattern: new RegExp(
+      String.raw`(\d{4})-(${months})-(\d{1,2})[ T](\d{2}:\d{2}:\d{2})(?:[.,](\d+))?` +
+        zonePart,
+    ),
+    toDate: ([, y, mon, d, time, fraction, zone]) => {
+      const mo = String(monthIndex(mon ?? "") + 1).padStart(2, "0");
+      return withZone(
+        `${y}-${mo}-${(d ?? "").padStart(2, "0")}T${time}${fraction ? `.${fraction.slice(0, 3).padEnd(3, "0")}` : ""}`,
+        zone,
+      );
+    },
   },
   // Apache/nginx: [25/Nov/2026:14:18:02 +0100]
   {
@@ -422,14 +438,15 @@ function parseTextLine(line: string, now: Date): ParsedLine | undefined {
     rest = rest.replace(/^\[\d+\]\s*/, "");
   }
 
-  const message =
-    (before ? `${before} ${rest}` : rest).trimStart() || line.trim();
+  const text = (before ? `${before} ${rest}` : rest).trimStart();
+  const message = text || line.trim();
   return {
     timestamp: found.iso,
-    level: level ?? guessLevel(message),
+    level: level ?? guessLevel(text),
     ...(service ? { service } : {}),
     message,
     structured: false,
+    ...(text ? {} : { bare: true }),
   };
 }
 
@@ -444,7 +461,8 @@ export function parseLogs(
   const logs: ImportedLog[] = [];
   /** Entries before the first timestamp; they get that timestamp. */
   const undated: ImportedLog[] = [];
-  let current: (ImportedLog & { structured: boolean }) | undefined;
+  let current:
+    (ImportedLog & { structured: boolean; bare?: boolean }) | undefined;
 
   for (const raw of content.split(/\r?\n/)) {
     if (!raw.trim()) continue;
@@ -460,6 +478,15 @@ export function parseLogs(
       parseLogfmtLine(line, now) ??
       parseTextLine(line, now);
 
+    // A timestamp alone on its line (as Coolify's UI shows deployment logs):
+    // the next line is its message, with its own level.
+    if (current?.bare && !parsed?.timestamp) {
+      current.message = line.trim();
+      current.level = textLevel(current.message)?.level ?? guessLevel(line);
+      current.bare = false;
+      continue;
+    }
+
     if (!parsed?.timestamp && current && !current.structured) {
       current.message += `\n${line}`;
       continue;
@@ -473,6 +500,7 @@ export function parseLogs(
       // An unstructured line in a structured file is foreign output: the
       // next one is an entry of its own too.
       structured: parsed?.structured ?? current?.structured ?? true,
+      ...(parsed?.bare ? { bare: true } : {}),
     };
     logs.push(entry);
     if (!entry.timestamp) undated.push(entry);

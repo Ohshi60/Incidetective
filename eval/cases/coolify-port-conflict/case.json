@@ -1,0 +1,31 @@
+{
+  "title": "Deploying Incidetective on Coolify fails",
+  "service": "coolify",
+  "severity": "medium",
+  "description": "First deployment of Incidetective on the homelab's Coolify (which already runs another app, a dashboard). Coolify marks the deployment as failed and the app's address returns HTTP 503.",
+  "logs": [
+    "deploy.log"
+  ],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "The web container publishes host port 8080, which another app on the same Coolify server (the Night City dashboard) already uses, so Docker could not start it: \"Bind for 0.0.0.0:8080 failed: port is already allocated\". Postgres and the API started fine; the leading \"Error:\" lines are Docker Compose's normal progress output on stderr.",
+    "keyEvidence": [
+      "port is already allocated",
+      "0.0.0.0:8080"
+    ],
+    "goodNextSteps": [
+      "Find what already uses port 8080 on the server (docker ps, ss -ltnp or lsof) and give this app a different host port",
+      "Remove the host port mapping, since Coolify's proxy reaches the container without one"
+    ],
+    "nextStepPatterns": [
+      "docker\\s+ps",
+      "\\b(ss|netstat|lsof)\\b",
+      "8080.{0,60}\\b(in use|used by|allocated|occupied|taken|another|other|conflict\\w*)",
+      "\\b(which|what)\\b.{0,40}\\b(using|uses|occup\\w+|holds?|bound)\\b.{0,30}\\b(port|8080)",
+      "(change|different|another|free|unused|other)\\s+(\\w+\\s+){0,2}(host\\s+)?port",
+      "WEB_PORT",
+      "(remove|drop|delete)\\b.{0,30}\\bport\\s+(mapping|binding)"
+    ]
+  },
+  "notes": "Real incident: the author's homelab Coolify (4.7.6), 25 November 2026. The full deployment log as exported from Coolify (739 lines: git clone, image builds, [DEBUG] commands), with the failure at the end. Fixed by setting WEB_PORT=8090. Checked for secrets: build-arg names only, no values. The cause is stated in one line, so this checks that Coolify and Docker Compose output is read well, including the misleading \"Error:\" prefix Coolify puts on Compose's progress lines. The copy-from-UI layout (timestamp on its own line) is covered by a parser test instead."
+}
