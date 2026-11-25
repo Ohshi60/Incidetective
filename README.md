@@ -13,7 +13,7 @@ Import application logs, identify recurring errors, examine supporting evidence,
 ## Features
 
 - **Incident management:** Create incidents and associate log evidence with them.
-- **Real-world log ingestion:** Import JSONL, Fastify/Pino, and common timestamped text logs.
+- **Real-world log ingestion:** One importer for most formats: JSON lines (Pino, Docker, `journalctl -o json`), key=value logs (Go's slog, logrus, Ollama), syslog and journald, Apache/nginx access logs, and timestamped text such as log4j or Serilog.
 - **Error clustering:** Group recurring failures using the Drain algorithm while preserving meaningful error codes.
 - **Contextual analysis:** Include preceding warning messages when investigating errors.
 - **AI investigation:** Generate possible root causes and diagnostic recommendations using a locally hosted Ollama model.
@@ -156,7 +156,7 @@ Open the URL displayed by Vite.
 ## Example workflow
 
 1. Create an incident describing an application failure.
-2. Upload a JSONL or supported text log file.
+2. Upload a log file.
 3. Review the deterministic analysis and grouped errors.
 4. Click **Investigate with AI**.
 5. Examine possible root causes, cited evidence, and suggested diagnostic steps.
@@ -165,7 +165,7 @@ Open the URL displayed by Vite.
 ## Current limitations
 
 - Logs must currently be imported manually.
-- Plain-text log support covers common timestamp formats, not every application log format.
+- Formats are recognized by common timestamp shapes and field names, not per-application rules; a file with no recognizable timestamp is rejected, and unusual formats may be read with less detail (e.g. every line as `info`).
 - Investigations use a selected subset of error findings and contextual warnings.
 - AI-generated conclusions may contain incorrect assumptions or diagnostic advice.
 - AI investigations are generated on demand and are not persisted.
@@ -179,6 +179,7 @@ The MVP is intended for local development and trusted environments, not direct p
 - [x] Persistent incident and log storage
 - [x] JSONL and Pino log ingestion
 - [x] Plain-text log ingestion
+- [x] Format-agnostic log import (JSON, logfmt, syslog, access logs, text)
 - [x] Deterministic error clustering
 - [x] Local LLM integration
 - [x] Evidence-referenced AI investigations

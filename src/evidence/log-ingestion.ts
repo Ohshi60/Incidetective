@@ -1,29 +1,18 @@
 import { batchInsertLogs } from "./evidence-store.js";
-import { parseJsonL, type ImportedLog } from "./log-import.js";
+import type { ImportedLog } from "./log-import.js";
+import { parseLogs } from "./log-parser.js";
 import { getIncident } from "../incidents/incident-store.js";
-import { parseTextLog } from "./text-log-import.js";
 
 /**
- * Parse an uploaded log file, choosing the parser from the first non-empty
- * line: JSON objects (JSONL / Pino) or timestamped text. Lines without their
- * own service name get `defaultService`. Throws LogImportError on bad input.
+ * Parse an uploaded log file in any supported format (see log-parser.ts).
+ * Lines without their own service name get `defaultService`. Throws
+ * LogImportError when nothing in the file can be read as a log entry.
  */
 export function parseLogContent(
   content: string,
   defaultService: string,
 ): ImportedLog[] {
-  const firstLine = content
-    .split(/\r?\n/)
-    .find((line) => line.trim())
-    ?.trimStart();
-
-  if (!firstLine) {
-    return [];
-  }
-
-  return firstLine.startsWith("{")
-    ? parseJsonL(content, defaultService)
-    : parseTextLog(content, defaultService);
+  return content.trim() ? parseLogs(content, defaultService) : [];
 }
 
 export async function ingestLogs(
