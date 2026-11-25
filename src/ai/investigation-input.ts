@@ -49,7 +49,7 @@ RULES:
 - Never invent events, infrastructure, configuration, or confirmed root causes.
 
 2. EVIDENCE TYPES
-- F1, F2, etc.: Grouped error findings.
+- F1, F2, etc.: Grouped log patterns, each with a level (error or warn). Warnings can be the only sign of a failure.
 - C1, C2, etc.: Contextual warning logs.
 - D1, D2, etc.: Raw diagnostic file excerpts.
 
@@ -181,6 +181,7 @@ export function buildInvestigationInput(
     .slice(0, MAX_FINDINGS)
     .map((finding, i) => ({
       id: `F${i + 1}`,
+      level: finding.level,
       service: finding.service,
       occurrences: finding.occurrences,
       firstSeen: finding.firstSeen,
@@ -191,9 +192,11 @@ export function buildInvestigationInput(
       })),
     }));
 
-  const errorTimes = report.findings.flatMap((finding) =>
-    finding.evidence.map((log) => Date.parse(log.timestamp)),
-  );
+  const errorTimes = report.findings
+    .filter((finding) => finding.level === "error")
+    .flatMap((finding) =>
+      finding.evidence.map((log) => Date.parse(log.timestamp)),
+    );
 
   // Warnings shortly before an error, newest first.
   const allContext = logs

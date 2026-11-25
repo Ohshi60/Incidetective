@@ -17,13 +17,26 @@ export function ReportFindings({ findings }: ReportFindingProps) {
                 {finding.service}
               </span>
 
-              <Badge variant="secondary">
-                {finding.occurrences} occurrences
-              </Badge>
+              <div className="flex gap-2">
+                <Badge
+                  variant={
+                    finding.level === "error" ? "destructive" : "outline"
+                  }
+                >
+                  {finding.level === "error" ? "Error" : "Warning"}
+                </Badge>
+                <Badge variant="secondary">
+                  {finding.occurrences} occurrences
+                </Badge>
+              </div>
             </div>
 
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Error pattern</p>
+              <p className="text-xs text-muted-foreground">
+                {finding.level === "error"
+                  ? "Error pattern"
+                  : "Warning pattern"}
+              </p>
 
               <p className="break-all font-mono text-sm font-medium leading-relaxed">
                 {finding.pattern}

@@ -100,6 +100,7 @@ describe("appCitedText", () => {
       summary: "",
       findings: [
         {
+          level: "error",
           service: "s",
           pattern: "Session lookup failed: <*>",
           occurrences: 2,

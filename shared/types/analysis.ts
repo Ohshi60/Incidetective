@@ -1,6 +1,8 @@
 import type { LogEntry } from "./evidence.js";
 
-export interface ErrorGroup {
+/** Recurring error or warning messages, clustered into one pattern. */
+export interface LogGroup {
+  level: "error" | "warn";
   service: string;
   normalizedMessage: string;
   count: number;
@@ -16,7 +18,8 @@ export interface IncidentAnalysis {
   affectedServices: string[];
   firstTimestamp: string | null;
   lastTimestamp: string | null;
-  errorGroups: ErrorGroup[];
+  errorGroups: LogGroup[];
+  warningGroups: LogGroup[];
 }
 
 export interface AIInvestigation {

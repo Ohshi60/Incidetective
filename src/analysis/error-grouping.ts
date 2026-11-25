@@ -4,7 +4,7 @@ import {
   DEFAULT_MASKING_INSTRUCTIONS,
 } from "@agentix-e/drain-ts";
 
-import type { ErrorGroup } from "../../shared/types/analysis.js";
+import type { LogGroup } from "../../shared/types/analysis.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 
 function extractErrorCodes(message: string): string[] {
@@ -15,12 +15,19 @@ function extractErrorCodes(message: string): string[] {
   return [...new Set((matches ?? []).map((code) => code.toUpperCase()))].sort();
 }
 
-export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
+/**
+ * Cluster log messages of one level into patterns with the Drain algorithm,
+ * separately per service and per set of Node error codes.
+ */
+export function groupLogs(
+  logs: LogEntry[],
+  level: LogGroup["level"],
+): LogGroup[] {
   const miners = new Map<string, TemplateMiner>();
-  const groups = new Map<string, ErrorGroup>();
+  const groups = new Map<string, LogGroup>();
 
   for (const log of logs) {
-    if (log.level !== "error") continue;
+    if (log.level !== level) continue;
 
     const errorCodes = extractErrorCodes(log.message);
 
@@ -69,6 +76,7 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
       existing.normalizedMessage = normalizedMessage;
     } else {
       groups.set(key, {
+        level,
         service: log.service,
         normalizedMessage,
         count: 1,
@@ -87,4 +95,8 @@ export function groupErrors(logs: LogEntry[]): ErrorGroup[] {
 
     return a.normalizedMessage.localeCompare(b.normalizedMessage);
   });
+}
+
+export function groupErrors(logs: LogEntry[]): LogGroup[] {
+  return groupLogs(logs, "error");
 }

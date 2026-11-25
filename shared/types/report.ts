@@ -1,6 +1,7 @@
 import type { IncidentSeverity } from "./incident.js";
 
 export interface ReportFinding {
+  level: "error" | "warn";
   service: string;
   pattern: string;
   occurrences: number;

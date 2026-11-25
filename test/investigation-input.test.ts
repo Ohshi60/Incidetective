@@ -15,6 +15,7 @@ const at = (seconds: number) => new Date(base + seconds * 1000).toISOString();
 
 function finding(i: number, message: string): ReportFinding {
   return {
+    level: "error",
     service: "api",
     pattern: `pattern ${i}`,
     occurrences: 10 - i,
@@ -158,6 +159,24 @@ describe("buildInvestigationInput", () => {
     expect(input.contextEvidence.at(-1)).toMatchObject({
       id: "C40",
       message: "warning 59",
+    });
+  });
+
+  it("only uses error findings to pick context warnings", () => {
+    const warnFinding: ReportFinding = {
+      ...finding(0, "slow read"),
+      level: "warn",
+    };
+    const input = buildInvestigationInput(
+      report([warnFinding]),
+      [warning(590, "10 s before the warning finding")],
+      [],
+      small,
+    );
+
+    expect(input.contextEvidence).toEqual([]);
+    expect(JSON.parse(input.user)).toMatchObject({
+      findings: [{ id: "F1", level: "warn" }],
     });
   });
 

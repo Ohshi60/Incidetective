@@ -11,6 +11,7 @@ const report: InvestigationReport = {
   summary: "",
   findings: [
     {
+      level: "error",
       service: "auth",
       pattern: "Session lookup failed: <*>",
       occurrences: 3,
