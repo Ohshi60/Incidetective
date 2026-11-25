@@ -24,6 +24,46 @@ export function AIInvestigation({ report }: Props) {
     },
   });
 
+  // One cited evidence item, resolved from its ID (F, C/I or D).
+  const renderEvidence = (id: string) => {
+    const context = investigation.data?.contextEvidence.find(
+      (log) => log.id === id,
+    );
+    const diagnostic = investigation.data?.diagnosticEvidence.find(
+      (file) => file.id === id,
+    );
+    const findingIndex = /^F\d+$/.test(id) ? Number(id.slice(1)) - 1 : -1;
+
+    const finding = report.findings[findingIndex];
+
+    const message =
+      diagnostic?.excerpt ??
+      context?.message ??
+      finding?.evidence[0]?.message ??
+      finding?.pattern;
+
+    if (!message) return null;
+
+    return (
+      <div key={id} className="rounded-md bg-muted/50 p-3 text-xs">
+        <div className="mb-2 flex items-center gap-2">
+          <span className="font-semibold">{id}</span>
+          <span className="min-w-0 break-all text-muted-foreground">
+            {diagnostic
+              ? `${diagnostic.fileName} · diagnostic file`
+              : `${context?.service ?? finding?.service} · ${
+                  context ? context.level : (finding?.level ?? "error")
+                }`}
+          </span>
+        </div>
+
+        <pre className="max-h-60 overflow-auto whitespace-pre-wrap break-words font-mono text-xs">
+          {message}
+        </pre>
+      </div>
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -89,52 +129,7 @@ export function AIInvestigation({ report }: Props) {
                       </p>
                     )}
 
-                    {h.evidenceIds.map((id) => {
-                      const context = investigation.data?.contextEvidence.find(
-                        (log) => log.id === id,
-                      );
-                      const diagnostic =
-                        investigation.data?.diagnosticEvidence.find(
-                          (file) => file.id === id,
-                        );
-                      const findingIndex = /^F\d+$/.test(id)
-                        ? Number(id.slice(1)) - 1
-                        : -1;
-
-                      const finding = report.findings[findingIndex];
-
-                      const message =
-                        diagnostic?.excerpt ??
-                        context?.message ??
-                        finding?.evidence[0]?.message ??
-                        finding?.pattern;
-
-                      if (!message) return null;
-
-                      return (
-                        <div
-                          key={id}
-                          className="rounded-md bg-muted/50 p-3 text-xs"
-                        >
-                          <div className="mb-2 flex items-center gap-2">
-                            <span className="font-semibold">{id}</span>
-                            <span className="min-w-0 break-all text-muted-foreground">
-                              {diagnostic
-                                ? `${diagnostic.fileName} · diagnostic file`
-                                : `${context?.service ?? finding?.service} · ${
-                                    context
-                                      ? context.level
-                                      : (finding?.level ?? "error")
-                                  }`}
-                            </span>
-                          </div>
-
-                          <pre className="max-h-60 overflow-auto whitespace-pre-wrap break-words font-mono text-xs">
-                            {message}
-                          </pre>
-                        </div>
-                      );
-                    })}
+                    {h.evidenceIds.map(renderEvidence)}
                   </div>
                 </details>
 
@@ -143,6 +138,26 @@ export function AIInvestigation({ report }: Props) {
                 </p>
               </div>
             ))}
+
+            {investigation.data.ruledOut.length > 0 && (
+              <div className="space-y-3 rounded-lg border p-4">
+                <h3 className="font-semibold">Ruled out</h3>
+                <p className="text-sm text-muted-foreground">
+                  Evidence that looks alarming but the AI judged unrelated to
+                  the problem.
+                </p>
+                {investigation.data.ruledOut.map((item, index) => (
+                  <details key={index} className="rounded-md border p-3">
+                    <summary className="cursor-pointer text-sm">
+                      {item.reason}
+                    </summary>
+                    <div className="mt-3 space-y-2">
+                      {item.evidenceIds.map(renderEvidence)}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            )}
 
             {investigation.data.missingEvidence.length > 0 && (
               <div className="rounded-lg border p-4 space-y-3">

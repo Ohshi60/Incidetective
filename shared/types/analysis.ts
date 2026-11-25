@@ -29,6 +29,11 @@ export interface IncidentAnalysis {
 
 export interface AIInvestigation {
   summary: string;
+  /** Evidence the model judged misleading, with its reason. */
+  ruledOut: {
+    evidenceIds: string[];
+    reason: string;
+  }[];
   hypotheses: {
     cause: string;
     evidenceIds: string[];

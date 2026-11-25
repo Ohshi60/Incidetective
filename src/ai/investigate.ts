@@ -4,6 +4,7 @@ import type { InvestigationReport } from "../../shared/types/report.js";
 import type { DiagnosticEvidence } from "../evidence/diagnostic-store.js";
 import {
   MAX_EVIDENCE_IDS,
+  MAX_RULED_OUT,
   buildInvestigationInput,
 } from "./investigation-input.js";
 import { ollamaJsonChat, ollamaSettings } from "./ollama.js";
@@ -80,31 +81,75 @@ export async function investigateWithAI(
   const missingEvidence =
     modelRequests.length > 0 ? modelRequests : fallbackRequests;
 
+  const hypotheses = result.hypotheses.slice(0, 3).map((h) => {
+    if (
+      typeof h.cause !== "string" ||
+      typeof h.nextStep !== "string" ||
+      !Array.isArray(h.evidenceIds)
+    ) {
+      throw new Error("Invalid AI hypothesis");
+    }
+
+    return {
+      cause: h.cause,
+      nextStep: h.nextStep,
+      evidenceIds: [
+        ...new Set(
+          h.evidenceIds.filter(
+            (id): id is string => typeof id === "string" && validIds.has(id),
+          ),
+        ),
+      ].slice(0, MAX_EVIDENCE_IDS),
+    };
+  });
+
+  // Optional for robustness: keep only well-formed items citing real IDs.
+  const ruledOut = (
+    Array.isArray(result.ruledOut) ? (result.ruledOut as unknown[]) : []
+  ).flatMap((item) => {
+    const r = item as { evidenceIds?: unknown; reason?: unknown };
+    if (typeof r.reason !== "string" || !r.reason.trim()) return [];
+    const ids = Array.isArray(r.evidenceIds)
+      ? r.evidenceIds.filter(
+          (id): id is string => typeof id === "string" && validIds.has(id),
+        )
+      : [];
+    return ids.length
+      ? [{ evidenceIds: [...new Set(ids)], reason: r.reason }]
+      : [];
+  });
+
   return {
     summary: result.summary,
     contextEvidence,
     missingEvidence,
     diagnosticEvidence,
-    hypotheses: result.hypotheses.slice(0, 3).map((h) => {
-      if (
-        typeof h.cause !== "string" ||
-        typeof h.nextStep !== "string" ||
-        !Array.isArray(h.evidenceIds)
-      ) {
-        throw new Error("Invalid AI hypothesis");
-      }
+    ...settleRuledOut(hypotheses, ruledOut),
+  };
+}
 
-      return {
-        cause: h.cause,
-        nextStep: h.nextStep,
-        evidenceIds: [
-          ...new Set(
-            h.evidenceIds.filter(
-              (id): id is string => typeof id === "string" && validIds.has(id),
-            ),
-          ),
-        ].slice(0, MAX_EVIDENCE_IDS),
-      };
-    }),
+/**
+ * Small models sometimes rule evidence out and still build a hypothesis on
+ * it. Settle the contradiction: the leading hypothesis wins (ruled-out items
+ * touching its evidence are dropped), and a later hypothesis resting only on
+ * ruled-out evidence is dropped.
+ */
+export function settleRuledOut(
+  hypotheses: AIInvestigation["hypotheses"],
+  ruledOut: AIInvestigation["ruledOut"],
+): Pick<AIInvestigation, "hypotheses" | "ruledOut"> {
+  const leading = new Set(hypotheses[0]?.evidenceIds ?? []);
+  const kept = ruledOut
+    .filter((r) => !r.evidenceIds.some((id) => leading.has(id)))
+    .slice(0, MAX_RULED_OUT);
+  const out = new Set(kept.flatMap((r) => r.evidenceIds));
+  return {
+    ruledOut: kept,
+    hypotheses: hypotheses.filter(
+      (h, index) =>
+        index === 0 ||
+        h.evidenceIds.length === 0 ||
+        !h.evidenceIds.every((id) => out.has(id)),
+    ),
   };
 }
