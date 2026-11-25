@@ -3,15 +3,31 @@
   "service": "ollama",
   "severity": "medium",
   "description": "After moving Ollama to a desktop with an AMD RX 7900 XT, some chat requests with a JSON schema fail with HTTP 500, and some return garbage like \"0000…\". It gets worse with longer prompts. Restarting Ollama helps for a while.",
-  "logs": ["server-5.log", "server-1.log"],
+  "logs": [
+    "server-5.log",
+    "server-1.log"
+  ],
   "diagnostics": [],
   "groundTruth": {
-    "cause": "Inference on Ollama's ROCm GPU backend produced corrupted output, so the JSON-schema grammar rejected it (\"Unexpected empty grammar stack\") and requests failed with HTTP 500; forcing the Vulkan backend (HIP_VISIBLE_DEVICES=-1) fixed it. The \"llama-server terminated\" lines are runners being stopped on model unload or restart, not crashes.",
-    "keyEvidence": ["Unexpected empty grammar stack", "ROCm"],
+    "cause": "Inference on Ollama's ROCm GPU backend produced corrupted output, so the JSON-schema grammar rejected it (\"Unexpected empty grammar stack\") and requests failed with HTTP 500; forcing the Vulkan backend (HIP_VISIBLE_DEVICES=-1) fixed it. The logs alone can't prove the backend is at fault: a good answer treats the grammar errors as a symptom of corrupted generation and proposes isolating it (another backend, the CPU, no schema) or looking the error up for this backend. The \"llama-server terminated\" lines are runners being stopped on model unload or restart, not crashes.",
+    "keyEvidence": [
+      "Unexpected empty grammar stack"
+    ],
     "goodNextSteps": [
       "Run the same request on another GPU backend (Vulkan via HIP_VISIBLE_DEVICES=-1) or on the CPU, to see whether the failures follow the ROCm backend",
       "Retry without a JSON schema and check whether the raw output is corrupted (e.g. repeated \"0\") rather than just failing the grammar"
+    ],
+    "nextStepPatterns": [
+      "vulkan",
+      "hip_visible_devices",
+      "(another|other|different|alternative|switch\\w*|chang\\w*|fall\\s?back)\\s+(\\w+\\s+){0,2}backend",
+      "(another|other|different)\\s+gpu",
+      "\\b(on|with|using|to)\\s+(the\\s+)?cpu\\b",
+      "without\\s+(a\\s+|the\\s+)?(json\\s+)?(schema|format|grammar)",
+      "raw\\s+(model\\s+)?output",
+      "known\\s+(issue|bug)s?|bug\\s+report|issue\\s+tracker|github\\s+issues?",
+      "disabl\\w*\\s+(\\w+\\s+){0,3}(gpu|acceleration|structured|schema|grammar)"
     ]
   },
-  "notes": "Real incident on the author's desktop, 25 November 2026: Ollama 0.40.18 on Windows 11, RX 7900 XT, ROCm 7.1 backend. Two server logs covering 14:18–14:34 local time. Every line in these files is at INFO except the grammar errors and the runner terminations. \"ROCm\" appears only in INFO lines (the backend in use), so naming the backend needs context the app doesn't send to the model today."
+  "notes": "Real incident on the author's desktop, 25 November 2026: Ollama 0.40.18 on Windows 11, RX 7900 XT, ROCm 7.1 backend. Two server logs covering 14:18–14:34 local time. Every line in these files is at INFO except the grammar errors and the runner terminations. The cause was confirmed by experiment (switching to Vulkan), not from the logs, so the next step carries this case: nextStepPatterns accept isolating the backend or looking the error up. Sending rare INFO patterns (which mention ROCm) was tried and didn't help, with qwen3:4b-instruct or qwen3:14b."
 }

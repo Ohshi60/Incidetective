@@ -20,6 +20,11 @@ export interface EvalCase {
     cause: string;
     keyEvidence: string[];
     goodNextSteps: string[];
+    /**
+     * Regular expressions (case-insensitive) for next steps that would really
+     * help; an answer passes if any hypothesis's next step matches one.
+     */
+    nextStepPatterns: string[];
   };
   notes?: string;
 }
@@ -54,6 +59,19 @@ export function parseCase(id: string, raw: unknown): EvalCase {
     fail("groundTruth.keyEvidence");
   }
   if (!isStringArray(gt?.goodNextSteps)) fail("groundTruth.goodNextSteps");
+  if (
+    !isStringArray(gt?.nextStepPatterns) ||
+    gt.nextStepPatterns.length === 0
+  ) {
+    fail("groundTruth.nextStepPatterns");
+  }
+  for (const pattern of gt?.nextStepPatterns as string[]) {
+    try {
+      new RegExp(pattern, "i");
+    } catch {
+      fail(`groundTruth.nextStepPatterns (${pattern})`);
+    }
+  }
 
   const source = c.source as Record<string, unknown> | undefined;
   if (
@@ -163,6 +181,18 @@ export function keyEvidenceHits(
   };
 }
 
+/** Which next-step patterns the answer's next steps match. */
+export function nextStepHits(
+  patterns: string[],
+  nextSteps: string[],
+): { matched: string[] } {
+  return {
+    matched: patterns.filter((pattern) =>
+      nextSteps.some((step) => new RegExp(pattern, "i").test(step)),
+    ),
+  };
+}
+
 /**
  * Resolve one app evidence ID to the text it stands for, matching how
  * investigateWithAI() numbers them: F = report findings, C = context
@@ -264,6 +294,8 @@ export interface VariantResult {
   /** The evidence text the answer cited, for reading and scoring. */
   cited?: string[];
   keyEvidence?: { found: string[]; missing: string[] };
+  /** Next-step patterns the answer matched; none means no useful next step. */
+  nextStep?: { matched: string[] };
   /** App only: how focused the citations are. */
   focus?: EvidenceFocus;
   /** Prompt tokens as counted by the model. */
@@ -319,6 +351,11 @@ function variantSection(
       diagnostics && `${diagnostics} diagnostics`,
     ].filter(Boolean);
     if (parts.length) meta.push(`left out to fit: ${parts.join(", ")}`);
+  }
+  if (result.nextStep) {
+    meta.push(
+      `useful next step: ${result.nextStep.matched.length ? "yes" : "no"}`,
+    );
   }
   if (result.focus) {
     const { idsPerHypothesis, topKeyEvidence, keyShare } = result.focus;

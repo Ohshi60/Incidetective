@@ -8,14 +8,27 @@
     "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
     "path": "application_1445175094696_0004"
   },
-  "logs": ["data/"],
+  "logs": [
+    "data/"
+  ],
   "diagnostics": [],
   "groundTruth": {
     "cause": "One cluster node was disconnected from the network, so tasks could not reach HDFS datanodes on it (NoRouteToHost) to read their input blocks and were killed after retries.",
-    "keyEvidence": ["NoRouteToHostException", "deadNodes"],
+    "keyEvidence": [
+      "NoRouteToHostException",
+      "deadNodes"
+    ],
     "goodNextSteps": [
       "Check network connectivity to the datanode address in the errors (ping, routes, switch port, firewall)",
       "Check the HDFS datanode report for dead or unreachable nodes"
+    ],
+    "nextStepPatterns": [
+      "\\bping\\b",
+      "traceroute",
+      "\\broutes?\\b|routing",
+      "firewall",
+      "network connectivity|connectivity\\s+(to|between|from)",
+      "dfsadmin|datanode report|dead\\b.{0,20}\\bnodes?"
     ]
   },
   "notes": "Loghub Hadoop run with an injected network disconnection. Small run with WARN-level evidence only."
