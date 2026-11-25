@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  generateReport,
-  headline,
-} from "../src/analysis/reports/generate-report.js";
+import { generateReport } from "../src/analysis/reports/generate-report.js";
+import { headline } from "../shared/text.js";
 import type { LogEntry } from "../shared/types/evidence.js";
 import type { Incident } from "../shared/types/incident.js";
 

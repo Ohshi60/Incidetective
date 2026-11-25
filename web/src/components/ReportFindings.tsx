@@ -1,4 +1,5 @@
 import type { ReportFinding } from "../../../shared/types/report";
+import { headline } from "../../../shared/text";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
@@ -50,8 +51,19 @@ export function ReportFindings({ findings }: ReportFindingProps) {
               </p>
 
               <p className="break-all font-mono text-sm font-medium leading-relaxed">
-                {finding.pattern}
+                {headline(finding.pattern)}
               </p>
+
+              {headline(finding.pattern) !== finding.pattern.trim() && (
+                <details className="text-xs">
+                  <summary className="cursor-pointer select-none text-muted-foreground hover:text-foreground">
+                    Show full pattern
+                  </summary>
+                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md bg-muted/40 p-3 font-mono leading-relaxed">
+                    {finding.pattern}
+                  </pre>
+                </details>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">

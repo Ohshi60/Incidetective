@@ -122,12 +122,14 @@ export function AIInvestigation({ report }: Props) {
                               {diagnostic
                                 ? `${diagnostic.fileName} · diagnostic file`
                                 : `${context?.service ?? finding?.service} · ${
-                                    context ? context.level : "error"
+                                    context
+                                      ? context.level
+                                      : (finding?.level ?? "error")
                                   }`}
                             </span>
                           </div>
 
-                          <pre className="whitespace-pre-wrap break-words font-mono text-xs">
+                          <pre className="max-h-60 overflow-auto whitespace-pre-wrap break-words font-mono text-xs">
                             {message}
                           </pre>
                         </div>
