@@ -52,6 +52,7 @@ RULES:
 - F1, F2, etc.: Grouped log patterns, each with a level (error or warn). Warnings can be the only sign of a failure.
 - C1, C2, etc.: Contextual warning logs.
 - D1, D2, etc.: Raw diagnostic file excerpts.
+- timeline: when each finding first appeared, oldest first. Patterns that started before the first error are candidate causes; patterns that started after it are more likely symptoms.
 
 Use all relevant evidence types.
 Prioritize original error messages over normalized patterns.
@@ -239,10 +240,25 @@ export function buildInvestigationInput(
         message: log.message,
       }));
 
+  // When each sent pattern first appeared, oldest first, with the first
+  // error marked: patterns that started earlier are candidate causes.
+  const timeline = () => {
+    const ordered = [...findings].sort((a, b) =>
+      a.firstSeen.localeCompare(b.firstSeen),
+    );
+    const firstError = ordered.find((f) => f.level === "error");
+    return ordered.map(
+      (f) =>
+        `${f.firstSeen} ${f.id} (${f.level}) first seen` +
+        (f === firstError ? " <- first error" : ""),
+    );
+  };
+
   const render = () =>
     JSON.stringify({
       incident,
       findings,
+      timeline: timeline(),
       contextLogs: contextLogs().map((log) => ({
         ...log,
         message: clip(log.message, MAX_MESSAGE_CHARS),

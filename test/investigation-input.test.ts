@@ -180,6 +180,27 @@ describe("buildInvestigationInput", () => {
     });
   });
 
+  it("adds a timeline of when each finding first appeared", () => {
+    const early: ReportFinding = {
+      ...finding(1, "disk almost full"),
+      level: "warn",
+      firstSeen: at(100),
+    };
+    const input = buildInvestigationInput(
+      report([finding(0, "write failed"), early]),
+      [],
+      [],
+      small,
+    );
+
+    expect(JSON.parse(input.user)).toMatchObject({
+      timeline: [
+        `${at(100)} F2 (warn) first seen`,
+        `${at(600)} F1 (error) first seen <- first error`,
+      ],
+    });
+  });
+
   it("always sends the first finding, even if nothing fits", () => {
     const input = buildInvestigationInput(
       report([finding(0, "timeout")]),
