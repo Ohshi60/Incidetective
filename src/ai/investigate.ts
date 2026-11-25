@@ -51,14 +51,19 @@ export async function investigateWithAI(
     throw new Error("Invalid AI response");
   }
 
-  const modelRequests = Array.isArray(result.missingEvidence)
-    ? result.missingEvidence
-        .filter(
-          (item): item is string =>
-            typeof item === "string" && item.trim().length > 0,
-        )
-        .slice(0, 2)
-    : [];
+  // The schema asks for missingEvidence per hypothesis; collect them.
+  const modelRequests = [
+    ...new Set(
+      (result.hypotheses as { missingEvidence?: unknown }[]).flatMap((h) =>
+        Array.isArray(h.missingEvidence)
+          ? h.missingEvidence.filter(
+              (item): item is string =>
+                typeof item === "string" && item.trim().length > 0,
+            )
+          : [],
+      ),
+    ),
+  ].slice(0, 2);
 
   // If the model didn't request evidence, use the diagnostic
   // steps it already proposed as follow-up evidence requests.
