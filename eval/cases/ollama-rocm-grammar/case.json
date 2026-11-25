@@ -1,0 +1,17 @@
+{
+  "title": "Ollama returns HTTP 500 for structured-output requests",
+  "service": "ollama",
+  "severity": "medium",
+  "description": "After moving Ollama to a desktop with an AMD RX 7900 XT, some chat requests with a JSON schema fail with HTTP 500, and some return garbage like \"0000…\". It gets worse with longer prompts. Restarting Ollama helps for a while.",
+  "logs": ["server-5.log", "server-1.log"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "Inference on Ollama's ROCm GPU backend produced corrupted output, so the JSON-schema grammar rejected it (\"Unexpected empty grammar stack\") and requests failed with HTTP 500; forcing the Vulkan backend (HIP_VISIBLE_DEVICES=-1) fixed it. The \"llama-server terminated\" lines are runners being stopped on model unload or restart, not crashes.",
+    "keyEvidence": ["Unexpected empty grammar stack", "ROCm"],
+    "goodNextSteps": [
+      "Run the same request on another GPU backend (Vulkan via HIP_VISIBLE_DEVICES=-1) or on the CPU, to see whether the failures follow the ROCm backend",
+      "Retry without a JSON schema and check whether the raw output is corrupted (e.g. repeated \"0\") rather than just failing the grammar"
+    ]
+  },
+  "notes": "Real incident on the author's desktop, 25 November 2026: Ollama 0.40.18 on Windows 11, RX 7900 XT, ROCm 7.1 backend. Two server logs covering 14:18–14:34 local time. Every line in these files is at INFO except the grammar errors and the runner terminations. \"ROCm\" appears only in INFO lines (the backend in use), so naming the backend needs context the app doesn't send to the model today."
+}
