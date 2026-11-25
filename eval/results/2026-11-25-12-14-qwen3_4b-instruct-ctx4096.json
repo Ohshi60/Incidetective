@@ -1,0 +1,537 @@
+{
+  "date": "2026-11-25T12:14:15.790Z",
+  "model": "qwen3:4b-instruct",
+  "numCtx": 4096,
+  "cases": [
+    {
+      "id": "hadoop-disk-full",
+      "title": "WordCount job had failing map tasks",
+      "logLines": 3759,
+      "parsedEntries": 3533,
+      "findings": 1,
+      "groundTruth": {
+        "cause": "The local disk on one cluster node filled up, so map tasks running there could not write their output (no valid local directory) and had to be killed and re-run on other nodes.",
+        "keyEvidence": [
+          "DiskErrorException",
+          "Could not find any valid local directory"
+        ],
+        "goodNextSteps": [
+          "Check free disk space on the node's YARN local directories (df on yarn.nodemanager.local-dirs)",
+          "Check which node the failed attempts ran on and whether YARN marked its disks unhealthy"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 96.402098833,
+        "answer": {
+          "summary": "Map tasks in the WordCount job failed due to inability to allocate local output directories, with multiple warnings indicating failed cleanup of temporary files.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2015-10-19T14:25:00.053Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000003_0"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2015-10-19T14:25:36.132Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000005_0"
+            },
+            {
+              "id": "C3",
+              "timestamp": "2015-10-19T14:25:47.460Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #3] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000002_0"
+            },
+            {
+              "id": "C4",
+              "timestamp": "2015-10-19T14:26:06.726Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #4] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000008_0"
+            },
+            {
+              "id": "C5",
+              "timestamp": "2015-10-19T14:26:20.742Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #0] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000004_0"
+            },
+            {
+              "id": "C6",
+              "timestamp": "2015-10-19T14:26:23.648Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000006_0"
+            },
+            {
+              "id": "C7",
+              "timestamp": "2015-10-19T14:26:28.867Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[main] org.apache.hadoop.mapred.YarnChild: Exception running child : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)"
+            },
+            {
+              "id": "C8",
+              "timestamp": "2015-10-19T14:26:28.977Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[main] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000007_0"
+            }
+          ],
+          "missingEvidence": [
+            "Provide the results of this diagnostic check: Check the disk usage and filesystem status of the task nodes (e.g., via df -h or df -i) at the time of the failure to verify if local storage was full or corrupted.",
+            "Provide the results of this diagnostic check: Verify the HDFS file system for residual or locked temporary files in the /out/out2/_temporary/ directory and check if the file system is in a corrupted or inconsistent state."
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The Hadoop job failed to find valid local disk space for writing output files, likely due to full or corrupted local filesystems on the task nodes.",
+              "nextStep": "Check the disk usage and filesystem status of the task nodes (e.g., via df -h or df -i) at the time of the failure to verify if local storage was full or corrupted.",
+              "evidenceIds": [
+                "F1",
+                "C7"
+              ]
+            },
+            {
+              "cause": "The Hadoop job failed to clean up temporary files in HDFS, which may have caused subsequent tasks to fail when attempting to write to the same output paths due to file system conflicts.",
+              "nextStep": "Verify the HDFS file system for residual or locked temporary files in the /out/out2/_temporary/ directory and check if the file system is in a corrupted or inconsistent state.",
+              "evidenceIds": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6",
+                "C8"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[IPC Server handler <NUM> on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Task: attempt_<NUM>_<NUM>_m_<NUM>_<NUM> - exited : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>/file.out at org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:<NUM>) at org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:<NUM>) at org.apache.hadoop.mapred.MapTask.run(MapTask.java:<NUM>) at org.apache.hadoop.mapred.YarnChild$<NUM>.run(YarnChild.java:<NUM>) at java.security.AccessController.doPrivileged(Native Method) at javax.security.auth.Subject.doAs(Subject.java:<NUM>) at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:<NUM>) at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:<NUM>)",
+          "[IPC Server handler 10 on 49792] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Task: attempt_1445182159119_0002_m_000007_0 - exited : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)",
+          "[main] org.apache.hadoop.mapred.YarnChild: Exception running child : org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find any valid local directory for output/attempt_1445182159119_0002_m_000007_0/file.out\n\tat org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathForWrite(LocalDirAllocator.java:402)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:150)\n\tat org.apache.hadoop.fs.LocalDirAllocator.getLocalPathForWrite(LocalDirAllocator.java:131)\n\tat org.apache.hadoop.mapred.YarnOutputFiles.getOutputFileForWrite(YarnOutputFiles.java:84)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:1833)\n\tat org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:1504)\n\tat org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:720)\n\tat org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:790)\n\tat org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)\n\tat org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:163)\n\tat java.security.AccessController.doPrivileged(Native Method)\n\tat javax.security.auth.Subject.doAs(Subject.java:415)\n\tat org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1628)\n\tat org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000003_0",
+          "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000005_0",
+          "[CommitterEvent Processor #3] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000002_0",
+          "[CommitterEvent Processor #4] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000008_0",
+          "[CommitterEvent Processor #0] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000004_0",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000006_0",
+          "[main] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out2/_temporary/1/_temporary/attempt_1445182159119_0002_m_000007_0"
+        ],
+        "keyEvidence": {
+          "found": [
+            "DiskErrorException",
+            "Could not find any valid local directory"
+          ],
+          "missing": []
+        },
+        "promptTokens": 1920,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 181.60515983400003,
+        "answer": {
+          "summary": "The WordCount MapReduce job experienced map task failures and prolonged execution due to excessive map output sizes exceeding the configured maxSingleShuffleLimit, leading to on-disk shuffling and significant I/O overhead. This caused delays in the reduce phase and overall job duration.",
+          "hypotheses": [
+            {
+              "cause": "Map tasks produced output sizes exceeding the maxSingleShuffleLimit, triggering on-disk shuffling and increasing I/O latency.",
+              "evidence": [
+                "attempt_1445182159119_0002_m_000005_1: Shuffling to disk since 216990140 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000009_1: Shuffling to disk since 172334804 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000003_1: Shuffling to disk since 216972750 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000004_1: Shuffling to disk since 216999709 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000006_1: Shuffling to disk since 217011663 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000007_1: Shuffling to disk since 216976206 is greater than maxSingleShuffleLimit (32663142)",
+                "attempt_1445182159119_0002_m_000008_1: Shuffling to disk since 217015228 is greater than maxSingleShuffleLimit (32663142)"
+              ],
+              "nextStep": "Check the input data distribution and size per map task to identify whether specific input splits are generating unusually large map outputs. Correlate this with input file sizes and partitioning strategy to determine if skewed data is causing oversized outputs."
+            },
+            {
+              "cause": "The reduce phase was delayed due to merging 10 large on-disk map outputs, which significantly increased the merge time and overall job duration.",
+              "evidence": [
+                "finalMerge called with 0 in-memory map-outputs and 10 on-disk map-outputs",
+                "Merging 10 files, 2125289789 bytes from disk",
+                "Merging 10 sorted segments",
+                "Down to the last merge-pass, with 10 segments left of total size: 2125289689 bytes"
+              ],
+              "nextStep": "Verify the total size of the map outputs and the number of map tasks to assess whether the number of map outputs is unusually high. Investigate whether the job configuration has a reasonable maxSingleShuffleLimit or if it should be increased to avoid on-disk shuffling."
+            }
+          ]
+        },
+        "promptTokens": 3241,
+        "cited": [
+          "attempt_1445182159119_0002_m_000005_1: Shuffling to disk since 216990140 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000009_1: Shuffling to disk since 172334804 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000003_1: Shuffling to disk since 216972750 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000004_1: Shuffling to disk since 216999709 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000006_1: Shuffling to disk since 217011663 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000007_1: Shuffling to disk since 216976206 is greater than maxSingleShuffleLimit (32663142)",
+          "attempt_1445182159119_0002_m_000008_1: Shuffling to disk since 217015228 is greater than maxSingleShuffleLimit (32663142)",
+          "finalMerge called with 0 in-memory map-outputs and 10 on-disk map-outputs",
+          "Merging 10 files, 2125289789 bytes from disk",
+          "Merging 10 sorted segments",
+          "Down to the last merge-pass, with 10 segments left of total size: 2125289689 bytes"
+        ],
+        "truncated": true,
+        "keptFraction": 0.010281472492676406,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "DiskErrorException",
+            "Could not find any valid local directory"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-network-disconnect",
+      "title": "WordCount map tasks killed after retries",
+      "logLines": 1929,
+      "parsedEntries": 963,
+      "findings": 0,
+      "groundTruth": {
+        "cause": "One cluster node was disconnected from the network, so tasks could not reach HDFS datanodes on it (NoRouteToHost) to read their input blocks and were killed after retries.",
+        "keyEvidence": [
+          "NoRouteToHostException",
+          "deadNodes"
+        ],
+        "goodNextSteps": [
+          "Check network connectivity to the datanode address in the errors (ping, routes, switch port, firewall)",
+          "Check the HDFS datanode report for dead or unreachable nodes"
+        ]
+      },
+      "app": {
+        "status": "skipped",
+        "reason": "No error-level findings, so the app refuses to investigate (the API returns 400)."
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 102.81907112499997,
+        "answer": {
+          "summary": "The provided log snippet shows a MapReduce job where map tasks are progressing through spilling and merging map outputs, and ultimately completing successfully. There is no evidence of map tasks being killed or failing after retries. The log ends with a successful completion message indicating the task is done and committing. Therefore, there is no actual incident of map tasks being killed after retries as described in the incident title.",
+          "hypotheses": [
+            {
+              "cause": "The incident description is incorrect or misaligned with the actual logs.",
+              "evidence": [
+                "Task 'attempt_1445175094696_0004_m_000006_1' done. And is in the process of committing",
+                "Task 'attempt_1445175094696_0004_m_000006_1' done."
+              ],
+              "nextStep": "Verify the full log for any error messages, task kill events, or failure indicators (e.g., 'KILLED', 'FAILED', 'ERROR') that may have been omitted. Check the logs for the same task ID at different stages to confirm whether it was killed or completed successfully."
+            }
+          ]
+        },
+        "promptTokens": 3674,
+        "cited": [
+          "Task 'attempt_1445175094696_0004_m_000006_1' done. And is in the process of committing",
+          "Task 'attempt_1445175094696_0004_m_000006_1' done."
+        ],
+        "truncated": true,
+        "keptFraction": 0.03294807572374112,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "NoRouteToHostException",
+            "deadNodes"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-network-large",
+      "title": "WordCount job stopped making progress",
+      "logLines": 100667,
+      "parsedEntries": 8304,
+      "findings": 8,
+      "groundTruth": {
+        "cause": "The node running the job's application master was disconnected from the network, so it repeatedly failed to contact the ResourceManager and could not renew its HDFS lease.",
+        "keyEvidence": [
+          "ERROR IN CONTACTING RM",
+          "Failed to renew lease"
+        ],
+        "goodNextSteps": [
+          "Check network connectivity from the application master's node to the ResourceManager and NameNode",
+          "Check the ResourceManager for the node's status (lost or unhealthy NodeManager)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 99.648608916,
+        "answer": {
+          "summary": "The WordCount job failed to progress due to a network connectivity issue between the client and the ResourceManager (RM) on msra-sa-41, with multiple errors indicating inability to establish IO streams or route traffic to the RM endpoint.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2015-10-18T21:45:16.673Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2015-10-18T21:45:17.064Z",
+              "service": "hadoop-mapreduce",
+              "level": "warn",
+              "message": "[Thread-626] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Graceful stop failed \norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:568)\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.serviceStop(JobHistoryEventHandler.java:389)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more"
+            }
+          ],
+          "missingEvidence": [
+            "Provide the results of this diagnostic check: Run a network connectivity check from MININT-FNANLI5 to msra-sa-41 on ports 8030 and 9000 using telnet or nc to verify if the ports are reachable and if there is a route to the host.",
+            "Provide the results of this diagnostic check: Check the YARN ResourceManager configuration on msra-sa-41 to confirm the advertised hostname and port, and verify if it has changed recently or is misconfigured."
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "A network route or DNS resolution failure prevents the client from reaching the ResourceManager at msra-sa-41:8030 or msra-sa-41:9000, causing the RMContainerAllocator to fail in establishing communication and eventually stop the job.",
+              "nextStep": "Run a network connectivity check from MININT-FNANLI5 to msra-sa-41 on ports 8030 and 9000 using telnet or nc to verify if the ports are reachable and if there is a route to the host.",
+              "evidenceIds": [
+                "F1",
+                "F2",
+                "F3",
+                "F4",
+                "F5",
+                "C1",
+                "C2"
+              ]
+            },
+            {
+              "cause": "The ResourceManager at msra-sa-41 has undergone a configuration change or restart that resulted in a hostname/IP mismatch (e.g., from 10.190.173.170 to msra-sa-41:9000), causing clients to fail in establishing connections due to address change detection.",
+              "nextStep": "Check the YARN ResourceManager configuration on msra-sa-41 to confirm the advertised hostname and port, and verify if it has changed recently or is misconfigured.",
+              "evidenceIds": [
+                "C1",
+                "F2",
+                "F3",
+                "F5"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. java.io.IOException: Failed on local exception: java.io.IOException: Couldn't set up IO streams; Host Details : local host is: \"MININT-FNANLI5/<IP>\"; destination host is: \"msra-sa-<NUM>\":<NUM>; at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy35.allocate(Unknown Source) at org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:<NUM>) at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy36.allocate(Unknown Source) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$<NUM>.run(RMCommunicator.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.io.IOException: Couldn't set up IO streams at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more Caused by: java.nio.channels.UnresolvedAddressException at sun.nio.ch.Net.checkAddress(Net.java:<NUM>) at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) ... <NUM> more",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: ERROR IN CONTACTING RM. \njava.io.IOException: Failed on local exception: java.io.IOException: Couldn't set up IO streams; Host Details : local host is: \"MININT-FNANLI5/127.0.0.1\"; destination host is: \"msra-sa-41\":8030; \n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:772)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy35.allocate(Unknown Source)\n\tat org.apache.hadoop.yarn.api.impl.pb.client.ApplicationMasterProtocolPBClientImpl.allocate(ApplicationMasterProtocolPBClientImpl.java:77)\n\tat sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy36.allocate(Unknown Source)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor.makeRemoteRequest(RMContainerRequestor.java:188)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:667)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:244)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$1.run(RMCommunicator.java:282)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.io.IOException: Couldn't set up IO streams\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:786)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 15 more\nCaused by: java.nio.channels.UnresolvedAddressException\n\tat sun.nio.ch.Net.checkAddress(Net.java:127)\n\tat sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:640)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:192)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\t... 18 more",
+          "[eventHandlingThread] org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler: Error writing History Event: org.apache.hadoop.mapreduce.jobhistory.JobUnsuccessfulCompletionEvent@13bb724a java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<NUM>) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[eventHandlingThread] org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler: Error writing History Event: org.apache.hadoop.mapreduce.jobhistory.JobUnsuccessfulCompletionEvent@13bb724a\njava.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more",
+          "[eventHandlingThread] org.apache.hadoop.yarn.YarnUncaughtExceptionHandler: Thread Thread[eventHandlingThread,<NUM>,main] threw an Exception. org.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:<NUM>) at org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler$<NUM>.run(JobHistoryEventHandler.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>) Caused by: java.net.NoRouteToHostException: No Route to Host from MININT-FNANLI5/<IP> to msra-sa-<NUM>:<NUM> failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see: http://wiki.apache.org/hadoop/NoRouteToHost at sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source) at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<NUM>) at java.lang.reflect.Constructor.newInstance(Constructor.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:<NUM>) at com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:<NUM>) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<NUM>) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<NUM>) at java.lang.reflect.Method.invoke(Method.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:<NUM>) at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:<NUM>) at com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<NUM>) at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<NUM>) Caused by: java.net.NoRouteToHostException: No route to host: no further information at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<NUM>) at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:<NUM>) at org.apache.hadoop.ipc.Client$Connection.access$<NUM>(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.getConnection(Client.java:<NUM>) at org.apache.hadoop.ipc.Client.call(Client.java:<NUM>) ... <NUM> more",
+          "[eventHandlingThread] org.apache.hadoop.yarn.YarnUncaughtExceptionHandler: Thread Thread[eventHandlingThread,5,main] threw an Exception.\norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:568)\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler$1.run(JobHistoryEventHandler.java:309)\n\tat java.lang.Thread.run(Thread.java:724)\nCaused by: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Could not contact RM after <NUM> milliseconds.",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Could not contact RM after 360000 milliseconds.",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Error communicating with RM: Could not contact RM after <NUM> milliseconds. org.apache.hadoop.yarn.exceptions.YarnRuntimeException: Could not contact RM after <NUM> milliseconds. at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:<NUM>) at org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$<NUM>.run(RMCommunicator.java:<NUM>) at java.lang.Thread.run(Thread.java:<NUM>)",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Error communicating with RM: Could not contact RM after 360000 milliseconds.\norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: Could not contact RM after 360000 milliseconds.\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.getResources(RMContainerAllocator.java:693)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator.heartbeat(RMContainerAllocator.java:244)\n\tat org.apache.hadoop.mapreduce.v2.app.rm.RMCommunicator$1.run(RMCommunicator.java:282)\n\tat java.lang.Thread.run(Thread.java:724)",
+          "[LeaseRenewer:msrabi@msra-sa-41:9000] org.apache.hadoop.ipc.Client: Address change detected. Old: msra-sa-41/10.190.173.170:9000 New: msra-sa-41:9000",
+          "[Thread-626] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Graceful stop failed \norg.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.handleEvent(JobHistoryEventHandler.java:568)\n\tat org.apache.hadoop.mapreduce.jobhistory.JobHistoryEventHandler.serviceStop(JobHistoryEventHandler.java:389)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.service.ServiceOperations.stop(ServiceOperations.java:52)\n\tat org.apache.hadoop.service.ServiceOperations.stopQuietly(ServiceOperations.java:80)\n\tat org.apache.hadoop.service.CompositeService.stop(CompositeService.java:157)\n\tat org.apache.hadoop.service.CompositeService.serviceStop(CompositeService.java:131)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceStop(MRAppMaster.java:1607)\n\tat org.apache.hadoop.service.AbstractService.stop(AbstractService.java:221)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.stop(MRAppMaster.java:1103)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster.shutDownJob(MRAppMaster.java:555)\n\tat org.apache.hadoop.mapreduce.v2.app.MRAppMaster$JobFinishEventHandler$1.run(MRAppMaster.java:602)\nCaused by: java.net.NoRouteToHostException: No Route to Host from  MININT-FNANLI5/127.0.0.1 to msra-sa-41:9000 failed on socket timeout exception: java.net.NoRouteToHostException: No route to host: no further information; For more details see:  http://wiki.apache.org/hadoop/NoRouteToHost\n\tat sun.reflect.GeneratedConstructorAccessor37.newInstance(Unknown Source)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:526)\n\tat org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:791)\n\tat org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:757)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1472)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1399)\n\tat org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232)\n\tat com.sun.proxy.$Proxy14.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.updateBlockForPipeline(ClientNamenodeProtocolTranslatorPB.java:877)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187)\n\tat org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102)\n\tat com.sun.proxy.$Proxy15.updateBlockForPipeline(Unknown Source)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1267)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:1005)\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:549)\nCaused by: java.net.NoRouteToHostException: No route to host: no further information\n\tat sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)\n\tat sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:735)\n\tat org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:530)\n\tat org.apache.hadoop.net.NetUtils.connect(NetUtils.java:494)\n\tat org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:607)\n\tat org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:705)\n\tat org.apache.hadoop.ipc.Client$Connection.access$2800(Client.java:368)\n\tat org.apache.hadoop.ipc.Client.getConnection(Client.java:1521)\n\tat org.apache.hadoop.ipc.Client.call(Client.java:1438)\n\t... 14 more"
+        ],
+        "keyEvidence": {
+          "found": [
+            "ERROR IN CONTACTING RM"
+          ],
+          "missing": [
+            "Failed to renew lease"
+          ]
+        },
+        "promptTokens": 2233,
+        "omitted": {
+          "findings": 3,
+          "contextLogs": 822,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 103.81641379199998,
+        "answer": {
+          "summary": "The WordCount MapReduce job stopped making progress due to a likely memory exhaustion or disk I/O bottleneck during the map task's spilling and merging phase. The logs show repeated spilling and merging operations, with a growing number of segments and increasing memory usage, indicating that the task is unable to complete its output buffer operations.",
+          "hypotheses": [
+            {
+              "cause": "Memory exhaustion in the map task due to large input splits or insufficient heap size",
+              "evidence": [
+                "mapreduce.task.io.sort.mb: 100",
+                "soft limit at 83886080",
+                "bufstart = 0; bufvoid = 104857600",
+                "kvstart = 26214396; length = 6553600"
+              ],
+              "nextStep": "Check the YARN container memory allocation and heap size configuration for the map task. Verify that the mapreduce.task.io.sort.mb and mapreduce.map.memory.mb are set appropriately for the input file size. Increase the memory limit if necessary and validate with a smaller input file to confirm behavior."
+            },
+            {
+              "cause": "Disk I/O saturation or failure during spilling and merging due to high volume of intermediate data",
+              "evidence": [
+                "Finished spill 4",
+                "Merging 5 sorted segments",
+                "Down to the last merge-pass, with 5 segments left of total size: 180080717 bytes"
+              ],
+              "nextStep": "Inspect the HDFS namenode logs and disk I/O metrics to verify whether the underlying storage system is experiencing high load or latency. Check the local directory path for the map task to confirm that the local disk has sufficient space and is not full or degraded."
+            }
+          ]
+        },
+        "promptTokens": 3492,
+        "cited": [
+          "mapreduce.task.io.sort.mb: 100",
+          "soft limit at 83886080",
+          "bufstart = 0; bufvoid = 104857600",
+          "kvstart = 26214396; length = 6553600",
+          "Finished spill 4",
+          "Merging 5 sorted segments",
+          "Down to the last merge-pass, with 5 segments left of total size: 180080717 bytes"
+        ],
+        "truncated": true,
+        "keptFraction": 0.0007653483345434602,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "ERROR IN CONTACTING RM",
+            "Failed to renew lease"
+          ]
+        }
+      }
+    },
+    {
+      "id": "redis-pool",
+      "title": "Users can't log in",
+      "logLines": 9,
+      "parsedEntries": 7,
+      "findings": 4,
+      "groundTruth": {
+        "cause": "The Redis connection pool was exhausted (100/100 connections), so session lookups first timed out and then were refused, which made authentication requests fail with HTTP 500.",
+        "keyEvidence": [
+          "connection pool",
+          "ECONNREFUSED",
+          "ETIMEDOUT"
+        ],
+        "goodNextSteps": [
+          "Check Redis client connection counts and pool configuration (max size, leaks from connections not being released)",
+          "Check Redis server health and maxclients"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 52.04696333300008,
+        "answer": {
+          "summary": "Users cannot log in due to auth-service failing to connect to Redis, with evidence of connection exhaustion and timeouts.",
+          "contextEvidence": [
+            {
+              "id": "C1",
+              "timestamp": "2026-11-12T12:10:21.200Z",
+              "service": "auth-service",
+              "level": "warn",
+              "message": "auth-service: Redis response latency increased to 1500ms"
+            },
+            {
+              "id": "C2",
+              "timestamp": "2026-11-12T12:10:24.100Z",
+              "service": "auth-service",
+              "level": "warn",
+              "message": "auth-service: Redis connection pool has reached maximum capacity"
+            }
+          ],
+          "missingEvidence": [
+            "Provide the results of this diagnostic check: Check the Redis server logs on 10.0.0.9 for connection rejection events and resource usage during the incident window to determine if the Redis instance is overloaded or misconfigured.",
+            "Provide the results of this diagnostic check: Verify network connectivity and latency between the auth-service and Redis at 10.0.0.9 using ping and traceroute commands during the incident window."
+          ],
+          "diagnosticEvidence": [
+            {
+              "id": "D1",
+              "fileName": "diagnostic-test.txt",
+              "excerpt": "Redis diagnostic output\nConnection pool exhausted\nActive connections: 100\nMaximum connections: 100\nNew connections refused\n"
+            }
+          ],
+          "hypotheses": [
+            {
+              "cause": "The auth-service is unable to establish Redis connections because the connection pool is full, leading to timeouts and authentication failures.",
+              "nextStep": "Check the Redis server logs on 10.0.0.9 for connection rejection events and resource usage during the incident window to determine if the Redis instance is overloaded or misconfigured.",
+              "evidenceIds": [
+                "F2",
+                "F3",
+                "F4",
+                "C2",
+                "D1"
+              ]
+            },
+            {
+              "cause": "A transient network issue between auth-service and Redis caused connection drops and timeouts, leading to authentication failures despite the service being otherwise healthy.",
+              "nextStep": "Verify network connectivity and latency between the auth-service and Redis at 10.0.0.9 using ping and traceroute commands during the incident window.",
+              "evidenceIds": [
+                "F3",
+                "F4",
+                "C1",
+                "D1"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "auth-service: Failed to acquire Redis connection after 3000ms",
+          "auth-service: Redis connection refused: ECONNREFUSED <IP>:<NUM>",
+          "auth-service: Redis connection refused: ECONNREFUSED 10.0.0.9:6379",
+          "auth-service: Session lookup failed: ETIMEDOUT <IP>:<NUM>",
+          "auth-service: Session lookup failed: ETIMEDOUT 10.0.0.9:6379",
+          "auth-service: Redis connection pool has reached maximum capacity",
+          "Redis diagnostic output\nConnection pool exhausted\nActive connections: 100\nMaximum connections: 100\nNew connections refused\n",
+          "auth-service: Redis response latency increased to 1500ms"
+        ],
+        "keyEvidence": {
+          "found": [
+            "connection pool",
+            "ECONNREFUSED",
+            "ETIMEDOUT"
+          ],
+          "missing": []
+        },
+        "promptTokens": 1243,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 36.20086629199994,
+        "answer": {
+          "summary": "Users cannot log in because the authentication service is failing to connect to Redis, leading to HTTP 500 errors. The root causes are identified from the logs and supported by specific log lines.",
+          "hypotheses": [
+            {
+              "cause": "Redis connection pool exhaustion due to high demand and no connection recovery",
+              "evidence": [
+                "Active connections: 100\nMaximum connections: 100\nNew connections refused"
+              ],
+              "nextStep": "Check Redis server logs for connection attempts and errors to determine if the Redis server is overloaded or rejecting connections due to memory or performance issues."
+            },
+            {
+              "cause": "Redis server unreachable or misconfigured (network or service failure)",
+              "evidence": [
+                "Redis connection refused: ECONNREFUSED 10.0.0.9:6379",
+                "Session lookup failed: ETIMEDOUT 10.0.0.9:6379"
+              ],
+              "nextStep": "Verify network connectivity from the auth-service pod to Redis at 10.0.0.9:6379 using a network diagnostic tool (e.g., telnet or nc) and confirm Redis is running and accepting connections on that address."
+            }
+          ]
+        },
+        "promptTokens": 549,
+        "cited": [
+          "Active connections: 100\nMaximum connections: 100\nNew connections refused",
+          "Redis connection refused: ECONNREFUSED 10.0.0.9:6379",
+          "Session lookup failed: ETIMEDOUT 10.0.0.9:6379"
+        ],
+        "truncated": false,
+        "keptFraction": 1,
+        "keyEvidence": {
+          "found": [
+            "connection pool",
+            "ECONNREFUSED",
+            "ETIMEDOUT"
+          ],
+          "missing": []
+        }
+      }
+    }
+  ]
+}
