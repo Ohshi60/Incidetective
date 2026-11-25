@@ -9,3 +9,7 @@ terraform.tfvars
 .terraform/
 *.tfstate
 *.tfstate.*
+
+# Eval: downloaded datasets
+eval/.cache/
+eval/cases/*/data/

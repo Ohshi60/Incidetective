@@ -1,0 +1,4 @@
+[2026-11-12 13:10:20.100 +01:00] [INF] [101] auth-service: Application started successfully
+[2026-11-12 13:10:21.200 +01:00] [WRN] [101] auth-service: Redis response latency increased to 1500ms
+[2026-11-12 13:10:22.300 +01:00] [ERR] [101] auth-service: Session lookup failed: ETIMEDOUT 10.0.0.9:6379
+[2026-11-12 13:10:23.400 +01:00] [ERR] [101] auth-service: Authentication request failed with HTTP 500

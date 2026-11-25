@@ -1,0 +1,22 @@
+{
+  "title": "WordCount job stopped making progress",
+  "service": "hadoop-mapreduce",
+  "severity": "high",
+  "description": "A WordCount MapReduce job stopped making progress, and its application master log grew to around 100,000 lines.",
+  "source": {
+    "dataset": "loghub-hadoop",
+    "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
+    "path": "application_1445175094696_0003"
+  },
+  "logs": ["data/"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "The node running the job's application master was disconnected from the network, so it repeatedly failed to contact the ResourceManager and could not renew its HDFS lease.",
+    "keyEvidence": ["ERROR IN CONTACTING RM", "Failed to renew lease"],
+    "goodNextSteps": [
+      "Check network connectivity from the application master's node to the ResourceManager and NameNode",
+      "Check the ResourceManager for the node's status (lost or unhealthy NodeManager)"
+    ]
+  },
+  "notes": "Loghub Hadoop run with an injected network disconnection. About 100,000 lines (8 MB): far too large to paste into a model's context, so it tests whether the app's compression adds value."
+}

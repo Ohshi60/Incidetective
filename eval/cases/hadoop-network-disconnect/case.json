@@ -1,0 +1,22 @@
+{
+  "title": "WordCount map tasks killed after retries",
+  "service": "hadoop-mapreduce",
+  "severity": "medium",
+  "description": "Map tasks in a WordCount MapReduce job kept failing to make progress and were killed after their last retry.",
+  "source": {
+    "dataset": "loghub-hadoop",
+    "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
+    "path": "application_1445175094696_0004"
+  },
+  "logs": ["data/"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "One cluster node was disconnected from the network, so tasks could not reach HDFS datanodes on it (NoRouteToHost) to read their input blocks and were killed after retries.",
+    "keyEvidence": ["NoRouteToHostException", "deadNodes"],
+    "goodNextSteps": [
+      "Check network connectivity to the datanode address in the errors (ping, routes, switch port, firewall)",
+      "Check the HDFS datanode report for dead or unreachable nodes"
+    ]
+  },
+  "notes": "Loghub Hadoop run with an injected network disconnection. Small run with WARN-level evidence only."
+}

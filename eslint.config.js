@@ -16,7 +16,7 @@ export default defineConfig([
   },
   {
     // Type-aware rules for code covered by tsconfig.json.
-    files: ["src/**/*.ts", "shared/**/*.ts", "test/**/*.ts"],
+    files: ["src/**/*.ts", "shared/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"],
     extends: [tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {

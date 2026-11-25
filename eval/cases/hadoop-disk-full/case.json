@@ -1,0 +1,22 @@
+{
+  "title": "WordCount job had failing map tasks",
+  "service": "hadoop-mapreduce",
+  "severity": "medium",
+  "description": "A WordCount MapReduce job on the Hadoop cluster had map tasks fail and get re-run, and the job took longer than usual.",
+  "source": {
+    "dataset": "loghub-hadoop",
+    "url": "https://zenodo.org/records/8196385/files/Hadoop.zip?download=1",
+    "path": "application_1445182159119_0002"
+  },
+  "logs": ["data/"],
+  "diagnostics": [],
+  "groundTruth": {
+    "cause": "The local disk on one cluster node filled up, so map tasks running there could not write their output (no valid local directory) and had to be killed and re-run on other nodes.",
+    "keyEvidence": ["DiskErrorException", "Could not find any valid local directory"],
+    "goodNextSteps": [
+      "Check free disk space on the node's YARN local directories (df on yarn.nodemanager.local-dirs)",
+      "Check which node the failed attempts ran on and whether YARN marked its disks unhealthy"
+    ]
+  },
+  "notes": "Loghub Hadoop run with an injected disk-full failure. The run has no ERROR lines: the evidence is in WARN lines and one FATAL."
+}
