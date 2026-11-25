@@ -128,6 +128,30 @@ describe("POST /incidents/:id/logs/import", () => {
     }
   });
 
+  it("rejects a text log in an unsupported format with 400 and its line number", async () => {
+    const app = buildApp();
+    try {
+      const created = await app.inject({
+        method: "POST",
+        url: "/incidents",
+        payload: incidentPayload,
+      });
+      const { id } = created.json<{ id: string }>();
+      const uploaded = await app.inject({
+        method: "POST",
+        url: `/incidents/${id}/logs/import`,
+        ...uploadPayload("Nov 12 13:10:20 pve sshd[123]: Accepted publickey"),
+      });
+      expect(uploaded.statusCode).toBe(400);
+      expect(uploaded.json()).toMatchObject({
+        error: "Invalid log file",
+        line: 1,
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
   it("returns 404 for an unknown incident", async () => {
     const app = buildApp();
     try {

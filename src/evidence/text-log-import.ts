@@ -1,7 +1,8 @@
-import type { ImportedLog } from "./log-import.js";
+import { LogImportError, type ImportedLog } from "./log-import.js";
 
-// ISO timestamps with explicit timezone, optionally bracketed.
-const timestampPattern = String.raw`\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:\s?(?:Z|[+-]\d{2}:?\d{2}))`;
+// ISO-like timestamps, optionally bracketed. The timezone is optional:
+// timestamps without one (e.g. log4j's "2015-10-18 18:01:47,978") are read as UTC.
+const timestampPattern = String.raw`\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:\s?(?:Z|[+-]\d{2}:?\d{2}))?`;
 
 const headerPattern = new RegExp(
   String.raw`^(?:\[(${timestampPattern})\]|(${timestampPattern}))\s+(.+)$`,
@@ -10,17 +11,21 @@ const headerPattern = new RegExp(
 const levelPattern =
   /^(?:\[(TRACE|DBG|DEBUG|INF|INFO|WRN|WARN|WARNING|ERR|ERROR|FTL|FATAL)\]|(TRACE|DBG|DEBUG|INF|INFO|WRN|WARN|WARNING|ERR|ERROR|FTL|FATAL)(?=\s|:|$))\s*:?\s*/i;
 
-function normalizeTimestamp(value: string): string {
-  const normalized = value
+function normalizeTimestamp(value: string, line: number): string {
+  let normalized = value
     .replace(/^(\d{4}-\d{2}-\d{2}) /, "$1T")
     .replace(",", ".")
     .replace(/\s(?=[+-]\d{2}:?\d{2}$)/, "")
     .replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
 
+  if (!/(?:Z|[+-]\d{2}:\d{2})$/.test(normalized)) {
+    normalized += "Z";
+  }
+
   const date = new Date(normalized);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error(`Invalid timestamp: ${value}`);
+    throw new LogImportError(line, `Invalid timestamp: ${value}`);
   }
 
   return date.toISOString();
@@ -56,20 +61,21 @@ export function parseTextLog(content: string, service: string): ImportedLog[] {
   for (const [index, line] of content.split(/\r?\n/).entries()) {
     if (!line.trim()) continue;
 
+    const lineNumber = index + 1;
     const match = line.match(headerPattern);
 
     if (match) {
       const rawTimestamp = match[1] ?? match[2];
 
       if (!rawTimestamp) {
-        throw new Error(`Missing timestamp at line ${index + 1}`);
+        throw new LogImportError(lineNumber, "Missing timestamp");
       }
 
-      const timestamp = normalizeTimestamp(rawTimestamp);
+      const timestamp = normalizeTimestamp(rawTimestamp, lineNumber);
       const rawMessage = match[3];
 
       if (rawMessage === undefined) {
-        throw new Error(`Missing log message at line ${index + 1}`);
+        throw new LogImportError(lineNumber, "Missing log message");
       }
 
       const { level, message } = parseSeverity(rawMessage);
@@ -85,12 +91,15 @@ export function parseTextLog(content: string, service: string): ImportedLog[] {
       // Continuation line: stack trace or multiline message.
       current.message += `\n${line}`;
     } else {
-      throw new Error(`Unsupported log header at line ${index + 1}`);
+      throw new LogImportError(
+        lineNumber,
+        "Unsupported log format: expected a line starting with a timestamp",
+      );
     }
   }
 
   if (logs.length === 0) {
-    throw new Error("No valid log entries found");
+    throw new LogImportError(1, "No valid log entries found");
   }
 
   return logs;
