@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { buildApp } from "../../src/app.js";
+import { MAX_UPLOAD_MIB, buildApp } from "../../src/app.js";
 import type { LogEntry } from "../../shared/types/evidence.js";
 
 const incidentPayload = {
@@ -166,7 +166,44 @@ describe("POST /incidents/:id/logs/import", () => {
     }
   });
 
-  it("rejects files over 1 MiB", async () => {
+  it("imports a file with more entries than one SQL statement can hold", async () => {
+    // 20,000 rows x 5 columns is over PostgreSQL's 65,535-parameter limit
+    // per statement, so this only works with chunked inserts.
+    const lines = Array.from({ length: 20_000 }, (_, i) =>
+      JSON.stringify({
+        timestamp: new Date(Date.UTC(2026, 9, 23, 10, 0, 0, i)).toISOString(),
+        level: i % 100 === 0 ? "error" : "info",
+        message: `Request ${i} handled`,
+      }),
+    ).join("\n");
+
+    const app = buildApp();
+    try {
+      const created = await app.inject({
+        method: "POST",
+        url: "/incidents",
+        payload: incidentPayload,
+      });
+      const { id } = created.json<{ id: string }>();
+      const uploaded = await app.inject({
+        method: "POST",
+        url: `/incidents/${id}/logs/import`,
+        ...uploadPayload(lines),
+      });
+      expect(uploaded.statusCode).toBe(201);
+      expect(uploaded.json()).toEqual({ imported: 20_000 });
+
+      const logsResponse = await app.inject({
+        method: "GET",
+        url: `/incidents/${id}/logs`,
+      });
+      expect(logsResponse.json<LogEntry[]>()).toHaveLength(20_000);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it(`rejects files over ${MAX_UPLOAD_MIB} MiB`, async () => {
     const app = buildApp();
     try {
       const created = await app.inject({
@@ -178,11 +215,11 @@ describe("POST /incidents/:id/logs/import", () => {
       const response = await app.inject({
         method: "POST",
         url: `/incidents/${id}/logs/import`,
-        ...uploadPayload("x".repeat(1024 * 1024 + 1)),
+        ...uploadPayload("x".repeat(MAX_UPLOAD_MIB * 1024 * 1024 + 1)),
       });
       expect(response.statusCode).toBe(413);
       expect(response.json()).toMatchObject({
-        error: "File exceeds the 1 MiB upload limit",
+        error: `File exceeds the ${MAX_UPLOAD_MIB} MiB upload limit`,
       });
     } finally {
       await app.close();

@@ -17,12 +17,16 @@ import {
   fetchDiagnosticEvidence,
 } from "./evidence/diagnostic-store.js";
 
+/** Largest log or diagnostic file accepted. Keep web/nginx.conf's
+ * client_max_body_size above it. */
+export const MAX_UPLOAD_MIB = 25;
+
 export function buildApp() {
   const app = Fastify({ logger: true });
 
   app.register(multipart, {
     limits: {
-      fileSize: 1024 * 1024, // 1 MiB
+      fileSize: MAX_UPLOAD_MIB * 1024 * 1024,
       files: 1,
     },
   });
@@ -129,7 +133,7 @@ export function buildApp() {
       } catch (error) {
         if (error instanceof app.multipartErrors.RequestFileTooLargeError) {
           return res.code(413).send({
-            error: "File exceeds the 1 MiB upload limit",
+            error: `File exceeds the ${MAX_UPLOAD_MIB} MiB upload limit`,
           });
         }
         if (error instanceof LogImportError) {
@@ -182,7 +186,7 @@ export function buildApp() {
       } catch (error) {
         if (error instanceof app.multipartErrors.RequestFileTooLargeError) {
           return res.code(413).send({
-            error: "File exceeds the 1 MiB upload limit",
+            error: `File exceeds the ${MAX_UPLOAD_MIB} MiB upload limit`,
           });
         }
 
