@@ -16,7 +16,8 @@ describe("parseTextLog", () => {
         timestamp: "2015-10-19T14:26:28.867Z",
         service: "hadoop",
         level: "warn",
-        message: "[main] org.apache.hadoop.mapred.YarnChild: Exception running child",
+        message:
+          "[main] org.apache.hadoop.mapred.YarnChild: Exception running child",
       },
       {
         timestamp: "2015-10-19T14:26:28.977Z",
@@ -53,7 +54,8 @@ describe("parseTextLog", () => {
   });
 
   it("rejects an unsupported first line with a LogImportError and its line number", () => {
-    const parse = () => parseTextLog("\nNov 12 13:10:20 pve sshd[1]: hello", "pve");
+    const parse = () =>
+      parseTextLog("\nNov 12 13:10:20 pve sshd[1]: hello", "pve");
 
     expect(parse).toThrow(LogImportError);
     expect(parse).toThrow(/^Line 2: Unsupported log format/);
