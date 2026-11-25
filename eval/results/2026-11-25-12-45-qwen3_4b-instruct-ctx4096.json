@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-25T12:45:57.957Z",
+  "model": "qwen3:4b-instruct",
+  "numCtx": 4096,
+  "cases": [
+    {
+      "id": "hadoop-machine-down",
+      "title": "WordCount job had map tasks killed and re-run",
+      "logLines": 4233,
+      "parsedEntries": 4036,
+      "findings": 4,
+      "groundTruth": {
+        "cause": "One cluster node (04DN8IQ) went down, so YARN marked it unusable and killed the map attempts running on it, which were then re-run on other nodes.",
+        "keyEvidence": [
+          "unusable node"
+        ],
+        "goodNextSteps": [
+          "Check whether node 04DN8IQ is up (ping, NodeManager status in the ResourceManager UI or `yarn node -list -all`)",
+          "Check that node's NodeManager and system logs for why it went down"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 71.118553792,
+        "answer": {
+          "summary": "Multiple warnings indicate failed file deletion and data node errors during a Hadoop MapReduce job, suggesting a data node failure or HDFS I/O issue that may have caused map tasks to be killed and re-run.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "The full HDFS block status and health of datanode 10.86.169.121 at the time of the incident, including its disk usage and node health logs.",
+            "The HDFS filesystem permissions and access logs for the path /out/out3/_temporary/1/_temporary/attempt_1445087491445_0001_m_000000_0 during the incident period."
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "A datanode failure at 10.86.169.121:50010 caused a block I/O error, leading to failed data streaming and subsequent map task kills.",
+              "nextStep": "Check the HDFS datanode logs for 10.86.169.121 during the time window 2015-10-17T21:41:34Z to confirm if it experienced a crash, disk failure, or network outage.",
+              "evidenceIds": [
+                "F2",
+                "F3",
+                "F4"
+              ]
+            },
+            {
+              "cause": "The HDFS file output commit failed due to permission or filesystem corruption, preventing cleanup of temporary files and triggering map task restarts.",
+              "nextStep": "Verify HDFS permissions and access logs for the output directory to determine if a permission issue prevented file deletion.",
+              "evidenceIds": [
+                "F1"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[DataStreamer for file /tmp/hadoop-yarn/staging/msrabi/.staging/job_<NUM>_<NUM>/job_<NUM>_<NUM>_<NUM>.jhist block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: Error Recovery for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> in pipeline <IP>:<NUM>, <IP>:<NUM>: bad datanode <IP>:<NUM>",
+          "[DataStreamer for file /tmp/hadoop-yarn/staging/msrabi/.staging/job_1445087491445_0001/job_1445087491445_0001_1.jhist block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: Error Recovery for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056 in pipeline 172.22.149.145:50010, 10.86.169.121:50010: bad datanode 10.86.169.121:50010",
+          "[ResponseProcessor for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: DFSOutputStream ResponseProcessor exception for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> java.io.IOException: Bad response ERROR for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM> from datanode <IP>:<NUM> at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer$ResponseProcessor.run(DFSOutputStream.java:<NUM>)",
+          "[ResponseProcessor for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: DFSOutputStream ResponseProcessor exception  for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056\njava.io.IOException: Bad response ERROR for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056 from datanode 10.86.169.121:50010\n\tat org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer$ResponseProcessor.run(DFSOutputStream.java:898)",
+          "[ResponseProcessor for block BP-<NUM>-<IP><NUM>:blk_<NUM>_<NUM>] org.apache.hadoop.hdfs.DFSClient: Slow ReadProcessor read fields took 48944ms (threshold=30000ms); ack: seqno: <NUM> status: SUCCESS status: ERROR downstreamAckTimeNanos: <NUM>, targets: [<IP>:<NUM>, <IP>:<NUM>]",
+          "[ResponseProcessor for block BP-1347369012-10.190.173.170-1444972147527:blk_1073742860_2056] org.apache.hadoop.hdfs.DFSClient: Slow ReadProcessor read fields took 48944ms (threshold=30000ms); ack: seqno: -2 status: SUCCESS status: ERROR downstreamAckTimeNanos: 0, targets: [172.22.149.145:50010, 10.86.169.121:50010]",
+          "[CommitterEvent Processor #<NUM>] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-<NUM>:<NUM>/out/out3/_temporary/<NUM>/_temporary/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out3/_temporary/1/_temporary/attempt_1445087491445_0001_m_000000_0",
+          "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out3/_temporary/1/_temporary/attempt_1445087491445_0001_m_000012_0",
+          "[CommitterEvent Processor #3] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/out/out3/_temporary/1/_temporary/attempt_1445087491445_0001_m_000008_0"
+        ],
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "unusable node"
+          ]
+        },
+        "promptTokens": 2101,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 124.873886834,
+        "answer": {
+          "summary": "The WordCount MapReduce job experienced map task kills and re-runs, causing a delay. Based on the logs, two potential root causes are identified with supporting log lines and actionable next steps.",
+          "hypotheses": [
+            {
+              "cause": "Memory exhaustion during map task execution",
+              "evidence": [
+                "2015-10-17 21:46:15,436 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 73782598; bufend = 3100998; bufvoid = 104857598",
+                "2015-10-17 21:46:28,898 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 13586755; bufend = 47763128; bufvoid = 104857600"
+              ],
+              "nextStep": "Check the YARN container logs for OOM (Out-of-Memory) errors or memory pressure indicators. Specifically, look for messages like 'Killed container' or 'Memory limit exceeded' in the container's stderr or logs from the NodeManager."
+            },
+            {
+              "cause": "Disk I/O saturation or spilling issues during map output generation",
+              "evidence": [
+                "2015-10-17 21:46:38,501 INFO [main] org.apache.hadoop.mapred.Merger: Merging 7 sorted segments",
+                "2015-10-17 21:46:38,510 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 7 segments left of total size: 228396188 bytes"
+              ],
+              "nextStep": "Inspect the DataNode logs for disk I/O bottlenecks or disk space issues. Verify that the underlying storage has sufficient free space and that there are no I/O errors or high latency during the merge phase of the map task."
+            }
+          ]
+        },
+        "promptTokens": 3669,
+        "cited": [
+          "2015-10-17 21:46:15,436 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 73782598; bufend = 3100998; bufvoid = 104857598",
+          "2015-10-17 21:46:28,898 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 13586755; bufend = 47763128; bufvoid = 104857600",
+          "2015-10-17 21:46:38,501 INFO [main] org.apache.hadoop.mapred.Merger: Merging 7 sorted segments",
+          "2015-10-17 21:46:38,510 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 7 segments left of total size: 228396188 bytes"
+        ],
+        "truncated": true,
+        "keptFraction": 0.009285023748476314,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "unusable node"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hadoop-machine-down-pagerank",
+      "title": "PageRank job slow, containers not starting",
+      "logLines": 3948,
+      "parsedEntries": 3800,
+      "findings": 2,
+      "groundTruth": {
+        "cause": "One cluster node (04DN8IQ, 10.86.164.9) went down, so the application master kept retrying to connect to it to launch containers and eventually killed the task attempts assigned to it.",
+        "keyEvidence": [
+          "Retrying connect to server",
+          "04DN8IQ"
+        ],
+        "goodNextSteps": [
+          "Check whether node 04DN8IQ (10.86.164.9) is reachable and its NodeManager is running",
+          "Check the ResourceManager's node list for that node's state (LOST or UNHEALTHY)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 53.4818315,
+        "answer": {
+          "summary": "A container completion event for an unknown container ID is reported, followed by warnings about failed deletion of temporary HDFS output files, indicating a job execution failure likely due to file system or container lifecycle issues.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "The full container allocation logs from the ResourceManager before and after the error timestamp to verify if container allocation was attempted or rejected.",
+            "HDFS file system access logs or permission settings for the path hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000004_0 to confirm if the job had write or delete permissions."
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The container completion event for an unknown container ID suggests a container allocation or lifecycle failure, possibly due to a misconfigured or corrupted container allocation process in the ResourceManager.",
+              "nextStep": "Check the ResourceManager container allocation logs around 2015-10-17T15:38:16Z to verify if container allocation was initiated or failed before the reported event.",
+              "evidenceIds": [
+                "F1"
+              ]
+            },
+            {
+              "cause": "The repeated warnings about failed deletion of temporary HDFS files indicate a file system permission issue or a corrupted file path, preventing cleanup after job completion.",
+              "nextStep": "Verify HDFS permissions and access logs for the specified temporary output directory to confirm whether the job had sufficient permissions to delete files.",
+              "evidenceIds": [
+                "F2"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Container complete event for unknown container id container_<NUM>_<NUM>_<NUM>_<NUM>",
+          "[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Container complete event for unknown container id container_1445062781478_0012_01_000012",
+          "[CommitterEvent Processor #<NUM>] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-<NUM>:<NUM>/pageout/out2/_temporary/<NUM>/_temporary/attempt_<NUM>_<NUM>_m_<NUM>_<NUM>",
+          "[CommitterEvent Processor #1] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000004_0",
+          "[CommitterEvent Processor #2] org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: Could not delete hdfs://msra-sa-41:9000/pageout/out2/_temporary/1/_temporary/attempt_1445062781478_0012_m_000006_1"
+        ],
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "Retrying connect to server",
+            "04DN8IQ"
+          ]
+        },
+        "promptTokens": 1183,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 150.96452895800005,
+        "answer": {
+          "summary": "The PageRank job is experiencing significant delays and appears to be stuck in a long-running spilling and merging phase. The logs show repeated spilling of map output segments and merging operations, with no indication of completion. This suggests a performance bottleneck in the map task's I/O or memory handling, possibly due to large input splits or insufficient resources.",
+          "hypotheses": [
+            {
+              "cause": "Large input splits causing excessive memory and I/O overhead",
+              "evidence": [
+                "2015-10-17 15:44:20,310 INFO [main] org.apache.hadoop.mapred.MapTask: mapreduce.task.io.sort.mb: 100",
+                "2015-10-17 15:44:20,310 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+                "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396; length = 6553600",
+                "2015-10-17 15:46:17,950 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 8 segments left of total size: 288324673 bytes"
+              ],
+              "nextStep": "Check the size distribution of input splits. If any split exceeds a few MB, it may be causing excessive memory usage and I/O during sorting and merging. Consider splitting the input data into smaller chunks or adjusting the map task input size via configuration (e.g., mapreduce.input.fileinputformat.split.maxsize)."
+            },
+            {
+              "cause": "Insufficient memory or disk space for spilling and merging operations",
+              "evidence": [
+                "2015-10-17 15:46:09,066 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 86511225; bufend = 19445134; bufvoid = 104857600",
+                "2015-10-17 15:46:17,950 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 8 segments left of total size: 288324673 bytes"
+              ],
+              "nextStep": "Verify that the cluster has sufficient disk space for temporary spilling. Monitor the HDFS storage and check for disk I/O bottlenecks. Increase the mapreduce.task.io.sort.mb or reduce the number of segments by adjusting input split size to avoid memory overflow and long merge passes."
+            }
+          ]
+        },
+        "promptTokens": 3817,
+        "cited": [
+          "2015-10-17 15:44:20,310 INFO [main] org.apache.hadoop.mapred.MapTask: mapreduce.task.io.sort.mb: 100",
+          "2015-10-17 15:44:20,310 INFO [main] org.apache.hadoop.mapred.MapTask: soft limit at 83886080",
+          "2015-10-17 15:44:28,811 INFO [main] org.apache.hadoop.mapred.MapTask: kvstart = 26214396; length = 6553600",
+          "2015-10-17 15:46:17,950 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 8 segments left of total size: 288324673 bytes",
+          "2015-10-17 15:46:09,066 INFO [main] org.apache.hadoop.mapred.MapTask: bufstart = 86511225; bufend = 19445134; bufvoid = 104857600"
+        ],
+        "truncated": true,
+        "keptFraction": 0.009386247021915324,
+        "keyEvidence": {
+          "found": [],
+          "missing": [
+            "Retrying connect to server",
+            "04DN8IQ"
+          ]
+        }
+      }
+    }
+  ]
+}
