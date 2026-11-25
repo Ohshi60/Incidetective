@@ -27,6 +27,21 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+
+      # Fail if src/db/schema.ts changed without a matching migration.
+      # generate only diffs the schema against drizzle/meta; it never
+      # connects, but drizzle.config.ts requires DATABASE_URL to be set.
+      - name: Check migrations match schema
+        env:
+          DATABASE_URL: postgresql://unused@localhost/unused
+        run: |
+          npx drizzle-kit generate
+          if [ -n "$(git status --porcelain drizzle)" ]; then
+            git status --porcelain drizzle
+            echo "::error::Schema changed without a migration. Run 'npx drizzle-kit generate' and commit the result."
+            exit 1
+          fi
+
       # Integration tests start PostgreSQL via Testcontainers, using the
       # runner's Docker daemon.
       - run: npm test
