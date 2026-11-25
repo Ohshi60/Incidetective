@@ -1,0 +1,146 @@
+{
+  "date": "2026-11-25T21:24:49.235Z",
+  "model": "qwen3:4b-instruct",
+  "numCtx": 16384,
+  "cases": [
+    {
+      "id": "coolify-port-conflict",
+      "title": "Deploying Incidetective on Coolify fails",
+      "logLines": 740,
+      "parsedEntries": 740,
+      "findings": 2,
+      "groundTruth": {
+        "cause": "The web container publishes host port 8080, which another app on the same Coolify server (the Night City dashboard) already uses, so Docker could not start it: \"Bind for 0.0.0.0:8080 failed: port is already allocated\". Postgres and the API started fine; the leading \"Error:\" lines are Docker Compose's normal progress output on stderr.",
+        "keyEvidence": [
+          "port is already allocated",
+          "0.0.0.0:8080"
+        ],
+        "goodNextSteps": [
+          "Find what already uses port 8080 on the server (docker ps, ss -ltnp or lsof) and give this app a different host port",
+          "Remove the host port mapping, since Coolify's proxy reaches the container without one"
+        ],
+        "nextStepPatterns": [
+          "docker\\s+ps",
+          "\\b(ss|netstat|lsof)\\b",
+          "8080.{0,60}\\b(in use|used by|allocated|occupied|taken|another|other|conflict\\w*)",
+          "\\b(which|what)\\b.{0,40}\\b(using|uses|occup\\w+|holds?|bound)\\b.{0,30}\\b(port|8080)",
+          "(change|different|another|free|unused|other)\\s+(\\w+\\s+){0,2}(host\\s+)?port",
+          "WEB_PORT",
+          "(remove|drop|delete)\\b.{0,30}\\bport\\s+(mapping|binding)"
+        ]
+      },
+      "app": {
+        "status": "ok",
+        "seconds": 2.2776745000000003,
+        "answer": {
+          "summary": "Deployment of Incidetective on Coolify failed due to port 8080 being in use or a stale volume state, both of which are likely blocking container networking setup.",
+          "contextEvidence": [],
+          "missingEvidence": [
+            "A list of running containers on the host at 2026-11-25T21:00:31.000Z showing which container is using port 8080",
+            "The state of the volume `gnstpqdhpyfayhfjcxfac5wy_postgres-data` before and after the deployment, including whether it was previously created or left in a partial state"
+          ],
+          "diagnosticEvidence": [],
+          "hypotheses": [
+            {
+              "cause": "The container deployment failed because port 8080 was already in use by another container or service, preventing the binding of the web endpoint.",
+              "nextStep": "Run `lsof -i :8080` or `netstat -tulnp | grep 8080` on the host to identify the process currently using port 8080.",
+              "evidenceIds": [
+                "F1"
+              ]
+            },
+            {
+              "cause": "An existing volume creation attempt (F2) may have triggered a conflict during container setup, possibly due to a stale or incomplete volume state.",
+              "nextStep": "Check the volume status using `docker volume inspect gnstpqdhpyfayhfjcxfac5wy_postgres-data` to verify if it was previously created and whether it is still active.",
+              "evidenceIds": [
+                "F2"
+              ]
+            }
+          ]
+        },
+        "cited": [
+          "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for <IP>:<NUM> failed: port is already allocated",
+          "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for 0.0.0.0:8080 failed: port is already allocated",
+          "Volume gnstpqdhpyfayhfjcxfac5wy_postgres-data Creating"
+        ],
+        "keyEvidence": {
+          "found": [
+            "port is already allocated",
+            "0.0.0.0:8080"
+          ],
+          "missing": []
+        },
+        "nextStep": {
+          "matched": [
+            "\\b(ss|netstat|lsof)\\b"
+          ]
+        },
+        "focus": {
+          "idsPerHypothesis": [
+            1,
+            1
+          ],
+          "topKeyEvidence": {
+            "found": [
+              "port is already allocated",
+              "0.0.0.0:8080"
+            ],
+            "missing": []
+          },
+          "keyShare": 0.5
+        },
+        "promptTokens": 1314,
+        "omitted": {
+          "findings": 0,
+          "contextLogs": 0,
+          "diagnostics": 0
+        }
+      },
+      "baseline": {
+        "status": "ok",
+        "seconds": 11.355640959,
+        "answer": {
+          "hypotheses": [
+            {
+              "cause": "Port conflict: The web container is trying to bind to port 8080, which is already in use by another container or service.",
+              "evidence": [
+                "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for 0.0.0.0:8080 failed: port is already allocated"
+              ],
+              "nextStep": "Check if any existing container is already using port 8080 by running `docker ps | grep 8080` and terminate or reconfigure the conflicting service if necessary."
+            },
+            {
+              "cause": "Incompatible or misconfigured Docker Compose file: The web service may be configured to expose port 8080, and this port is already allocated by another service (e.g., the existing dashboard app), causing a conflict during deployment.",
+              "evidence": [
+                "Volume gnstpqdhpyfayhfjcxfac5wy_postgres-data Created",
+                "Container web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 Creating",
+                "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for 0.0.0.0:8080 failed: port is already allocated"
+              ],
+              "nextStep": "Inspect the `compose.prod.yaml` file to verify the web service's port mapping and ensure it does not conflict with the existing dashboard app's port configuration. Adjust the port if needed (e.g., use 8081)."
+            }
+          ],
+          "summary": "The deployment fails due to a port conflict on port 8080, likely caused by an existing service (such as the dashboard) already using it. The root cause is either a port conflict or a misconfigured Docker Compose file. The most immediate and likely cause is the port conflict, as the error explicitly states the port is already allocated."
+        },
+        "promptTokens": 14677,
+        "cited": [
+          "Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 (32a02cda1870aeb6c27bb74f4832e76cbe7cd379022d9f8b67d11796fe0bfbab): Bind for 0.0.0.0:8080 failed: port is already allocated",
+          "Volume gnstpqdhpyfayhfjcxfac5wy_postgres-data Created",
+          "Container web-gnstpqdhpyfayhfjcxfac5wy-20261125T205755 Creating"
+        ],
+        "nextStep": {
+          "matched": [
+            "docker\\s+ps",
+            "8080.{0,60}\\b(in use|used by|allocated|occupied|taken|another|other|conflict\\w*)"
+          ]
+        },
+        "truncated": true,
+        "keptFraction": 0.38434367385651913,
+        "keyEvidence": {
+          "found": [
+            "port is already allocated",
+            "0.0.0.0:8080"
+          ],
+          "missing": []
+        }
+      }
+    }
+  ]
+}

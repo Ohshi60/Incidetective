@@ -44,6 +44,7 @@ import {
   nextStepHits,
   parseCase,
   renderMarkdown,
+  shrinkToFit,
   type BaselineAnswer,
   type CaseResult,
   type EvalCase,
@@ -244,23 +245,41 @@ async function runCase(evalCase: EvalCase): Promise<CaseResult> {
       baselineSystemPrompt,
       RAW_LOG_CHARS_PER_TOKEN,
     );
-    const input = buildBaselineInput(
+    let input = buildBaselineInput(
       evalCase,
       [...diagnosticFiles, ...logFiles],
       maxChars,
     );
-    try {
-      const [chat, seconds] = await timed(() =>
-        ollamaJsonChat(
-          {
-            model,
-            schema: baselineSchema,
-            system: baselineSystemPrompt,
-            user: input.text,
-          },
-          settings,
-        ),
+    const ask = () =>
+      ollamaJsonChat(
+        {
+          model,
+          schema: baselineSchema,
+          system: baselineSystemPrompt,
+          user: input.text,
+        },
+        settings,
       );
+    try {
+      const [chat, seconds] = await timed(async () => {
+        try {
+          return await ask();
+        } catch (error) {
+          // Some logs (shell commands, hex IDs) pack more tokens per character
+          // than the estimate: cut to Ollama's own count and retry once.
+          const smaller = shrinkToFit(String(error), maxChars, settings);
+          if (smaller === undefined) throw error;
+          log(
+            `  baseline too long for the context; retrying at ${smaller} chars`,
+          );
+          input = buildBaselineInput(
+            evalCase,
+            [...diagnosticFiles, ...logFiles],
+            smaller,
+          );
+          return await ask();
+        }
+      });
       const answer = chat.json as BaselineAnswer;
       const hypotheses = Array.isArray(answer.hypotheses)
         ? answer.hypotheses

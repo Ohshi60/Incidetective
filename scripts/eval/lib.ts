@@ -166,6 +166,27 @@ export function buildBaselineInput(
   };
 }
 
+/**
+ * When Ollama rejects a raw paste as too long ("request (N tokens) exceeds
+ * the available context size (M tokens)"), the character budget that should
+ * fit instead, using Ollama's own token count. Undefined for other errors.
+ */
+export function shrinkToFit(
+  errorMessage: string,
+  maxChars: number,
+  budget: { numCtx: number; numPredict: number },
+): number | undefined {
+  const match =
+    /request \((\d+) tokens\) exceeds the available context size/.exec(
+      errorMessage,
+    );
+  const requested = Number(match?.[1]);
+  if (!requested) return undefined;
+  // Leave room for the answer, plus a 5% margin for the estimate.
+  const fits = (budget.numCtx - budget.numPredict) / requested;
+  return Math.floor(maxChars * fits * 0.95);
+}
+
 // --- Evidence checks ---------------------------------------------------------
 
 /** Which ground-truth substrings appear in the evidence an answer cited. */

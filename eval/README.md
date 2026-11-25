@@ -39,6 +39,7 @@ The "key evidence cited" line is an automatic hint: it checks whether the cited 
 | `hadoop-machine-down` | Loghub Hadoop | ~4,200 lines | Node down; attempts killed on an unusable node (INFO lines only) |
 | `hadoop-machine-down-pagerank` | Loghub Hadoop | ~3,900 lines | Node down; 624 INFO "Retrying connect to server" lines |
 | `ollama-rocm-grammar` | Real: the author's desktop | ~2,800 lines (two Ollama server logs) | Ollama's ROCm GPU backend corrupted output, so JSON-schema requests failed; "llama-server terminated" lines are unloads, not crashes |
+| `coolify-port-conflict` | Real: the author's homelab Coolify | 739 lines (full deployment log) | Host port 8080 already used by another app; Compose's progress lines are prefixed "Error:" |
 
 Add a case with a folder containing `case.json` (see the existing ones) and its log files. A case with a `source` downloads its logs into `data/`, which is gitignored.
 

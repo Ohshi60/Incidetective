@@ -8,6 +8,7 @@ import {
   keyEvidenceHits,
   nextStepHits,
   parseCase,
+  shrinkToFit,
 } from "../scripts/eval/lib.js";
 import type { AIInvestigation } from "../shared/types/analysis.js";
 import type { InvestigationReport } from "../shared/types/report.js";
@@ -231,5 +232,23 @@ describe("nextStepHits", () => {
 
   it("matches nothing when no step fits", () => {
     expect(nextStepHits(["vulkan"], ["Check logs"])).toEqual({ matched: [] });
+  });
+});
+
+describe("shrinkToFit", () => {
+  const budget = { numCtx: 16384, numPredict: 1200 };
+
+  it("scales the budget by Ollama's own token count, with a margin", () => {
+    expect(
+      shrinkToFit(
+        "Ollama error: HTTP 400: request (18237 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        30000,
+        budget,
+      ),
+    ).toBe(Math.floor(30000 * (15184 / 18237) * 0.95));
+  });
+
+  it("ignores other errors", () => {
+    expect(shrinkToFit("HTTP 500: boom", 30000, budget)).toBeUndefined();
   });
 });
